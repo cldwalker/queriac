@@ -26,7 +26,7 @@ set :domain, "sikelianos.railsmachina.com"
 set :user, "deploy"
 
 # URL of your source repository.
-set :repository, "https://monoquery.googlecode.com/svn/trunk/"
+set :repository, "http://monoquery.googlecode.com/svn/trunk/"
 
 # Rails environment. Used by application setup tasks and migrate tasks.
 set :rails_env, "production"
