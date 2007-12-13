@@ -1,0 +1,62 @@
+<div id="primary">
+
+	<h1>
+		commands <%= "tagged with #{@tag}" if @tag %>
+	</h1>
+
+	<table>
+	  <tr>
+	    <th>Name</th>
+	    <th width="70">Keyword</th>
+	    <th width="30" class="centered">Hits</th>
+	    <th>Last Used</th>	
+			<th>Options</th>
+	  </tr>
+
+	<% for command in @commands %>
+		<tr <%= cycle('class="offset"', '') -%>>	
+	    <td class="<%= command.bookmarklet? ? "bookmarklet" : command.kind %>"><%= link_to command.name, command.view_path %></td>
+	    <td><%=h command.keyword %></td>
+	    <td class="centered"><%=h command.queries.size if command.queries.size > 0 %></td>
+	    <td><%= time_ago_in_words(command.queries.last.created_at) + " ago" if command.queries.size > 0 %></td>	
+			<td>
+				<ul class="options">
+				<% if owner? %>
+					<li class="no_icon"><%= link_to image_tag("icons/edit.png"), command.edit_path %></li>
+					<li class="no_icon"><%= link_to image_tag("icons/delete.png"), command.delete_path, :confirm => "Are you sure you want to delete this command?" %></li>
+				<% elsif logged_in? %>
+					<li class="add"><%= link_to 'Copy', new_command_path({:ancestor => command.id}) %></li>
+				<% end %>
+				</ul>
+			</td>
+	  </tr>
+	<% end %>
+	</table>
+
+	<% if owner? %>
+		<ul class="bolder options">
+			<li class="add"><%= link_to 'Add a New command', new_command_path %></li>
+		</ul>
+	<% end %>
+	
+</div>
+
+<div id="secondary">
+	
+	<h1>tags</h1>
+	
+	<%= tag_cloud @tags %>
+	
+	<h1>users</h1>
+	
+	<ul class="users">
+	<% for user in @users %>
+		<li>
+			<b><%= link_to user.login, user.home_path %></b>
+			(<%= pluralize(user.commands.count, "command") %>, <%= pluralize(user.queries.count, "query") %>)
+		</li>
+	<% end %>
+	</ul>
+
+		
+</div>

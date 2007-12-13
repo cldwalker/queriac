@@ -1,0 +1,33 @@
+<div class="floater">
+  <%= f.label :name %><br />
+  <%= f.text_field :name, :size => 50  %>
+</div>
+
+<div class="floater">
+  <%= f.label :keyword %><br />
+  <%= f.text_field :keyword, :size => 14 %>
+</div>
+
+<div class="floatkiller">
+  <%= f.label :url, :text => "URL or Javascript Command" %><br />
+  <%= f.text_field :url, :size => 90 %>
+</div>
+
+<div>
+  <%= f.label :description, :text => "Description (If command is parametric, please outline all parameters and provide an example query)" %><br />
+  <%= f.text_area :description, :cols => 100, :rows => 12  %>
+</div>
+
+<div>
+  <%= label_tag "Tags (separated by spaces)", :for => :tags %><br />
+	<% tag_list = @ancestor ? @ancestor.tag_list : @command.tag_list %>
+  <%= text_field_tag :tags, tag_list, {:size => 90} %>
+</div>
+
+<div class="floater">
+  <%= f.check_box :public, {:onclick => "handle_publicity_checkboxes(this);"} %> <%= f.label :public, :text => "Publicize this command" %>
+</div>
+
+<div class="floater">
+  <%= f.check_box :public_queries %> <%= f.label :public_queries, :text => "Publicize queries on this command too", :id => "command_public_queries_label" %>
+</div>

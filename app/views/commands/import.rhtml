@@ -1,0 +1,5 @@
+<h1>Import Results <%= @commands.size %></h1>
+
+<% for command in @commands %>
+	<%= "#{command.name} / #{command.keyword} / #{command.type} / #{command.url}" %><br />
+<% end %>

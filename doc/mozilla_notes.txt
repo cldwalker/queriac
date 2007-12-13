@@ -1,0 +1,17 @@
+// Original Bookmarklet
+javascript:_s=document.createElement('script');_s.type='text/javascript';_s.src='http://localhost:3000/commands/%s';document.getElementsByTagName('head')[0].appendChild(_s);void(0);
+
+// Original Bookmarklet (Line Breaks)
+javascript:_s=document.createElement('script');
+_s.type='text/javascript';
+_s.src='http://localhost:3000/commands/%s';
+document.getElementsByTagName('head')[0].appendChild(_s);
+void(0);
+
+// Original Keyword.URL help from mozilla.firefox.support forum
+data:text/html,<body onload="alert(document.body.textContent)"><plaintext>
+
+// Composite Keyword.URL
+data:text/html,<body onload="javascript:_s=document.createElement('script');_s.type='text/javascript';_s.src='http://localhost:3000/zeke/'+document.body.textContent;document.body.appendChild(_s);void(0);"><plaintext>
+
+data:text/html,<body onload="javascript:_s=document.createElement('script');_s.type='text/javascript';_s.src='http://monoquery.com/zeke/'+document.body.textContent;document.body.appendChild(_s);void(0);"><plaintext>

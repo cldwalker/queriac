@@ -1,0 +1,30 @@
+<%= collapser_for "upload", :autohide => true, :label => "Hide Uploader" %>
+
+<div id="upload">
+	<h1>Upload bookmark file from Firefox/Camino/Mozilla</h1>
+
+	<%= form_tag({:action=>'create'}, :multipart => true) %>
+		<input type="file" class="text" name="bookmarks_file" />
+		<input type="submit" class="submit" name="Upload" value="Upload Bookmarks" />
+	</form>
+</div>
+
+<%= hide "upload" %>
+
+
+<h1 class="inline">New Command</h1>
+
+<%= expander_for "upload", :autohide => false, :label => "Lots of Commands? Upload them!" %>
+
+<%= error_messages_for :command %>
+
+<% form_for(:command, :url => commands_path) do |f| %>
+
+	<%= render :partial => "edit_form", :locals => {:f => f} %>
+
+  <div class="floatkiller">
+    <%= f.label :url, :text => " " %><br />	
+    <%= submit_tag "Create Command", :class => "submit" %>
+  </div>
+<% end %>
+

@@ -1,0 +1,60 @@
+<div id="primary">
+
+	<h2>Recent Queries (<%= @command.queries.size %>)</h2>
+	
+	<p class="url"><%= @command.url.ellipsize(:max => 60, :delimiter => "......" ) %></p>
+	
+	<table>
+	  <tr>
+	    <th>Query</th>
+	    <th>Date</th>
+	  </tr>
+	<% for query in @command.queries %>
+		<tr <%= cycle('class="offset"', '') -%>>	
+		  <td>
+				<% if query.query_string.empty? %>
+					<%= link_to "(empty)", @command.url_for(query.query_string), :class => "faded" %>
+				<% else %>
+					<b><%= link_to query.query_string, @command.url_for(query.query_string) %></b>
+				<% end %>
+			</td>
+		  <td>
+				<%= time_ago_in_words query.created_at %> ago
+			</td>
+		</tr>
+	<% end %>
+	</table>
+	
+</div>
+
+
+<div id="secondary">
+	
+	<h2>Command Info </h2>
+	
+	<p>
+	  <b>Kind:</b> <%=h @command.kind %>
+	</p>
+	
+	<p>
+	  <b>Keyword:</b> <%=h @command.keyword %>
+	</p>
+
+	<p>
+	  <b>Description:</b> <%=h @command.description %>
+	</p>
+	
+	<p>
+	  <b>Tags:</b> <%=h @command.tags.collect{|t| t.name}.join(", ") %>
+	</p>	
+
+	<ul class="options">
+		<% if owner? %>
+				<li class="edit"><%= link_to 'Edit', @command.edit_path %></li>
+				<li class="delete"><%= link_to 'Delete', @command.delete_path, :confirm => "Are you sure you want to delete this command?" %></li>
+		<% elsif logged_in? %>
+			<li class="add"><%= link_to 'Copy', new_command_path({:ancestor => @command.id}) %></li>
+		<% end %>
+	</ul>
+	
+</div>

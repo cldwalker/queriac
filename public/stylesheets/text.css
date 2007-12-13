@@ -1,0 +1,278 @@
+body {
+	font-family: "Lucida Grande", Lucida, Verdana, sans-serif;	
+/*	font-size: 62.8%;*/
+	font-size: 10px;
+}
+
+a {
+	text-decoration: none;
+	color: mediumblue;
+	color: #427f0b;
+}
+a:hover {
+	text-decoration: underline;
+}
+p a {
+	text-decoration: underline;
+	color: #427f0b;
+	padding-right: 2px;
+	padding-left: 2px;
+	
+}
+p a:hover {
+	text-decoration: none;
+	background-color: #427f0b;
+	color: white;
+}
+
+
+
+/* TEXT
+*********************************************************************************/
+
+h1,h2,h3,h4 {
+	font-family: "Trebuchet MS", "Trebuchet-MS" "Lucida Grande", Lucida, Verdana, sans-serif;	
+	color: #333;
+	text-align: left;
+	clear: both;
+}
+
+h1 {
+	line-height: 1.3em;
+	font-size: 2.2em;
+	margin: 20px 0 10px 0;
+	color: #427f0b;
+}
+
+h2 {
+	line-height: 1.3em;
+	font-size: 1.9em;
+	margin: 25px 0 10px 0;
+	color: #333;
+}
+h2 a {
+	color: #666;
+}
+
+
+
+/* FLASH / MESSAGE BOXES
+*********************************************************************************/
+
+.flash-msg {
+	border: 1px solid #76191a;
+	padding: 8px;
+	color: #000;
+	font-size: 1.2em;
+}
+
+.notice {
+	background-color: #427f0b;
+	color: white;
+	border-color: #009d20;
+}
+
+.notice a {
+	color: green;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+.warning {
+	background-color: #ed2700;
+	color: white;
+	border-color: #700;
+}
+
+
+/* ERRORS
+*********************************************************************************/
+#errors {
+	width: 500px;
+	background: #FCFAE1 url(../images/icons/error.png) no-repeat 5px 12px;	
+	border: 1px solid firebrick;
+	padding: 10px 10px 10px 35px;
+	color: #000;
+	color: firebrick;
+}
+
+#errors p {
+	margin: 0;
+	padding: 0;
+	color:  firebrick;
+	font-size: 1.4em;
+}
+
+#errors ul {
+	margin: 5px 0 0 0;
+}
+
+#errors li {
+	color:  black;
+	font-weight: bold;
+	font-size: 1.2em;
+	list-style-type: disc;
+	padding: 5px;
+}
+
+p {
+	font-family: "Lucida Grande", Lucida, Verdana, sans-serif;	
+	color: #444;
+	text-decoration: none;
+	word-spacing: normal;
+	text-align: left;
+	letter-spacing: 0;
+	line-height: 1.4em;
+	font-size: 1.3em;
+	padding: 0px 0 15px 0;
+}
+
+p.bordered {
+	background-color: #F3F3F3;
+	border: 1px solid #DDD;
+	padding: 10px;
+}
+
+
+p.caption {
+	padding-left: 10px;
+	margin-bottom: 20px;
+}
+
+p.url {
+	font-size: 1.5em;
+	color: #427f0b;
+}
+
+table p {
+	font-size: 1em;
+}
+
+
+/* LISTS
+*********************************************************************************/
+ul.normal {
+	list-style-type: disc;
+	padding-left: 15px;
+	color: #444;
+}
+
+ul.normal li {
+	font-size: 1.2em;
+	padding-bottom: 10px;
+	list-style-position: outside;
+	line-height: 1.3em;
+}
+
+ul.users {
+	list-style-type: none;
+	padding-left: 0px;
+	color: #444;
+}
+
+ul.users li {
+	font-size: 1.2em;
+	padding-bottom: 10px;
+	list-style-position: outside;
+	line-height: .9em;
+}
+
+
+ol.normal {
+	list-style-type: decimal;
+	padding-left: 15px;
+	color: #444;
+}
+
+ol.normal li {
+	font-size: 1.2em;
+	padding-bottom: 10px;
+	list-style-position: outside;
+	line-height: 1.3em;
+}
+
+
+/* OPTIONS
+*********************************************************************************/
+
+/* This is for the lists that are typically within the rows of the tables */
+ul.options li {
+	display: block;
+	float: left;
+	padding: 2px 10px 2px 20px;
+	/*border: 1px solid navy;*/
+}
+
+ul.options li a {
+	font-size: 1.1em;
+}
+
+ul.options li.no_icon {
+	padding: 0 2px 0 2px;
+}
+
+/* This is for the lists that are typically at the bottoms of the tables */
+ul.bolder li {
+	padding: 5px 20px 5px 23px;
+}
+
+ul.bolder li a {
+	font-size: 1.2em;	
+	font-weight: bold;
+}
+
+ul.options li.add {
+	background: url(../images/icons/add.png) no-repeat left center;
+}
+
+ul.options li.edit {
+	background: url(../images/icons/edit.png) no-repeat left center;	
+}
+
+ul.options li.delete {
+	background: url(../images/icons/delete.png) no-repeat left center;
+}
+
+ul.options li.add a, ul.options li.approve a, ul.options li.reserve a {
+	color: green;
+}
+
+ul.options li.edit a,ul.options li.expore a, ul.options li.view a {
+	color: saddlebrown;
+}
+
+ul.options li.delete a, ul.options li.reject a {
+	color: firebrick;
+}
+
+/* MISC
+*********************************************************************************/
+.reduced {
+	font-size: 90%;
+}
+
+.faded {
+	color: #999;
+}
+
+/* Tags
+*********************************************************************************/
+p.tags a.t1 {
+	font-size: 1em;
+	opacity: .3;
+}
+p.tags a.t2 {
+	font-size: 1.2em;
+	opacity: .5;
+}
+p.tags a.t3 {
+	font-size: 1.4em;
+	opacity: .7;
+}
+p.tags a.t4 {
+	font-size: 1.6em;
+	opacity: .9;
+}
+p.tags a.t5, p.tags a.t6, p.tags a.t7 {
+	font-size: 1.8em;
+}

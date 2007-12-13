@@ -1,0 +1,75 @@
+<div id="primary">
+
+<h1>Help!</h1>
+
+<p>Note: If you just want setup instructions, go to the <%= link_to "setup page", "/setup" %>.</p>
+
+<h2>What does monoquery do?</h2>
+<p>
+	Unimpressive yet simple answer: It lets you type <b>g james brown</b> in your address bar to do a 
+	Google search for James Brown.
+</p>
+	
+<p>Long and fulfilling answer: Monoquery could be described as the fusion of Firefox quicksearches 
+	and del.icio.us. Monoquery allows you to manage your quicksearches, shortcuts, and bookmarklets 
+	by taking them out of your browser profile and onto the web, making them portable, taggable, 
+	shareable, and generally easier to manage. Ever wanted to know what your friends are looking up in 
+	Google, or the dictionary, or keep track of your own searches? Monoquery makes it easy.
+</p>
+
+<h2>What is a quicksearch?</h2>
+<p>A quicksearch (also called a keymark in Mozilla-speak) allows you to define a keyword for searching a site. For example, a keyworded bookmark could be set up so that a user could type 'g spam and eggs' in your address bar and thereby trigger a Google search for the words "spam and eggs."</p>
+
+<p>Read more about quicksearches at the <%= link_to "Mozilla Developer Center", "http://developer.mozilla.org/en/docs/Bookmark_Keywords" %></p>
+
+<h2>What is a bookmarklet?</h2>
+<p>I'm gonna go ahead and steal Wikipedia's definition for this one: "A bookmarklet is a small JavaScript program stored as a URL within a bookmark in most popular web browsers, or stored within a hyperlink on a web page." The following are some generic examples of what bookmarklets can be used for..</p>
+<ul class="normal">	
+	<li>Modify the appearance of a web page within the browser (e.g., change font size, background color, etc.).
+	<li>Extract data from a web page (e.g., hyperlinks, images, text, etc.).</li>
+	<li>Query a search engine, with search term(s) provided by previously selected text, or by a dialog box.</li>
+	<li>Submit the current page to a link validation service, or translation service.</li>
+</ul>
+
+<p>Read more about bookmarklets on Wikipedia: <%= link_to "http://en.wikipedia.org/wiki/Bookmarklet" %></p>
+
+
+<h2>What is a shortcut?</h2>
+<p>
+	This one's easy. A shortcut lets you create a keyword for a page you often visit. For example, 
+	you could create a monoquery command for your favorite site, e.g. 
+	<b>http://www.myfavoritewebsite.com/with/long/forgettable/address/</b> and give it a nice short keyword, 
+	say <b>fave</b>. Now you can type <b>fave</b> in the address bar and voila! Up pops 
+	<b>http://www.myfavoritewebsite.com/with/long/forgettable/address/</b>!
+</p>
+
+<h2>Sounds great, but I'm paranoid about privacy..</h2>
+<p>
+	Don't want people to see what you're searching for? Monoquery lets you toggle the publicity of 
+	your commands individually and the queries you make with them. If you're really paranoid, you
+	can tell monoquery no to log your queries at all, so even you won't know what you've searched for.
+</p>
+
+<h2>I'm ready. How do I set it up?</h2>
+<% if logged_in? %>
+	<p>It looks like you're already logged in, so go ahead and proceed to the <%= link_to "setup page", "/setup" %>.</p>
+<% else %>
+	<p>
+		You don't seem to be logged in. First you'll need to <%= link_to "log in", new_session_path %> or 
+		<%= link_to "create an account", new_user_path %>.
+	</p>
+<% end %>
+
+
+<h2>Things I haven't written yet..</h2>
+<ul class="normal">
+	<li>How to upload bookmarks.</li>
+	<li>Get rid of your bookmarks in your browser or they will take precedence.</li>
+	<li>A novel.</li>
+</ul>
+
+</div>
+
+<div id="secondary">
+	<%= render :partial => "/sessions/form" unless logged_in? %>
+</div>

@@ -1,0 +1,46 @@
+<div id="primary">
+	<h1>Latest Activity (20 Queries)</h1>
+
+	<table>
+	  <tr>
+			<th>User</th>
+			<th>Command</th>
+	    <th>Query</th>
+	  </tr>
+	<% for query in @queries %>
+		<tr <%= cycle('class="offset"', '') -%>>
+			<td>
+				<%= link_to query.command.user.login, query.command.user.home_path %>
+			</td>
+		  <td>
+				<%= link_to query.command.name, "/#{query.command.user.login}/#{query.command.keyword}/view" %>
+			</td>
+		  <td>
+				<% if query.query_string.empty? %>
+					<%= link_to "(empty)", query.command.url_for(query.query_string), :class => "faded" %>
+				<% else %>
+					<b><%= link_to query.query_string, query.command.url_for(query.query_string) %></b>
+				<% end %>
+			</td>
+		</tr>
+	<% end %>
+	</table>
+	
+</div>
+
+<div id="secondary">
+	<%= render :partial => "/sessions/form" unless logged_in? %>
+
+
+	<h1>users</h1>	
+	<ul class="users">
+	<% for user in @users %>
+		<li>
+			<b><%= link_to user.login, user.home_path %></b>
+			(<%= pluralize(user.commands.count, "command") %>, 
+			<%= pluralize(user.queries.count, "query") %>)
+		</li>
+	<% end %>
+	</ul>
+
+</div>

@@ -1,0 +1,117 @@
+
+/* *** LABELS / ACCESSKEYS ***
+*********************************************************************************/
+form.bordered {
+	background-color: #F3F3F3;
+	border: 1px solid #DDD;
+	padding: 10px 20px 10px 20px;
+}
+
+
+label, kbd {
+	font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+}
+
+label, label.enabled {
+	font-size: 1.1em;
+	padding: 2px 2px 2px 0;
+	color: #666;
+}
+
+label.disabled {
+	color: #AAA;
+}
+
+kbd {
+	color: #666;
+	font-weight: bold;
+	border-bottom: 1px solid #666;
+}
+
+label.disabled kbd {
+	color: #AAA;
+	font-weight: normal;
+	border-bottom: none;	
+}
+
+label.required kbd {
+	border-bottom: 2px solid firebrick;	
+}
+
+
+div.labelWithError {	
+	margin: 0;
+	padding:  0;
+	display: inline;	
+}
+
+div.fieldWithErrors {
+	margin: 0;
+	padding:  0;
+	outline: 2px solid firebrick;
+	display: inline;
+}
+
+
+/* *** FORMS ***
+*********************************************************************************/
+
+form div {
+	margin: 15px 0 10px 0;
+/*	border: 1px dashed;*/
+}
+
+form div.floater {
+	float:  left;
+	margin-right: 20px;
+}
+
+form div.tighter {
+	margin: 5px 0 10px 0;
+}
+
+form div.checkbox {
+	padding-top: 12px;
+	padding-left: 15px;
+}
+
+.floatkiller {
+	float: none;
+	clear: both;
+}
+
+form div.boxed {
+	border: 1px solid grey;
+	padding: 10px 10px 10px 10px;
+	background-color: whitesmoke;
+}
+
+form div.submit {
+	vertical-align: bottom;
+}
+
+input[type=text], input[type=password], input.text, textarea, select {
+	margin: 10px 0 5px 0;
+	padding: 1px;
+	font-size: 1.3em;
+}
+
+select, textarea {
+	font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+	font-size: 1.2em;
+}
+
+textarea.rich {
+	padding-top: 25px;
+	margin-top: 25px;
+}
+
+input[type=text]:focus, input[type=password]:focus, input.text:focus {
+	/*outline: 2px solid grey;*/
+}
+
+input[type=submit], input.button, input.submit {
+	margin: 10px 0 5px 0;
+	padding: 2px;
+	font-size: 1.3em;
+}

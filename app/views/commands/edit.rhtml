@@ -1,0 +1,13 @@
+<h1>Edit Command</h1>
+
+<%= error_messages_for :command %>
+
+<% form_for(:command, :url => "/commands/#{@command.id}", :html => { :method => :put }) do |f| %>
+
+	<%= render :partial => "edit_form", :locals => {:f => f} %>
+
+  <div class="floatkiller">
+    <%= f.label :url, :text => " " %><br />	
+    <%= submit_tag "Save Changes", :class => "submit" %>
+  </div>
+<% end %>

@@ -1,0 +1,22 @@
+<key>Monoquery JS</key>
+<string>javascript:_s=document.createElement('script');_s.type='text/javascript';_s.src='http://monoquery.com/zeke/%s';document.getElementsByTagName('head')[0].appendChild(_s);void(0);</string>
+
+javascript:_c='document.URL';_p='Expression:';while(_c=prompt(_p,_c)) {  _b=new Date().getTime();  try {    _v=eval(_c); _t=typeof(_v);  } catch(v) {_v=v; _t='';}  _e=new Date().getTime();  _p=_t+' ('+(_e-_b)+'ms): '+_v;} void(0);
+
+javascript:
+_c='document.URL';
+_p='Expression:';
+while(_c=prompt(_p,_c)) {
+	_b=new Date().getTime();
+	try {
+		_v=eval(_c);
+		_t=typeof(_v);
+	}
+	catch(v) {
+		_v=v;
+		_t='';
+	}
+	_e=new Date().getTime();
+	_p=_t+' ('+(_e-_b)+'ms): '+_v;
+}
+void(0);
