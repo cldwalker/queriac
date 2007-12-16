@@ -2,19 +2,19 @@ module ApplicationHelper
 
   def render_page_title
     if @user || @command || @tag
-      crumbs = ["monoquery"]
+      crumbs = ["queriac"]
       crumbs << @user.login if @user
       crumbs << "tag" unless @tag.blank?
       crumbs << @tag unless @tag.blank?
       crumbs << @command.keyword unless @command.blank? || @command.name.blank?
       return crumbs.join("/")
     else 
-      return "Monoquery. All our quicksearches are belong to us."
+      return "Queriac. All our quicksearches are belong to us."
     end
   end
   
   def render_nav
-    crumbs = [link_to("monoquery", '/')]
+    crumbs = [link_to("queriac", '/')]
     crumbs << link_to(@user.login, @user.home_path) if @user
     crumbs << "tag" unless @tag.blank?
     crumbs << @tag unless @tag.blank?

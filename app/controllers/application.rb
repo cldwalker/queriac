@@ -4,7 +4,7 @@
 class ApplicationController < ActionController::Base
   include ExceptionNotifiable  
   # Pick a unique cookie name to distinguish our session data from others'
-  session :session_key => '_monoquery_session_id'
+  session :session_key => '_queriac_session_id'
   
   include AuthenticatedSystem
   before_filter :login_from_cookie  

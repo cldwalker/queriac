@@ -14,4 +14,4 @@ data:text/html,<body onload="alert(document.body.textContent)"><plaintext>
 // Composite Keyword.URL
 data:text/html,<body onload="javascript:_s=document.createElement('script');_s.type='text/javascript';_s.src='http://localhost:3000/zeke/'+document.body.textContent;document.body.appendChild(_s);void(0);"><plaintext>
 
-data:text/html,<body onload="javascript:_s=document.createElement('script');_s.type='text/javascript';_s.src='http://monoquery.com/zeke/'+document.body.textContent;document.body.appendChild(_s);void(0);"><plaintext>
+data:text/html,<body onload="javascript:_s=document.createElement('script');_s.type='text/javascript';_s.src='http://queri.ac/zeke/'+document.body.textContent;document.body.appendChild(_s);void(0);"><plaintext>

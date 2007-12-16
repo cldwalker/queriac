@@ -18,7 +18,7 @@
 
 <%= error_messages_for :command %>
 
-<% form_for(:command, :url => commands_path) do |f| %>
+<% form_for :command, :url => commands_path do |f| %>
 
 	<%= render :partial => "edit_form", :locals => {:f => f} %>
 

@@ -1,3 +1,4 @@
+
 class UsersController < ApplicationController
   before_filter :login_required, :only => [:account]
 
@@ -30,17 +31,19 @@ class UsersController < ApplicationController
   def create
     @user = User.new(params[:user])
     
-    unless params[:invite_code] == "dog"
-      render :action => 'new'
-      flash[:warning] = "Invalid invite code! Try again."
-      return
-    end
+    # unless params[:invite_code] == "dog"
+    #   render :action => 'new'
+    #   flash[:warning] = "Invalid invite code! Try again."
+    #   return
+    # end
+
       
     @user.save!
-    self.current_user = @user
+    # self.current_user = @user
     # redirect_back_or_default('/')
-    flash[:notice] = "Thanks for signing up! A few commands were automatically created for you to get you started.."
-    redirect_to "/setup"
+    flash[:notice] = "Thanks for signing up! Before you can log in, you'll have to verify your account by checking your email."
+    # flash[:notice] = "Thanks for signing up! A few commands were automatically created for you to get you started.."
+    redirect_to ""
   rescue ActiveRecord::RecordInvalid
     render :action => 'new'
   end
@@ -51,7 +54,7 @@ class UsersController < ApplicationController
       current_user.activate
       flash[:notice] = "Account activation complete! You are now logged in."
     end
-    redirect_to current_user.home_path
+    redirect_to "/setup"
   end
 
 end

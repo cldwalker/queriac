@@ -76,15 +76,15 @@ PARAM_START = "("
 PARAM_END = ")"
 DEFAULT_PARAM = "(q)"
 
-ExceptionNotifier.exception_recipients = %w(admin@monoquery.com)
-ExceptionNotifier.sender_address = %("Application Error" <admin@monoquery.com>)
-ExceptionNotifier.email_prefix = "[monoquery] "
+ExceptionNotifier.exception_recipients = %w(admin@queri.ac)
+ExceptionNotifier.sender_address = %("Application Error" <admin@queri.ac>)
+ExceptionNotifier.email_prefix = "[queriac] "
 
 ActionMailer::Base.smtp_settings = {
-  :address => "mail.monoquery.com",
+  :address => "mail.queri.ac",
   :port => 25,
-  :domain => "monoquery.com",
+  :domain => "queri.ac",
   :authentication => :login,
-  :user_name => "admin@monoquery.com",
+  :user_name => "admin@queri.ac",
   :password => "ereiamJH"
 }

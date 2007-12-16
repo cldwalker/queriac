@@ -30,35 +30,35 @@ class User < ActiveRecord::Base
   #   tags.sort
   # end
   
-  def after_create
-    g = self.commands.create!(
-      :name => "Google Quicksearch", 
-      :keyword => "g",
-      :url => "http://www.google.com/search?q=(q)",
-      :description => "Performs a basic Google search."
-    )
-    g.tags = "google"
-    g.save
-    
-    mq = self.commands.create!(
-      :name => "My Monoquery Commands", 
-      :keyword => "mq",
-      :url => "http://monoquery.com/#{self.login}/",
-      :description => "A shortcut to a list of my monoquery commands."
-    )
-    mq.tags = "monoquery"
-    mq.save
-
-    gms = self.commands.create!(
-      :name => "Gmail Search", 
-      :keyword => "gms",
-      :url => "http://monoquery.com/#{self.login}/",
-      :description => "Search your gmail. If you're not logged in you'll be directed to the Gmail login page. Examples..\ngms dog\ngms is:starred mom\ngms label:todo"
-    )
-    gms.tags = "google gmail mail email"
-    gms.save
-
-  end
+  # def after_create
+  #   g = self.commands.create!(
+  #     :name => "Google Quicksearch", 
+  #     :keyword => "g",
+  #     :url => "http://www.google.com/search?q=(q)",
+  #     :description => "Performs a basic Google search."
+  #   )
+  #   g.tags = "google"
+  #   g.save
+  #   
+  #   mq = self.commands.create!(
+  #     :name => "My Queriac Commands", 
+  #     :keyword => "mq",
+  #     :url => "http://queri.ac/#{self.login}/",
+  #     :description => "A shortcut to a list of my queriac commands."
+  #   )
+  #   mq.tags = "queriac"
+  #   mq.save
+  # 
+  #   gms = self.commands.create!(
+  #     :name => "Gmail Search", 
+  #     :keyword => "gms",
+  #     :url => "http://queri.ac/#{self.login}/",
+  #     :description => "Search your gmail. If you're not logged in you'll be directed to the Gmail login page. Examples..\ngms dog\ngms is:starred mom\ngms label:todo"
+  #   )
+  #   gms.tags = "google gmail mail email"
+  #   gms.save
+  # 
+  # end
   
   def home_path
     "/#{self.login}/"
@@ -89,7 +89,7 @@ class User < ActiveRecord::Base
   
   # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
   def self.authenticate(login, password)
-    u = find :first, :conditions => ['login = ? OR email = ? and activated_at IS NOT NULL', login, login] # need to get the salt
+    u = find :first, :conditions => ['login = ? OR email = ?', login, login] # need to get the salt
     u && u.authenticated?(password) ? u : nil
   end
 
@@ -113,7 +113,7 @@ class User < ActiveRecord::Base
 
   # These create and unset the fields required for remembering users between browser closes
   def remember_me
-    remember_me_for 6.weeks
+    remember_me_for 1.year
   end
 
   def remember_me_for(time)
