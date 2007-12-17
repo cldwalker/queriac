@@ -1,3 +1,12 @@
+# == Schema Information
+# Schema version: 10
+#
+# Table name: tags
+#
+#  id   :integer(11)     not null, primary key
+#  name :string(255)     default(""), not null
+#
+
 class Tag < ActiveRecord::Base  
   has_many_polymorphs :taggables, 
     :from => [:commands], 

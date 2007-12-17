@@ -17,7 +17,6 @@ ActionController::Routing::Routes.draw do |map|
   map.command ':login/:command/delete', :controller => 'commands', :action => 'destroy', :method => :delete
   map.command ':login/*command', :controller => 'commands', :action => 'show'
 
-
   
   # The priority is based upon order of creation: first created -> highest priority.
   

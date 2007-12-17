@@ -1,3 +1,23 @@
+# == Schema Information
+# Schema version: 10
+#
+# Table name: commands
+#
+#  id             :integer(11)     not null, primary key
+#  name           :string(255)     
+#  keyword        :string(255)     
+#  url            :text            
+#  description    :text            
+#  kind           :string(255)     
+#  origin         :string(255)     default("hand")
+#  created_at     :datetime        
+#  modified_at    :datetime        
+#  bookmarklet    :boolean(1)      
+#  user_id        :integer(11)     
+#  public         :boolean(1)      default(TRUE)
+#  public_queries :boolean(1)      default(TRUE)
+#
+
 class Command < ActiveRecord::Base
   belongs_to :user
   has_many :queries, :dependent => :destroy

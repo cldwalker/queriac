@@ -1,7 +1,9 @@
 <div id="primary">
 
+
 	<h1>
-		commands <%= "tagged with #{@tag}" if @tag %>
+		<%= "#{@user.login}'s Public " unless owner? %>
+		Commands <%= "tagged with #{@tag}" if @tag %>
 	</h1>
 
 	<table>
@@ -43,11 +45,11 @@
 
 <div id="secondary">
 	
-	<h1>tags</h1>
+	<h1>Tags</h1>
 	
 	<%= tag_cloud @tags %>
 	
-	<h1>users</h1>
+	<h1>Users</h1>
 	
 	<ul class="users">
 	<% for user in @users %>

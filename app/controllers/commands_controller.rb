@@ -19,7 +19,11 @@ class CommandsController < ApplicationController
   # GET /commands/1
   # GET /commands/1.xml
   def show
-    @user = User.find_by_login(params[:login])
+    
+    
+    raise params[:command].to_yaml
+    
+    @user = (logged_in? && current_user.login==params[:login]) ? current_user : User.find_by_login(params[:login])
 
     # Catch instances of /user/keyword/view
     if params[:command][1] == "view"
