@@ -27,7 +27,6 @@ class SessionsController < ApplicationController
       flash[:notice] = "Logged in successfully"
       
     else
-      raise "not logged in"
       flash[:warning] = "Problem logging in. Please try again."
       render :action => 'new'
     end

@@ -1,29 +1,10 @@
 <div id="primary">
-
-	<h2>Recent Queries (<%= @command.queries.size %>)</h2>
 	
 	<p class="url"><%= @command.url.ellipsize(:max => 60, :delimiter => "......" ) %></p>
-	
-	<table>
-	  <tr>
-	    <th>Query</th>
-	    <th>Date</th>
-	  </tr>
-	<% for query in @command.queries %>
-		<tr <%= cycle('class="offset"', '') -%>>	
-		  <td>
-				<% if query.query_string.empty? %>
-					<%= link_to "(empty)", @command.url_for(query.query_string), :class => "faded" %>
-				<% else %>
-					<b><%= link_to query.query_string, @command.url_for(query.query_string) %></b>
-				<% end %>
-			</td>
-		  <td>
-				<%= time_ago_in_words query.created_at %> ago
-			</td>
-		</tr>
+
+	<% if owner? || @command.public? %>
+			<%= render :partial => "query_table", :locals => {:command => @command, :queries => @queries} %>
 	<% end %>
-	</table>
 	
 </div>
 

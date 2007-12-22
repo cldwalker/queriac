@@ -1,6 +1,7 @@
 ActionController::Routing::Routes.draw do |map|
   map.resources :commands, :member => { :import => :get }
   map.resources :users, :sessions
+  map.resources :commands, :member => { :execute => :get }
     
   map.activate '/activate/:activation_code', :controller => 'users', :action => 'activate'
 
@@ -12,11 +13,12 @@ ActionController::Routing::Routes.draw do |map|
 
   map.user ':login', :controller => 'users', :action => 'show'
   map.tag ':login/tag/:tag', :controller => 'users', :action => 'show'
-  
+
+
+  map.command ':login/:command/show', :controller => 'commands', :action => 'show'  
   map.command ':login/:command/edit', :controller => 'commands', :action => 'edit'
   map.command ':login/:command/delete', :controller => 'commands', :action => 'destroy', :method => :delete
-  map.command ':login/*command', :controller => 'commands', :action => 'show'
-
+  map.command ':login/*command', :controller => 'commands', :action => 'execute'
   
   # The priority is based upon order of creation: first created -> highest priority.
   

@@ -1,6 +1,6 @@
 class CommandsController < ApplicationController
 
-  before_filter :login_required, :except => [ :show ]
+  before_filter :login_required, :except => [ :show, :execute ]
 
   # GET /commands
   # GET /commands.xml
@@ -15,94 +15,76 @@ class CommandsController < ApplicationController
       format.xml  { render :xml => @commands.to_xml }
     end
   end
-
-  # GET /commands/1
-  # GET /commands/1.xml
-  def show
+  
+  def execute
+    load_user
     
+    # Extract command and query string from params
+    param_parts = params[:command].join("/").split(' ')
+    keyword = param_parts.shift.downcase # first part of string
+    query_string = param_parts.join(' ') # remainder of the string
     
-    raise params[:command].to_yaml
+    @command = @user.commands.find_by_keyword(keyword)
     
-    @user = (logged_in? && current_user.login==params[:login]) ? current_user : User.find_by_login(params[:login])
-
-    # Catch instances of /user/keyword/view
-    if params[:command][1] == "view"
-      keyword = "view"
-      query_string = params[:command][0]
-    else
-      param_parts = params[:command].first.split(' ')
-      keyword = param_parts.shift.downcase # first part of string
-      query_string = param_parts.join(' ') # remainder of the string
-    end
-
-    case keyword
-    when "new"
-      redirect_to new_command_path
-      
-    when "edit"
-      # Show a form to edit the command
-
-      # URLs that lead here:
-      # /user/keyword edit
-      # /user/keyword/edit
-      begin
-        @command = @user.commands.find_by_keyword(query_string)
-        redirect_to "/#{@user.login}/#{@command.keyword}/edit"
-      rescue
-        flash[:warning] = "Command '#{query_string}' not found!"
-        redirect_to @user.home_path
-      end
-
+    # Route to google if not found
+    if @command.nil? 
+      redirect_to "/#{@user.login}/g #{params[:command].join("/")}"
+      # TODO route the query through the user's default command
+      # (maybe store that the default command was used as a fallback too?)
+      # redirect_to "/#{@user.login}/#{@user.default_command} #{query_string}"
       return
+    end
+
+    if @command.private? && !owner?
+      render :text => "This command (#{@command.keyword}) is not shared by this user (#{@user.login})."
+      return    
+    end
+    
+    # Store the query in the database
+    @command.save_query(query_string)
+    
+
+    # Needs to be constructed if commands takes arguments
+    @yield = @command.parametric? ? @command.url_for(query_string) : @command.url
       
-    when "view"
-      # Show a page of stats/info for this command.
+    if @command.bookmarklet?
+      # Command is a Javascript bookmarklet, so rather than redirect to it, we
+      # we simply render it so the script that called it can use it as its source.
+      render :text => @yield
       
-      # URLs that lead here:
-      # /user/keyword view
-      # /user/keyword/view      
-      @command = @user.commands.find_by_keyword(query_string, :include => [:queries, :tags], :order => "queries.created_at DESC")
-      respond_to do |format|
-        format.html # show.rhtml
-        format.xml  { render :xml => @command.to_xml }
-      end  
+    elsif params["js"]
+      # Command is not Javascript, but is being executed in a Javascript context,
+      # so convert the URL into a javascript that will redirect to the URL.
+      render :text => "alert(#{@yield})"
       
     else
-      # Not editing or viewing, so execute the requested command
-      
-      @command = @user.commands.find_by_keyword(keyword)
-      
-      if @command.nil?
-        # Eventually, route the query through the user's default command
-        # But for now..
-        render :text => "Command not found."
-        return
-      end
-
-      # Store the query in the database
-      @command.save_query(query_string)
-      
-      # Needs to be constructed if commands takes arguments
-      @yield = @command.parametric? ? @command.url_for(query_string) : @command.url
-        
-      if @command.bookmarklet?
-        # Command is a Javascript bookmarklet, so rather than redirect to it, we
-        # we simply render it so the script that called it can use it as its source.
-        render :text => @yield
-        
-      elsif params["js"]
-        # Command is not Javascript, but is being executed in a Javascript context,
-        # so convert the URL into a javascript that will redirect to the URL.
-        render :text => "alert(#{@yield})"
-        
-      else
-        # Command is a simple URL to which we redirect
-        redirect_to @yield
-        
-      end
+      # Command is a simple URL to which we redirect
+      redirect_to @yield
       
     end
- 
+
+    
+  end
+
+  # GET /commands/foo
+  def show
+    load_user
+    @command = @user.commands.find_by_keyword(params[:command])
+    
+    if @command.nil?
+      flash[:warning] = "User #{@user.login} has no command with keyword '#{params[:command]}'"
+      redirect_to @user.home_path
+      return
+    end    
+
+    @queries = @command.queries.paginate(:order => "queries.created_at DESC", :page => params[:page]) if owner? || @command.public?
+    
+    # raise @queries.methods.to_yaml
+
+    respond_to do |format|
+      format.html # show.rhtml
+      format.xml  { render :xml => @command.to_xml }
+    end
   end
 
   # GET /commands/new
@@ -210,6 +192,17 @@ class CommandsController < ApplicationController
       format.html { redirect_to current_user.home_path }
       format.xml  { head :ok }
     end
+  end
+  
+  private
+  
+  def load_user
+    # Command may or may not owned by the current user. Find out..
+    @user = (logged_in? && current_user.login==params[:login]) ? current_user : User.find_by_login(params[:login])    
+  end
+  
+  def owner?
+    logged_in? && @user == current_user
   end
   
 end

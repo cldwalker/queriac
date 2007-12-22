@@ -225,6 +225,46 @@ td.bookmarklet {
 }
 
 
+
+
+
+.pagination {
+	width: 100%;
+	text-align: center;
+  padding: 3px;
+  margin: 15px 3px;
+}
+.pagination a {
+  padding: 2px 5px 2px 5px;
+  margin: 2px;
+  border: 1px solid #DDDDDD;
+  text-decoration: none;
+  color: #427f0b;
+  background: none;
+}
+.pagination a:hover, .pagination a:active {
+  border: 1px solid #427f0b;
+  color: #FFF;
+  text-decoration: none;
+  background-color: #427f0b;
+}
+.pagination span.current {
+  padding: 2px 5px 2px 5px;
+  margin: 2px;
+  border: 1px solid #427f0b;
+  font-weight: bold;
+  background-color: #427f0b;
+  color: #FFF;
+}
+.pagination span.disabled {
+  padding: 2px 5px 2px 5px;
+  margin: 2px;
+  border: 1px solid #eee;
+  color: #ddd;
+}
+
+
+
 /* MISCELLANEOUS
 *********************************************************************************/
 .centered {

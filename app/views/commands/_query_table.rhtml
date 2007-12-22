@@ -1,0 +1,29 @@
+<h2>
+	Recent Queries
+	<%= "(Showing #{@queries.size} of #{@queries.total_entries})" unless @queries.page_count == 1 %>
+</h2>
+
+<table>
+  <tr>
+    <th>Query</th>
+    <th>Date</th>
+  </tr>
+
+<% for query in @queries %>
+	<tr <%= cycle('class="offset"', '') -%>>	
+	  <td>
+			<% if query.query_string.empty? %>
+				<%= link_to "(Command run with no parameters)", @command.url_for(query.query_string), :class => "faded" %>
+			<% else %>
+				<b><%= link_to query.query_string, @command.url_for(query.query_string) %></b>
+			<% end %>
+		</td>
+	  <td>
+			<%= time_ago_in_words query.created_at %> ago
+		</td>
+	</tr>
+<% end %>
+
+</table>
+
+<%= will_paginate @queries %>

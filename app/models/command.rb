@@ -31,7 +31,7 @@ class Command < ActiveRecord::Base
   #------------------------------------------------------------------------------------------------------------------
 
   def validate
-    stopwords = %w(new view edit delete tags tag help home setup)
+    stopwords = %w(delete tags tag help home setup)
     if stopwords.include?(self.keyword.downcase)      
       errors.add_to_base "Sorry, the keyword you've chosen (#{self.keyword}) is reserved by the system. Please use something else" 
     end
@@ -52,6 +52,8 @@ class Command < ActiveRecord::Base
   #------------------------------------------------------------------------------------------------------------------
   def parametric?; self.kind == "parametric"; end
   def bookmarklet?; self.bookmarklet; end
+  def public?; read_attribute(:public); end
+  def private?; !public?; end
   
   # Paths
   #------------------------------------------------------------------------------------------------------------------
