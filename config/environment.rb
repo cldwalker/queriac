@@ -76,15 +76,16 @@ PARAM_START = "("
 PARAM_END = ")"
 DEFAULT_PARAM = "(q)"
 
-ExceptionNotifier.exception_recipients = %w(admin@queri.ac)
-ExceptionNotifier.sender_address = %("Application Error" <admin@queri.ac>)
+ExceptionNotifier.exception_recipients = %w(zeke@queri.ac)
+ExceptionNotifier.sender_address = %("Application Error" <zeke@queri.ac>)
 ExceptionNotifier.email_prefix = "[queriac] "
 
+
 ActionMailer::Base.smtp_settings = {
-  :address => "mail.queri.ac",
-  :port => 25,
-  :domain => "queri.ac",
-  :authentication => :login,
-  :user_name => "admin@queri.ac",
-  :password => "ereiamJH"
+:address => "smtp.gmail.com",
+:port => 587,
+:domain => "gmail.com",  :authentication => :plain,
+:user_name => "zeke@queri.ac",
+:password => "gomero"
 }
+ActionMailer::Base.delivery_method = :smtp
