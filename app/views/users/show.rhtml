@@ -1,6 +1,18 @@
 <div id="primary">
-
-
+	
+	<% if params[:bad_command] && owner? %>
+		<% keyword = params[:bad_command] %>
+		<div class="flash-msg warning">
+			The command you entered (<%= keyword %>) does not exist. What do you want to do about it?
+		</div>	
+		
+		<ul class="options standalone stacked">
+			<li class="edit"><%= link_to("Pick a default command and direct orphan queries to it.", edit_user_path(current_user)) %></li>
+			<li class="add"><%= link_to("Create a new command with keyword '#{keyword}'", new_command_path(:keyword => keyword)) %></li>
+		</ul>
+	<% end %>
+	
+	
 	<h1>
 		<%= "#{@user.login}'s Public " unless owner? %>
 		Commands <%= "tagged with #{@tag}" if @tag %>
@@ -10,16 +22,14 @@
 	  <tr>
 	    <th>Name</th>
 	    <th width="70">Keyword</th>
-	    <th width="30" class="centered">Hits</th>
 	    <th>Last Used</th>	
 			<th>Options</th>
 	  </tr>
 
 	<% for command in @commands %>
 		<tr <%= cycle('class="offset"', '') -%>>	
-	    <td class="<%= command.bookmarklet? ? "bookmarklet" : command.kind %>"><%= link_to command.name, command.view_path %></td>
+	    <td class="<%= command.bookmarklet? ? "bookmarklet" : command.kind %>"><%= link_to command.name, command.show_path %></td>
 	    <td><%=h command.keyword %></td>
-	    <td class="centered"><%=h command.queries.size if command.queries.size > 0 %></td>
 	    <td><%= time_ago_in_words(command.queries.last.created_at) + " ago" if command.queries.size > 0 %></td>	
 			<td>
 				<ul class="options">

@@ -9,16 +9,22 @@ ActionController::Routing::Routes.draw do |map|
 
 
   map.connect 'help', :controller => 'static', :action => 'help'
-  map.connect 'setup', :controller => 'static', :action => 'setup'
+  map.connect 'tutorial', :controller => 'static', :action => 'tutorial'
 
+  # map.user '/rss/:login', :controller => 'users', :action => 'show'
   map.user ':login', :controller => 'users', :action => 'show'
   map.tag ':login/tag/:tag', :controller => 'users', :action => 'show'
 
-
+  map.user ':login/commands', :controller => 'commands', :action => 'index'
+  
+  map.query ':login/:command/queries', :controller => 'queries', :action => 'index'
+  map.query':login/queries', :controller => 'queries', :action => 'index'
+  
   map.command ':login/:command/show', :controller => 'commands', :action => 'show'  
   map.command ':login/:command/edit', :controller => 'commands', :action => 'edit'
   map.command ':login/:command/delete', :controller => 'commands', :action => 'destroy', :method => :delete
   map.command ':login/*command', :controller => 'commands', :action => 'execute'
+  
   
   # The priority is based upon order of creation: first created -> highest priority.
   

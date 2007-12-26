@@ -1,6 +1,6 @@
 <div id="primary">
 
-<h1>Setup</h1>
+<h1>Configuring your browser for Queriac</h1>
 
 <p>
 	This page will help you get Firefox/Camino set up quickly. For a more verbose explanation 
@@ -21,16 +21,18 @@
 
 
 <h2>MetaShortcutness</h2>
-<p>Once you've got your browser set up per the above instructions, you'll have quick access to some built-in commands immediately. Type any of the following right into your address bar..</p>
+<p>
+	When you created your Queriac account a few commands were created for you automatically to get you started.
+	Among some of the more obvious starter commands like a Google quicksearch, there are some commands that give you
+	quick access to various parts of your account. Once you've got your browser set up per the above instructions, 
+	type any of the following right into your address bar..
+</p>
 
-<%= image_tag "screenshots/new.png" %>
-<p class="caption">Typing <b>new</b> in the address bar will take you to Queriac's "Create a New Command" page.</p>
+<p class="caption">Type <b>new</b> in the address bar and you'll be taken to Queriac's "Create a New Command" page.</p>
 
-<%= image_tag "screenshots/view_g.png" %>
-<p class="caption">Type <b>view</b> and one of your commands' keywords (g for Google in the example above) to view that command's page, showing you its tags, a list of recent queries you've made with the command, etc.</p>
+<p class="caption">Type <b>show <i>g</i></b> to view a command's summary page (g for Google Quicksearch in this case), showing you its tags, a list of recent queries you've made with the command, etc.</p>
 
-<%= image_tag "screenshots/edit_g.png" %>
-<p class="caption">Typing <b>edit</b> and one of your commands' keywords will take you to a form to edit the command.</p>
+<p class="caption">Type <b>edit <i>g</i></b> to edit a command. (again, g as in Google Quicksearch in this example)</p>
 
 <% if logged_in? %>
 	<h2>Using Bookmarklets</h2>

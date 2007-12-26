@@ -13,7 +13,7 @@
 				<%= link_to query.command.user.login, query.command.user.home_path %>
 			</td>
 		  <td>
-				<%= link_to query.command.name, "/#{query.command.user.login}/#{query.command.keyword}/view" %>
+				<%= link_to query.command.name, query.command.show_path %>
 			</td>
 		  <td>
 				<% if query.query_string.empty? %>

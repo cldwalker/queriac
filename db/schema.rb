@@ -2,7 +2,7 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 10) do
+ActiveRecord::Schema.define(:version => 11) do
 
   create_table "commands", :force => true do |t|
     t.column "name",           :string
@@ -50,9 +50,10 @@ ActiveRecord::Schema.define(:version => 10) do
     t.column "remember_token_expires_at", :datetime
     t.column "activation_code",           :string,   :limit => 40
     t.column "activated_at",              :datetime
-    t.column "default_command",           :integer
+    t.column "default_command_id",        :integer
     t.column "first_name",                :string
     t.column "last_name",                 :string
+    t.column "per_page",                  :integer
   end
 
 end

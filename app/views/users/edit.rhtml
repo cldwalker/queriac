@@ -1,0 +1,44 @@
+<h1>You	</h1>
+
+<%= error_messages_for :user %>
+
+
+<% form_for(:user, :url => "/users/#{@user.id}", :html => { :method => :put }) do |f| %>
+
+	<div class="floater">
+	  <%= f.label :first_name %><br />
+	  <%= f.text_field :first_name, :size => 15  %>
+	</div>
+	
+	<div class="floater">
+	  <%= f.label :last_name %><br />
+	  <%= f.text_field :last_name, :size => 15  %>
+	</div>
+	
+	<div class="floater">
+	  <%= f.label :email %><br />
+	  <%= f.text_field :email  %>
+	</div>
+	
+
+<h1>Settings</h1>
+
+	<p>When a query is being made and the command doesn't exist..</p>
+
+	<div class="floatkill">
+		<%= radio_button_tag 'use_default_command', 'no', !current_user.default_command? %> 
+		<%= label_tag "Tell me the command doesn't exist and give me some options.", :for => "use_default_command_no" %>
+	</div>
+
+
+	<div class="floatkill">
+		<%= radio_button_tag 'use_default_command', 'yes', current_user.default_command? %> 
+		<%= label_tag "Run the query using this command: ", :for => "use_default_command_yes" %>
+
+		<%= f.select :default_command_id, current_user.commands.find_quicksearches(:all).collect {|c| [ "#{c.keyword} - #{c.name}", c.id ] } %>
+	</div>
+		
+  <p>
+    <%= submit_tag "Save Settings", :class => "submit" %>
+  </p>
+<% end %>

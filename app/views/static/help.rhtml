@@ -2,7 +2,7 @@
 
 <h1>Help!</h1>
 
-<p>Note: If you just want setup instructions, go to the <%= link_to "setup page", "/setup" %>.</p>
+<p>Note: If you just want setup instructions, go to the <%= link_to "tutorial page", "/tutorial" %>.</p>
 
 <h2>What does Queriac do?</h2>
 <p>
@@ -52,7 +52,7 @@
 
 <h2>I'm ready. How do I set it up?</h2>
 <% if logged_in? %>
-	<p>It looks like you're already logged in, so go ahead and proceed to the <%= link_to "setup page", "/setup" %>.</p>
+	<p>It looks like you're already logged in, so go ahead and proceed to the <%= link_to "tutorial page", "/tutorial" %>.</p>
 <% else %>
 	<p>
 		You don't seem to be logged in. First you'll need to <%= link_to "log in", new_session_path %> or 

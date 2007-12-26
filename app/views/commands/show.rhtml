@@ -1,37 +1,33 @@
-<div id="primary">
-	
-	<p class="url"><%= @command.url.ellipsize(:max => 60, :delimiter => "......" ) %></p>
+<h1>Command: <%= @command.name %> (<%= @command.keyword %>)</h1>
 
-	<% if owner? || @command.public? %>
-			<%= render :partial => "query_table", :locals => {:command => @command, :queries => @queries} %>
-	<% end %>
-	
+<div id="primary">
+	<%= render :partial => "queries/query_table", :locals => {:queries => @queries} if owner? || @command.public? %>
 </div>
 
 
 <div id="secondary">
 	
-	<h2>Command Info </h2>
+	<h2>About this Command</h2>
 	
-	<p>
-	  <b>Kind:</b> <%=h @command.kind %>
-	</p>
+	<p class="url"><%= @command.url.ellipsize(:max => 60, :delimiter => "......" ) %></p>
 	
-	<p>
-	  <b>Keyword:</b> <%=h @command.keyword %>
-	</p>
+	<p><b>Kind:</b> <%=h @command.kind %></p>
+	
+	<p><b>Visible to Public:</b> <%= @command.public? ? "Yes" : "No" %></p>
+	
+	<p><b>Queries visible to Public:</b> <%= @command.public_queries? ? "Yes" : "No" %></p>
 
-	<p>
-	  <b>Description:</b> <%=h @command.description %>
-	</p>
-	
-	<p>
-	  <b>Tags:</b> <%=h @command.tags.collect{|t| t.name}.join(", ") %>
-	</p>	
+	<% unless @command.description.blank? %>
+		<p><b>Description:</b> <%=h @command.description %></p>
+	<% end %>
 
-	<ul class="options">
+	<% unless @command.tags.empty? %>	
+		<p><b>Tags:</b> <%= @command.tags.collect{|t| t.name}.join(", ") %></p>	
+		<% end %>
+
+	<ul class="options standalone">
 		<% if owner? %>
-				<li class="edit"><%= link_to 'Edit', @command.edit_path %></li>
+				<li class="edit"><%= link_to 'Edit this Command', @command.edit_path %></li>
 				<li class="delete"><%= link_to 'Delete', @command.delete_path, :confirm => "Are you sure you want to delete this command?" %></li>
 		<% elsif logged_in? %>
 			<li class="add"><%= link_to 'Copy', new_command_path({:ancestor => @command.id}) %></li>

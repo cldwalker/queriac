@@ -31,7 +31,7 @@ class Command < ActiveRecord::Base
   #------------------------------------------------------------------------------------------------------------------
 
   def validate
-    stopwords = %w(delete tags tag help home setup)
+    stopwords = %w(delete tags tag help home tutorial queries commands)
     if stopwords.include?(self.keyword.downcase)      
       errors.add_to_base "Sorry, the keyword you've chosen (#{self.keyword}) is reserved by the system. Please use something else" 
     end
@@ -54,11 +54,12 @@ class Command < ActiveRecord::Base
   def bookmarklet?; self.bookmarklet; end
   def public?; read_attribute(:public); end
   def private?; !public?; end
+  def public_queries?; self.public_queries; end
   
   # Paths
   #------------------------------------------------------------------------------------------------------------------
-  def view_path
-    "/#{self.user.login}/#{self.keyword}/view"
+  def show_path
+    "/#{self.user.login}/#{self.keyword}/show"
   end
   
   def edit_path
@@ -73,6 +74,12 @@ class Command < ActiveRecord::Base
   #------------------------------------------------------------------------------------------------------------------
   def self.find_public(*args)
     with_scope(:find => {:conditions => {:public => true}}) do
+      self.find(*args)
+    end
+  end
+  
+  def self.find_quicksearches(*args)
+    with_scope(:find => {:conditions => {:kind => "parametric", :bookmarklet => false}, :order => "commands.keyword asc"}) do
       self.find(*args)
     end
   end

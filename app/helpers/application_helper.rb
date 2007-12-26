@@ -6,7 +6,8 @@ module ApplicationHelper
       crumbs << @user.login if @user
       crumbs << "tag" unless @tag.blank?
       crumbs << @tag unless @tag.blank?
-      crumbs << @command.keyword unless @command.blank? || @command.name.blank?
+      crumbs << @command.keyword unless @command.blank?
+      crumbs << "queries" if params[:controller] == "queries"
       return crumbs.join("/")
     else 
       return "Queriac. All our quicksearches are belong to us."
@@ -18,7 +19,9 @@ module ApplicationHelper
     crumbs << link_to(@user.login, @user.home_path) if @user
     crumbs << "tag" unless @tag.blank?
     crumbs << @tag unless @tag.blank?
-    crumbs << @command.keyword unless @command.blank? || @command.name.blank?
+    crumbs << link_to(@command.keyword, @command.show_path) unless @command.blank? || @command.new_record?
+    crumbs << "queries" if params[:controller] == "queries"
+    crumbs << params[:action] if params[:controller] == "static" && params[:action] != "home"
     crumbs << "<form><input type='text'></input></form>" if nil # !command.blank? && commmand.parametric? && !command.bookmarklet? 
     return crumbs.join(" &raquo; ")
   end
@@ -26,7 +29,8 @@ module ApplicationHelper
   def render_mininav
     items = []
     items << "logged in as " + link_to(current_user.login, current_user.home_path, :class => "underlined") if logged_in?
-    items << link_to("setup", "/setup")
+    items << link_to("settings", edit_user_path(current_user.login)) if logged_in?
+    items << link_to("tutorial", "/tutorial")
     items << link_to_unless_current("help", "/help")
     items << link_to("logout", session_path(session.id), :confirm => "Are you sure you want to log out?", :method => :delete) if logged_in?
     items << link_to("sign up", new_user_path) unless logged_in?

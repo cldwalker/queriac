@@ -2,17 +2,19 @@ class CommandsController < ApplicationController
 
   before_filter :login_required, :except => [ :show, :execute ]
 
-  # GET /commands
-  # GET /commands.xml
   def index
+    load_user
     
-    @commands = Command.find(:all, :order => "commands.kind, commands.name", :include => [:queries])
+    publicity_clause = owner? ? {} : {:conditions => ["commands.public = 1"]}
+    @commands = @user.commands.paginate({
+      :order => "commands.created_at DESC", 
+      :page => params[:page],
+      :include => [:tags]
+    }.merge(publicity_clause))
     
-    @recent_queries = Query.find(:all, :limit => 15, :order => "queries.created_at", :include => [:command])
-
     respond_to do |format|
-      format.html # index.rhtml
-      format.xml  { render :xml => @commands.to_xml }
+      format.html # show.rhtml
+      format.xml  { render :xml => @queries.to_xml }
     end
   end
   
@@ -26,12 +28,16 @@ class CommandsController < ApplicationController
     
     @command = @user.commands.find_by_keyword(keyword)
     
-    # Route to google if not found
     if @command.nil? 
-      redirect_to "/#{@user.login}/g #{params[:command].join("/")}"
-      # TODO route the query through the user's default command
+
+      if @user.default_command?
+        redirect_to "/#{@user.login}/#{@user.default_command.keyword} #{params[:command].join("/")}" 
+      else
+        redirect_to @user.home_path + "?bad_command=#{keyword}"
+        return
+      end
+
       # (maybe store that the default command was used as a fallback too?)
-      # redirect_to "/#{@user.login}/#{@user.default_command} #{query_string}"
       return
     end
 
@@ -97,6 +103,8 @@ class CommandsController < ApplicationController
       @command.keyword = @ancestor.keyword
       @command.url = @ancestor.url
       @command.description = @ancestor.description
+    elsif params[:keyword]
+      @command.keyword = params[:keyword]
     end
     
   end
