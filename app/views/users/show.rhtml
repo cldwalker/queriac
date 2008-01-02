@@ -12,48 +12,25 @@
 		</ul>
 	<% end %>
 	
+		
+	<%= render :partial => "commands/quicksearch_summary_table", :locals => {:quicksearches => @quicksearches, :user => @user} unless @quicksearches.empty? %>
 	
-	<h1>
-		<%= "#{@user.login}'s Public " unless owner? %>
-		Commands <%= "tagged with #{@tag}" if @tag %>
-	</h1>
+	<%= render :partial => "commands/shortcut_summary_table", :locals => {:shortcuts => @shortcuts, :user => @user} unless @shortcuts.empty? %>
+	
+	<%= render :partial => "commands/bookmarklet_summary_table", :locals => {:bookmarklets => @bookmarklets, :user => @user} unless @bookmarklets.empty? %>
 
-	<table>
-	  <tr>
-	    <th>Name</th>
-	    <th width="70">Keyword</th>
-	    <th>Last Used</th>	
-			<th>Options</th>
-	  </tr>
-
-	<% for command in @commands %>
-		<tr <%= cycle('class="offset"', '') -%>>	
-	    <td class="<%= command.bookmarklet? ? "bookmarklet" : command.kind %>"><%= link_to command.name, command.show_path %></td>
-	    <td><%=h command.keyword %></td>
-	    <td><%= time_ago_in_words(command.queries.last.created_at) + " ago" if command.queries.size > 0 %></td>	
-			<td>
-				<ul class="options">
-				<% if owner? %>
-					<li class="no_icon"><%= link_to image_tag("icons/edit.png"), command.edit_path %></li>
-					<li class="no_icon"><%= link_to image_tag("icons/delete.png"), command.delete_path, :confirm => "Are you sure you want to delete this command?" %></li>
-				<% elsif logged_in? %>
-					<li class="add"><%= link_to 'Copy', new_command_path({:ancestor => command.id}) %></li>
-				<% end %>
-				</ul>
-			</td>
-	  </tr>
-	<% end %>
-	</table>
-
-	<% if owner? %>
-		<ul class="bolder options">
-			<li class="add"><%= link_to 'Add a New command', new_command_path %></li>
-		</ul>
-	<% end %>
 	
 </div>
 
 <div id="secondary">
+
+	<% if owner? %>
+		<h1>Options</h1>
+		<ul class="options standalone">
+			<li class="add"><%= link_to 'New command', new_command_path %></li>
+			<li class="add"><%= link_to 'View ALL commands', current_user.commands_path %></li>
+		</ul>
+	<% end %>
 	
 	<h1>Tags</h1>
 	

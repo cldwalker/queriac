@@ -2,27 +2,31 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 11) do
+ActiveRecord::Schema.define(:version => 12) do
 
   create_table "commands", :force => true do |t|
-    t.column "name",           :string
-    t.column "keyword",        :string
-    t.column "url",            :text
-    t.column "description",    :text
-    t.column "kind",           :string
-    t.column "origin",         :string,   :default => "hand"
-    t.column "created_at",     :datetime
-    t.column "modified_at",    :datetime
-    t.column "bookmarklet",    :boolean,  :default => false
-    t.column "user_id",        :integer
-    t.column "public",         :boolean,  :default => true
-    t.column "public_queries", :boolean,  :default => true
+    t.column "name",                :string
+    t.column "keyword",             :string
+    t.column "url",                 :text
+    t.column "description",         :text
+    t.column "kind",                :string
+    t.column "origin",              :string,   :default => "hand"
+    t.column "created_at",          :datetime
+    t.column "modified_at",         :datetime
+    t.column "bookmarklet",         :boolean,  :default => false
+    t.column "user_id",             :integer
+    t.column "public",              :boolean,  :default => true
+    t.column "public_queries",      :boolean,  :default => true
+    t.column "queries_count",       :integer,  :default => 0
+    t.column "queries_count_owner", :integer,  :default => 0
   end
 
   create_table "queries", :force => true do |t|
-    t.column "command_id",   :string
-    t.column "query_string", :string
-    t.column "created_at",   :datetime
+    t.column "command_id",     :string
+    t.column "query_string",   :string
+    t.column "created_at",     :datetime
+    t.column "user_id",        :integer
+    t.column "run_by_default", :boolean,  :default => false
   end
 
   create_table "taggings", :force => true do |t|

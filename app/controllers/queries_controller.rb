@@ -54,15 +54,4 @@ class QueriesController < ApplicationController
     end
   end
   
-  private
-  
-  def load_user
-    # Object may or may not owned by the current user. Find out..
-    @user = (logged_in? && current_user.login==params[:login]) ? current_user : User.find_by_login(params[:login])    
-  end
-  
-  def owner?
-    logged_in? && @user == current_user
-  end
-  
 end

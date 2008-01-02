@@ -1,39 +1,25 @@
 
 class UsersController < ApplicationController
   before_filter :login_required, :only => [:account]
+  before_filter :load_user, :only => [:show]
 
   def new
   end
   
-  def account    
-    @user = User.find :first, :conditions => ['login = ?', params[:login]]
-
-    # TODO: Build form for editing account
-  end
-
   def show
-    @user = User.find :first, :conditions => ['login = ?', params[:login]]
-    find_type = (current_user == @user) ? "find" : "find_public"
-
-    @commands = @user.commands.send find_type, :all, {:order => "modified_at DESC", :include => [:user]}
+    publicity = owner? ? "any" : "public"
+    
+    @quicksearches = @user.commands.send(publicity).quicksearches.used.find(:all, {:order => "queries_count_all DESC", :include => [:user], :limit => 15})
+    @shortcuts = @user.commands.send(publicity).shortcuts.used.find(:all, {:order => "queries_count_all DESC", :include => [:user], :limit => 15})
+    @bookmarklets = @user.commands.send(publicity).bookmarklets.used.find(:all, {:order => "queries_count_all DESC", :include => [:user], :limit => 15})
     
     @tag = params[:tag]
     @tags = @user.tags
     
-    # TODO: Fix this. It's lame    
-    @commands.reject!{|c| !c.tag_list.include? @tag} if @tag
-    
-    
-    # Find most-queried commands
-    # grouped = @user.queries.find(:all, :select => [:command_id]).group_by(&:command_id)
-    # sorted = grouped.sort { |a,b| a[1].size <=> b[1].size }.reverse
-    # command_ids = []
-    # 0.upto(19) { |i| command_ids << sorted[i][0] }
-    # @popular_commands = Command.find(command_ids).sort { |a,b| a.queries.size <=> b.queries.size }.reverse
-
+    # TODO: Fix this. It's lame
+    @commands.select!{|c| c.tags.map(&:name).include? @tag } if @tag
     
     @users = User.find(:all, :order => :login)
-
   end
 
   def create

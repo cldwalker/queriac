@@ -9,4 +9,12 @@ class ApplicationController < ActionController::Base
   include AuthenticatedSystem
   before_filter :login_from_cookie  
   
+  def load_user
+    @user = (logged_in? && current_user.login==params[:login]) ? current_user : User.find_by_login(params[:login])    
+  end
+  
+  def owner?
+    logged_in? && current_user == @user
+  end
+  
 end

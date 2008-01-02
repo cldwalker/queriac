@@ -67,6 +67,8 @@ end
 # Mime::Type.register "application/x-mobile", :mobile
 
 # Include your application configuration below
+gem 'has_finder'
+require 'has_finder'
 require 'open-uri'
 require 'hpricot'
 

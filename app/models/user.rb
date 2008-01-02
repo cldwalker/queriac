@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 10
+# Schema version: 12
 #
 # Table name: users
 #
@@ -14,19 +14,19 @@
 #  remember_token_expires_at :datetime        
 #  activation_code           :string(40)      
 #  activated_at              :datetime        
-#  default_command           :integer(11)     
+#  default_command_id        :integer(11)     
 #  first_name                :string(255)     
 #  last_name                 :string(255)     
+#  per_page                  :integer(11)     
 #
 
 require 'digest/sha1'
 class User < ActiveRecord::Base
   has_many :commands
-
-  belongs_to :default_command, :class_name => "Command", :foreign_key => :default_command_id
-
-  has_many :queries, :through => :commands
+  has_many :queries
   has_many :tags, :through => :commands
+  
+  belongs_to :default_command, :class_name => "Command", :foreign_key => :default_command_id
   
   # Virtual attribute for the unencrypted password
   attr_accessor :password
@@ -85,11 +85,19 @@ class User < ActiveRecord::Base
   # end
   
   def home_path
-    "/#{self.login}/"
+    "/#{login}/"
   end
   
   def tag_path
-    "/#{self.login}/tag/"
+    "/#{login}/tag/"
+  end
+  
+  def commands_path
+    "/#{login}/commands/"
+  end
+  
+  def default_command_path(query)
+    "/#{login}/default_to #{default_command.keyword} #{query}"
   end
   
   def default_command?

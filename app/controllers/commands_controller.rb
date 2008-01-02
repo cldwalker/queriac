@@ -1,9 +1,9 @@
 class CommandsController < ApplicationController
 
-  before_filter :login_required, :except => [ :show, :execute ]
+  before_filter :login_required, :except => [:execute, :show]
+  before_filter :load_user, :only => [:index, :execute, :show, :edit]
 
   def index
-    load_user
     
     publicity_clause = owner? ? {} : {:conditions => ["commands.public = 1"]}
     @commands = @user.commands.paginate({
@@ -19,73 +19,78 @@ class CommandsController < ApplicationController
   end
   
   def execute
-    load_user
     
     # Extract command and query string from params
+    # (The join is here to bring query strings back together, as queries containing
+    # slashes are broken into array elements by Rails' routing
     param_parts = params[:command].join("/").split(' ')
-    keyword = param_parts.shift.downcase # first part of string
+    keyword = param_parts.shift.downcase # steal first word of the string
+    
+    # If first part of string is 'default_to', take note and use next
+    # word in string as the command to execute
+    if keyword == "default_to"
+      keyword = param_parts.shift.downcase 
+      defaulted = true
+    end
+    
     query_string = param_parts.join(' ') # remainder of the string
     
     @command = @user.commands.find_by_keyword(keyword)
     
+    # If command doesn't exist, route the query to the user's default command,
+    # or redirect to user's home path and show options, depending on their settings.
     if @command.nil? 
-
       if @user.default_command?
-        redirect_to "/#{@user.login}/#{@user.default_command.keyword} #{params[:command].join("/")}" 
+        redirect_to @user.default_command_path(params[:command].join("/"))
       else
         redirect_to @user.home_path + "?bad_command=#{keyword}"
-        return
       end
-
-      # (maybe store that the default command was used as a fallback too?)
       return
     end
 
+    # Don't allow outsiders to run private commands
     if @command.private? && !owner?
       render :text => "This command (#{@command.keyword}) is not shared by this user (#{@user.login})."
-      return    
+      return
     end
     
     # Store the query in the database
-    @command.save_query(query_string)
+    @command.queries.create(
+      :query_string => query_string,
+      :run_by_default => defaulted || false,
+      :user_id => current_user.id
+    )
     
-
     # Needs to be constructed if commands takes arguments
-    @yield = @command.parametric? ? @command.url_for(query_string) : @command.url
+    @result = @command.parametric? ? @command.url_for(query_string) : @command.url
       
     if @command.bookmarklet?
-      # Command is a Javascript bookmarklet, so rather than redirect to it, we
+      # Command is a Javascript bookmarklet, so rather than redirect to it,
       # we simply render it so the script that called it can use it as its source.
-      render :text => @yield
+      render :text => @result
       
-    elsif params["js"]
+    # elsif params["js"]
       # Command is not Javascript, but is being executed in a Javascript context,
       # so convert the URL into a javascript that will redirect to the URL.
-      render :text => "alert(#{@yield})"
+      # render :text => "alert(#{@yield})"
       
     else
       # Command is a simple URL to which we redirect
-      redirect_to @yield
-      
+      redirect_to @result
     end
 
-    
   end
 
-  # GET /commands/foo
   def show
-    load_user
     @command = @user.commands.find_by_keyword(params[:command])
     
     if @command.nil?
       flash[:warning] = "User #{@user.login} has no command with keyword '#{params[:command]}'"
       redirect_to @user.home_path
       return
-    end    
+    end
 
     @queries = @command.queries.paginate(:order => "queries.created_at DESC", :page => params[:page]) if owner? || @command.public?
-    
-    # raise @queries.methods.to_yaml
 
     respond_to do |format|
       format.html # show.rhtml
@@ -93,7 +98,6 @@ class CommandsController < ApplicationController
     end
   end
 
-  # GET /commands/new
   def new  
     @command = Command.new
     
@@ -109,15 +113,11 @@ class CommandsController < ApplicationController
     
   end
 
-  # GET /commands/1;edit
   def edit
-    @user = User.find_by_login(params[:login])
-    raise "You are not allowed to edit this command." if @user != current_user
+    raise "You are not allowed to edit this command." unless owner?
     @command = current_user.commands.find_by_keyword(params[:command], :include => [:user])
   end
 
-  # POST /commands
-  # POST /commands.xml
   def create
 
     # If user uploaded a bookmark file
@@ -170,8 +170,6 @@ class CommandsController < ApplicationController
     end      
   end
 
-  # PUT /commands/1
-  # PUT /commands/1.xml
   def update
     @command = Command.find(params[:id])
 
@@ -188,8 +186,6 @@ class CommandsController < ApplicationController
     end
   end
 
-  # DELETE /commands/1
-  # DELETE /commands/1.xml
   def destroy
     @command = current_user.commands.find_by_keyword(params[:command], :include => [:queries])
     @command.queries.destroy_all
@@ -200,17 +196,6 @@ class CommandsController < ApplicationController
       format.html { redirect_to current_user.home_path }
       format.xml  { head :ok }
     end
-  end
-  
-  private
-  
-  def load_user
-    # Command may or may not owned by the current user. Find out..
-    @user = (logged_in? && current_user.login==params[:login]) ? current_user : User.find_by_login(params[:login])    
-  end
-  
-  def owner?
-    logged_in? && @user == current_user
   end
   
 end

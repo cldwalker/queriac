@@ -35,7 +35,7 @@
 		<%= radio_button_tag 'use_default_command', 'yes', current_user.default_command? %> 
 		<%= label_tag "Run the query using this command: ", :for => "use_default_command_yes" %>
 
-		<%= f.select :default_command_id, current_user.commands.find_quicksearches(:all).collect {|c| [ "#{c.keyword} - #{c.name}", c.id ] } %>
+		<%= f.select :default_command_id, current_user.commands.quicksearches.collect {|c| [ "#{c.keyword} - #{c.name}", c.id ] }, {}, :onfocus => "$('use_default_command_yes').checked = true" %>
 	</div>
 		
   <p>

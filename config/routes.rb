@@ -13,7 +13,7 @@ ActionController::Routing::Routes.draw do |map|
 
   # map.user '/rss/:login', :controller => 'users', :action => 'show'
   map.user ':login', :controller => 'users', :action => 'show'
-  map.tag ':login/tag/:tag', :controller => 'users', :action => 'show'
+  map.tag ':login/commands/tag/:tag', :controller => 'users', :action => 'show'
 
   map.user ':login/commands', :controller => 'commands', :action => 'index'
   
