@@ -1,9 +1,3 @@
-class ActiveRecord::Errors
-  def full_messages_with_p_tags
-    full_messages.collect{ |err| "<p>#{err}</p>" }
-  end
-end
-
 class Hash
   def grep(*args)
     valid = self.keys.grep(*args)
