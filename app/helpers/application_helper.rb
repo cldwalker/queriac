@@ -17,8 +17,9 @@ module ApplicationHelper
   def render_nav
     crumbs = [link_to("queriac", '/')]
     crumbs << link_to(@user.login, @user.home_path) if @user
+    crumbs << "commands" unless @tag.blank?
     crumbs << "tag" unless @tag.blank?
-    crumbs << @tag unless @tag.blank?
+    crumbs << @tag.gsub(" ", "+") unless @tag.blank?
     crumbs << link_to(@command.keyword, @command.show_path) unless @command.blank? || @command.new_record?
     crumbs << "queries" if params[:controller] == "queries"
     crumbs << params[:action] if params[:controller] == "static" && params[:action] != "home"

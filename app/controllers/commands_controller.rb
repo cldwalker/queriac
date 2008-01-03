@@ -5,12 +5,18 @@ class CommandsController < ApplicationController
 
   def index
     
-    publicity_clause = owner? ? {} : {:conditions => ["commands.public = 1"]}
-    @commands = @user.commands.paginate({
-      :order => "commands.created_at DESC", 
-      :page => params[:page],
-      :include => [:tags]
-    }.merge(publicity_clause))
+    publicity = owner? ? "any" : "public"
+    
+    if params[:tag]
+      @tag = params[:tag]
+      @commands = @user.commands.find_tagged_with(@tag.split(" ").join(", "), :match_all => true, :order => "commands.keyword")
+    else
+      @commands = @user.commands.send(publicity).paginate({
+        :order => "commands.keyword ASC", 
+        :page => params[:page],
+        :include => [:tags]
+      })
+    end
     
     respond_to do |format|
       format.html # show.rhtml

@@ -1,4 +1,4 @@
-<h1>Your Commands</h1>
+<h1><%= @tag.blank? ? "All Commands" : "Commands tagged with #{@tag.gsub(' ', ' and ')}" %></h1>
 
 <ul class="bolder options standalone">
 	<li class="add"><%= link_to 'Add a New command', new_command_path %></li>
@@ -16,8 +16,8 @@
 <% for command in @commands %>
 	<tr <%= cycle('class="offset"', '') -%>>	
     <td class="<%= command.kind %>">
-			<p class="command_title"><%= link_to command.name, edit_command_path(command.keyword) %></p>
-			<p class="tag_list">Tags: <%= command.tags.map{|t| link_to(t.name, "/#{command.user.login}/tag/#{t.name}") }.join(" ") %></p>
+			<p class="command_title"><%= link_to command.name, command.edit_path %></p>
+			<p class="tag_list">Tags: <%= command.tags.map{|t| link_to(t.name, "/#{command.user.login}/commands/tag/#{t.name}") }.join(" ") %></p>
 		</td>
     <td><%=h command.keyword %></td>
     <td class="centered"><%=h command.queries.size if command.queries.size > 0 %></td>
@@ -32,4 +32,4 @@
 <% end %>
 </table>
 
-<%= will_paginate @commands %>
+<%= will_paginate @commands unless @tag %>

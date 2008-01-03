@@ -13,11 +13,11 @@ class UsersController < ApplicationController
     @shortcuts = @user.commands.send(publicity).shortcuts.used.find(:all, {:order => "queries_count_all DESC", :include => [:user], :limit => 15})
     @bookmarklets = @user.commands.send(publicity).bookmarklets.used.find(:all, {:order => "queries_count_all DESC", :include => [:user], :limit => 15})
     
-    @tag = params[:tag]
     @tags = @user.tags
     
     # TODO: Fix this. It's lame
-    @commands.select!{|c| c.tags.map(&:name).include? @tag } if @tag
+    @tag = params[:tag]
+    # @commands.select!{|c| c.tags.map(&:name).include? @tag } if @tag
     
     @users = User.find(:all, :order => :login)
   end

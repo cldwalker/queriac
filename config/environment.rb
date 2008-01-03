@@ -10,10 +10,6 @@ RAILS_GEM_VERSION = '1.2.3' unless defined? RAILS_GEM_VERSION
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
 
-require "string_extensions"
-String.send :include, StringExtensions
-
-
 Rails::Initializer.run do |config|
   # Settings in config/environments/* take precedence over those specified here
 
@@ -66,11 +62,6 @@ end
 # Mime::Type.register "text/richtext", :rtf
 # Mime::Type.register "application/x-mobile", :mobile
 
-# Include your application configuration below
-gem 'has_finder'
-require 'has_finder'
-require 'open-uri'
-require 'hpricot'
 
 Time::DATE_FORMATS[:ymdhms] = "%Y%m%d%H%M%S"
 
@@ -91,3 +82,9 @@ ActionMailer::Base.smtp_settings = {
 :password => "gomero"
 }
 ActionMailer::Base.delivery_method = :smtp
+
+# Include your application configuration below
+gem 'has_finder'
+require 'has_finder'
+require 'open-uri'
+require 'hpricot'

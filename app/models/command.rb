@@ -24,6 +24,8 @@ class Command < ActiveRecord::Base
   belongs_to :user
   has_many :queries, :dependent => :destroy
   
+  acts_as_taggable
+  
   has_finder :used, :conditions => ["commands.queries_count_all > 0"]
   has_finder :unused, :conditions => ["commands.queries_count_all = 0"]
   has_finder :popular, :conditions => ["commands.queries_count_all > 50"]
@@ -89,6 +91,11 @@ class Command < ActiveRecord::Base
   
   def url_for(query_string)
     self.url.sub(DEFAULT_PARAM, CGI.escape(query_string))
+  end
+  
+  def update_tags(tags)
+    self.tag_list = tags
+    self.save
   end
   
   def update_query_counts
