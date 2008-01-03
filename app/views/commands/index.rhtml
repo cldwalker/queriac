@@ -16,7 +16,7 @@
 <% for command in @commands %>
 	<tr <%= cycle('class="offset"', '') -%>>	
     <td class="<%= command.kind %>">
-			<p class="command_title"><%= link_to command.name, command.edit_path %></p>
+			<p class="command_title"><%= link_to command.name, command.show_path %></p>
 			<p class="tag_list">Tags: <%= command.tags.map{|t| link_to(t.name, "/#{command.user.login}/commands/tag/#{t.name}") }.join(" ") %></p>
 		</td>
     <td><%=h command.keyword %></td>

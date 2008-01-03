@@ -88,8 +88,8 @@ class User < ActiveRecord::Base
     "/#{login}/"
   end
   
-  def tag_path
-    "/#{login}/commands/tag/"
+  def tag_path(tag)
+    "/#{login}/commands/tag/#{tag}"
   end
   
   def commands_path

@@ -88,16 +88,16 @@ h2 a {
 	font-size: 1.2em;
 }
 
+.flash-msg a {
+	color: white;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
 .notice {
 	background-color: #427f0b;
 	color: white;
 	border-color: #009d20;
-}
-
-.notice a {
-	color: green;
-	font-weight: bold;
-	text-decoration: underline;
 }
 
 .warning {

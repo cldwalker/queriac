@@ -52,7 +52,7 @@ module ApplicationHelper
     tags = {}
     otags.each { |t| tags[t.name] = tags.has_key?(t.name) ? tags[t.name]+1 : 1 }
     
-    output = tags.sort.collect{|t| link_to(t[0], "#{@user.tag_path}#{t[0]}", :class => "t#{t[1]}") }.join(" ")
+    output = tags.sort.collect{|t| link_to(t[0], "#{@user.tag_path(t[0])}", :class => "t#{t[1]}") }.join(" ")
     content_tag(:p, output, :class => "tags")
   end
   

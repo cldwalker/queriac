@@ -20,7 +20,7 @@
 
 <div>
   <%= label_tag "Tags (separated by spaces)", :for => :tags %><br />
-	<% tag_list = @ancestor ? @ancestor.tag_list : @command.tag_list %>
+	<% tag_list = @ancestor ? @ancestor.tag_string : @command.tag_string %>
   <%= text_field_tag :tags, tag_list, {:size => 90} %>
 </div>
 

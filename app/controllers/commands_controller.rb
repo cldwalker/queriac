@@ -182,8 +182,8 @@ class CommandsController < ApplicationController
     respond_to do |format|
       if @command.update_attributes(params[:command])
         @command.update_tags(params[:tags])
-        flash[:notice] = "Command updated: <b>#{@command.name}</b>"
-        format.html { redirect_to "/#{current_user.login}" }
+        flash[:notice] = "Command updated: <b><a href='#{@command.show_path}'>#{@command.name}</a></b>"
+        format.html { redirect_to current_user.home_path }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }
