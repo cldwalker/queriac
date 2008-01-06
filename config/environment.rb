@@ -80,7 +80,7 @@ ActionMailer::Base.smtp_settings = {
   :domain => "gmail.com", 
   :authentication => :plain,
   :user_name => "zeke@queri.ac",
-  :password => ENV['QUERIAC_SMTP_PASSWORD']
+  :password => "gomero"
 }
 ActionMailer::Base.delivery_method = :smtp
 
