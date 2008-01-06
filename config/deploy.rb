@@ -20,7 +20,7 @@ set :application, "monoquery"
 set :deploy_to, "/var/www/apps/#{application}"
 
 # Primary domain name of your application. Used as a default for all server roles.
-set :domain, "sikelianos.railsmachina.com"
+set :domain, "queri.ac"
 
 # Login user for ssh.
 set :user, "deploy"

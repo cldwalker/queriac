@@ -64,7 +64,6 @@ end
 # Mime::Type.register "text/richtext", :rtf
 # Mime::Type.register "application/x-mobile", :mobile
 
-
 Time::DATE_FORMATS[:ymdhms] = "%Y%m%d%H%M%S"
 
 PARAM_START = "("
@@ -75,13 +74,13 @@ ExceptionNotifier.exception_recipients = %w(zeke@queri.ac)
 ExceptionNotifier.sender_address = %("Application Error" <zeke@queri.ac>)
 ExceptionNotifier.email_prefix = "[queriac] "
 
-
 ActionMailer::Base.smtp_settings = {
-:address => "smtp.gmail.com",
-:port => 587,
-:domain => "gmail.com",  :authentication => :plain,
-:user_name => "zeke@queri.ac",
-:password => "gomero"
+  :address => "smtp.gmail.com",
+  :port => 587,
+  :domain => "gmail.com", 
+  :authentication => :plain,
+  :user_name => "zeke@queri.ac",
+  :password => ENV['QUERIAC_SMTP_PASSWORD']
 }
 ActionMailer::Base.delivery_method = :smtp
 
