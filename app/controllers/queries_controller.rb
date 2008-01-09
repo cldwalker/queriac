@@ -52,6 +52,6 @@ class QueriesController < ApplicationController
       format.html { redirect_to current_user.home_path }
       format.xml  { head :ok }
     end
-  end
+  end\
   
 end

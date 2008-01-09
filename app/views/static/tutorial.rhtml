@@ -13,11 +13,17 @@
 	<li>Open your browser and type <b>about:config</b> in the address bar. This will open up a big list of browser preferences.</li>
 	<li>In the filter field, type <b>keyword</b>. This should filter the list down to just a couple of items.</li>
 	<li>Set <b>keyword.enabled</b> to <i>true</i>.</li>
-	<li>Set <b>keyword.URL</b> to <i>http://queri.ac/youraccountname/</i>, using your account name of course. <b>And don't forget the trailing slash!</b></li>
-	<li>That's it! Log in to your account at <i>http://queri.ac/youraccountname/</i> to start adding commands. Here's a screenshot of the about:config</li>
+	<li>
+		Set <b>keyword.URL</b> to 
+		<%= logged_in? ? "<i>http://queri.ac/#{current_user.login}/</i>" : "<i>http://queri.ac/youraccountname/</i>, using your account name of course." %> 
+		<b>Don't forget the trailing slash!</b>
+	</li>
+	<li>
+		That's it! Visit your account page at 
+		<%= logged_in? ? link_to("http://queri.ac/#{current_user.login}", current_user.login) : "<i>http://queri.ac/youraccountname</i>" %>
+		to start adding commands.
+	</li>
 </ol>
-
-<%= image_tag "screenshots/about_config.png" %>
 
 
 <h2>MetaShortcutness</h2>
@@ -28,11 +34,13 @@
 	type any of the following right into your address bar..
 </p>
 
-<p class="caption">Type <b>new</b> in the address bar and you'll be taken to Queriac's "Create a New Command" page.</p>
+<p class="caption">&rarr; Type <b>q</b> in the address bar and you'll be taken to your Queriac account page.</p>
 
-<p class="caption">Type <b>show <i>g</i></b> to view a command's summary page (g for Google Quicksearch in this case), showing you its tags, a list of recent queries you've made with the command, etc.</p>
+<p class="caption">&rarr; Type <b>new</b> in the address bar and you'll be taken to Queriac's "Create a New Command" page.</p>
 
-<p class="caption">Type <b>edit <i>g</i></b> to edit a command. (again, g as in Google Quicksearch in this example)</p>
+<p class="caption">&rarr; Type <b>show <i>g</i></b> to view a command's summary page (g for Google Quicksearch in this case), showing you its tags, a list of recent queries you've made with the command, etc.</p>
+
+<p class="caption">&rarr; Type <b>edit <i>g</i></b> to edit a command. (again, g as in Google Quicksearch in this example)</p>
 
 <% if logged_in? %>
 	<h2>Using Bookmarklets</h2>

@@ -42,47 +42,72 @@ class User < ActiveRecord::Base
   before_save :encrypt_password
   before_create :make_activation_code 
   
-  # def tags
-  #   self.commands.find(:all, :select => :id, :include => :tags).map(&:tags).flatten.uniq.sort_by(&:name)
-  # end
+  def after_create
+    g = self.commands.create!(
+      :name => "Google Quicksearch", 
+      :keyword => "g",
+      :url => "http://www.google.com/search?q=(q)",
+      :description => "Performs a basic Google search."
+    )
+    g.update_tags("google")
+    
+    gms = self.commands.create!(
+      :name => "Gmail Search", 
+      :keyword => "gms",
+      :url => "http://mail.google.com/mail/?search=query&view=tl&start=0&init=1&fs=1&q=(q)",
+      :description => "Search your Gmail. If you're not logged in you'll be directed to the Gmail login page.\n\nExamples\ngms dog\ngms is:starred mom\ngms label:todo"
+    )
+    gms.update_tags("google gmail mail")
   
-  # def tags_with_counts
-  #   tags = {}
-  #   self.commands.find(:all, :select => :id, :include => :tags).map(&:tags).flatten.sort_by(&:name).each do |tag|
-  #     tags[tag.name] = tags.has_key?(tag.name) ? tags[tag.name]+1 : 1
-  #   end
-  #   tags.sort
-  # end
+    w = self.commands.create!(
+      :name => "Google \"I'm Feeling Lucky\" Wikipedia (en) search",
+      :keyword => "w",
+      :url => "http://www.google.com/search?btnI=I'm%20Feeling%20Lucky&q=site:en.wikipedia.org%20(q)",
+      :description => "Jumps to Google's first search result for the query you've entered + site:en.wikipedia.org\n\nExample: w colonel sanders"
+    )
+    w.update_tags("google wikipedia")
+    
+    word = self.commands.create!(
+      :name => "Dictionary Lookup at Reference.com",
+      :keyword => "word",
+      :url => "http://www.reference.com/browse/all/(q)",
+      :description => "Look up word definitions\n\nExample: word peripatetic"
+    )
+    word.update_tags("dictionary reference language english")
+    
+    q = self.commands.create!(
+      :name => "My Queriac Page",
+      :keyword => "q",
+      :url => "http://queri.ac/#{self.login}/",
+      :description => "A shortcut to my queriac account page."
+    )
+    q.update_tags("queriac bootstrap")
+    
+    show = self.commands.create!(
+      :name => "Show a Queriac command",
+      :keyword => "show",
+      :url => "http://queri.ac/#{self.login}/(q)/show",
+      :description => "Show info on a queriac command.\n\nExample: show g"
+    )
+    show.update_tags("queriac bootstrap")
+    
+    edit = self.commands.create!(
+      :name => "Edit a Queriac command",
+      :keyword => "edit",
+      :url => "http://queri.ac/#{self.login}/(q)/edit",
+      :description => "Edit a queriac command.\n\nExample: edit g"
+    )
+    edit.update_tags("queriac bootstrap")
+    
+    n = self.commands.create!(
+      :name => "Create a new Queriac command",
+      :keyword => "new",
+      :url => "http://queri.ac/commands/new",
+      :description => "Shortcut to the queriac page for creating a new account."
+    )
+    n.update_tags("queriac bootstrap")
   
-  # def after_create
-  #   g = self.commands.create!(
-  #     :name => "Google Quicksearch", 
-  #     :keyword => "g",
-  #     :url => "http://www.google.com/search?q=(q)",
-  #     :description => "Performs a basic Google search."
-  #   )
-  #   g.tags = "google"
-  #   g.save
-  #   
-  #   mq = self.commands.create!(
-  #     :name => "My Queriac Commands", 
-  #     :keyword => "mq",
-  #     :url => "http://queri.ac/#{self.login}/",
-  #     :description => "A shortcut to a list of my queriac commands."
-  #   )
-  #   mq.tags = "queriac"
-  #   mq.save
-  # 
-  #   gms = self.commands.create!(
-  #     :name => "Gmail Search", 
-  #     :keyword => "gms",
-  #     :url => "http://queri.ac/#{self.login}/",
-  #     :description => "Search your gmail. If you're not logged in you'll be directed to the Gmail login page. Examples..\ngms dog\ngms is:starred mom\ngms label:todo"
-  #   )
-  #   gms.tags = "google gmail mail email"
-  #   gms.save
-  # 
-  # end
+  end
   
   def home_path
     "/#{login}/"

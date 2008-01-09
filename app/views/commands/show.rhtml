@@ -25,7 +25,7 @@
 	
 
 	<% unless @command.description.blank? %>
-		<p><b>Description:</b> <%=h @command.description %></p>
+		<p><b>Description:</b> <%= textilize_without_paragraph @command.description %></p>
 	<% end %>
 
 	<% unless @command.tags.empty? %>	

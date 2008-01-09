@@ -12,12 +12,14 @@
 		</ul>
 	<% end %>
 	
-		
-	<%= render :partial => "commands/quicksearch_summary_table", :locals => {:quicksearches => @quicksearches, :user => @user} unless @quicksearches.empty? %>
 	
-	<%= render :partial => "commands/shortcut_summary_table", :locals => {:shortcuts => @shortcuts, :user => @user} unless @shortcuts.empty? %>
-	
-	<%= render :partial => "commands/bookmarklet_summary_table", :locals => {:bookmarklets => @bookmarklets, :user => @user} unless @bookmarklets.empty? %>
+	<% if @commands %>
+		<%= render :partial => "commands/generic_summary_table", :locals => {:commands => @commands, :user => @user} %>	
+	<% else %>
+		<%= render :partial => "commands/quicksearch_summary_table", :locals => {:quicksearches => @quicksearches, :user => @user} unless @quicksearches.empty? %>	
+		<%= render :partial => "commands/shortcut_summary_table", :locals => {:shortcuts => @shortcuts, :user => @user} unless @shortcuts.empty? %>
+		<%= render :partial => "commands/bookmarklet_summary_table", :locals => {:bookmarklets => @bookmarklets, :user => @user} unless @bookmarklets.empty? %>
+	<% end %>
 
 	
 </div>

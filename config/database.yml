@@ -2,6 +2,7 @@ development:
   adapter: mysql
   database: queriac_development
   username: root
+  password:
   socket: /tmp/mysql.sock
 
 test:
