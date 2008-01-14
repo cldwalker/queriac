@@ -94,7 +94,7 @@ class Command < ActiveRecord::Base
   end
   
   def update_tags(tags)
-    self.tag_list = tags
+    self.tag_list = tags.split(" ").join(", ")
     self.save
   end
   

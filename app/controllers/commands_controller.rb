@@ -164,7 +164,7 @@ class CommandsController < ApplicationController
       respond_to do |format|      
         if @command.save
           @command.update_tags(params[:tags])
-          flash[:notice] = "New command created: <b>#{@command.name}</b>"
+          flash[:notice] = "New command created: <b><a href='#{@command.show_path}'>#{@command.name}</a></b>"
           format.html { redirect_to current_user.home_path }
           format.xml  { head :created, :location => command_url(@command) }
         else
