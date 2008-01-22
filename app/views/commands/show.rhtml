@@ -17,12 +17,11 @@
 	
 	<p><b>Queries visible to Public:</b> <%= @command.public_queries? ? "Yes" : "No" %></p>
 
-	<p><b>Your Query count:</b> <%= @command.queries_count_all %></p>
+	<p><b>Owner queries:</b> <%= @command.queries_count_all %></p>
 	
 	<% if @command.public_queries? %>
-		<p><b>Outsider Query count:</b> <%= @command.queries_count_outsiders %></p>
+		<p><b>Outsider queries:</b> <%= @command.queries_count_outsiders %></p>
 	<% end %>
-	
 
 	<% unless @command.description.blank? %>
 		<p><b>Description:</b> <%= textilize_without_paragraph @command.description %></p>

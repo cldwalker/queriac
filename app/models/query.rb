@@ -18,7 +18,7 @@ class Query < ActiveRecord::Base
   has_finder :public, :conditions => ["commands.public_queries = 1"]
 
   def after_create
-    command.update_query_counts
+    self.command.update_query_counts
   end
   
 end

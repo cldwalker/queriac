@@ -51,15 +51,6 @@ Rails::Initializer.run do |config|
   
 end
 
-# Add new inflection rules using the following format 
-# (all these examples are active by default):
-# Inflector.inflections do |inflect|
-#   inflect.plural /^(ox)$/i, '\1en'
-#   inflect.singular /^(ox)en/i, '\1'
-#   inflect.irregular 'person', 'people'
-#   inflect.uncountable %w( fish sheep )
-# end
-
 # Add new mime types for use in respond_to blocks:
 # Mime::Type.register "text/richtext", :rtf
 # Mime::Type.register "application/x-mobile", :mobile
@@ -73,16 +64,6 @@ DEFAULT_PARAM = "(q)"
 ExceptionNotifier.exception_recipients = %w(zeke@queri.ac)
 ExceptionNotifier.sender_address = %("Application Error" <zeke@queri.ac>)
 ExceptionNotifier.email_prefix = "[queriac] "
-
-ActionMailer::Base.smtp_settings = {
-  :address => "smtp.gmail.com",
-  :port => 587,
-  :domain => "gmail.com", 
-  :authentication => :plain,
-  :user_name => "zeke@queri.ac",
-  :password => "gomero"
-}
-ActionMailer::Base.delivery_method = :smtp
 
 # Include your application configuration below
 gem 'has_finder'

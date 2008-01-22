@@ -9,7 +9,7 @@
 </div>
 
 <div class="floatkiller">
-  <%= f.label :url, :text => "URL or Javascript Command" %><br />
+  <%= f.label :url, :text => "URL or Javascript Command. (Don't forget to the protocol: http, javascript, aim, etc..)" %><br />
   <%= f.text_field :url, :size => 90 %>
 </div>
 
@@ -20,7 +20,17 @@
 
 <div>
   <%= label_tag "Tags (separated by spaces)", :for => :tags %><br />
-	<% tag_list = @ancestor ? @ancestor.tag_string : @command.tag_string %>
+	
+	<% 
+		if params[:tags]
+			tag_list = params[:tags]
+		elsif @ancestor
+			tag_list = @ancestor.tag_string
+		else
+			tag_list = @command.tag_string
+		end
+	%>
+	
   <%= text_field_tag :tags, tag_list, {:size => 90} %>
 </div>
 

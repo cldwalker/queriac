@@ -10,7 +10,7 @@ body {
 	margin:0px auto 80px auto;
 	padding:0px;
 	position:relative;
-	text-align:left;
+/*  text-align:left;*/
 	width: 980px;
 }
 
@@ -27,57 +27,15 @@ body {
 /* ***** LOGO ***** */
 
 #logo {
-	padding: 15px 0 0 0;
+	padding: 17px 0 5px 0;
 	color: white;
-	font-size: 2.4em;
+	font-size: 2.3em;
 }
 
 #logo a {
+  height: 20px;
 	color: white;
 }
-
-
-/* ***** NAV ***** */
-
-#nav ul {
-	bottom:0px;
-	font-size:12px;
-	position:absolute;
-	right:0px;
-}
-
-#nav li {
-/*	background:transparent url(../images/base/lt-tab.gif) no-repeat scroll left top;*/
-	float:left;
-	margin:0px 0px 0px 1px;
-	padding:0px 0px 0px 9px;
-}
-
-
-#nav a {
-	font-family: "Lucida Grande", Lucida, Verdana;
-/*	background:transparent url(../images/base/rt-tab.gif) no-repeat scroll right top;*/
-	color:#FFFFFF;
-	display:block;
-	float:left;
-	margin:0px;
-	padding: 9px 15px 8px 6px;
-	text-decoration:none;
-}
-
-#nav li.selected {
-/*	background-image:url(../images/base/lt-tab-over.gif);*/
-}
-
-#nav li.selected a {
-/*	background-image:url(../images/base/rt-tab-over.gif);*/
-	font-weight: bold;
-}
-
-#nav a:hover {
-	text-decoration: underline;
-}
-
 
 /* ***** MINI-NAV ***** */
 
@@ -85,6 +43,7 @@ body {
 	position: absolute;
 	top:25px;
 	right: 5px;
+	width: 400px;
 }
 
 #mininav ul {
@@ -172,7 +131,7 @@ th {
 }
 
 tr.offset {
-	background-color: #F1F1F1;
+	background-color: #F5F5F5;
 }
 
 td {

@@ -5,12 +5,12 @@ body {
 }
 
 a {
-	text-decoration: none;
+  text-decoration: none;
 	color: mediumblue;
 	color: #427f0b;
 }
 a:hover {
-	text-decoration: underline;
+  text-decoration: underline;
 }
 p a {
 	text-decoration: underline;
@@ -220,8 +220,8 @@ ol.normal li {
 /* This is for the lists that are typically within the rows of the tables */
 
 ul.options.standalone {
-  background-color: #f7ffe2;
-  border: 1px solid #cbcd91;
+  background-color: #F5F5F5;
+  border: 1px solid #DDD;
   padding: 10px;
   overflow: auto;
 }

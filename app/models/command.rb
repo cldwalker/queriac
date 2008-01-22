@@ -57,9 +57,9 @@ class Command < ActiveRecord::Base
     self.bookmarklet = self.url.downcase.starts_with?('javascript') ? true : false
   end
   
-  def url=(url)
-    super(url.blank? || url.downcase.starts_with?('http') || url.downcase.starts_with?('file') || url.downcase.starts_with?('javascript') ? url : "http://#{url}")
-  end
+  # def url=(url)
+  #   super(url.blank? || url.downcase.starts_with?('http') || url.downcase.starts_with?('file') || url.downcase.starts_with?('javascript') ? url : "http://#{url}")
+  # end
 
   # Booleans
   #------------------------------------------------------------------------------------------------------------------

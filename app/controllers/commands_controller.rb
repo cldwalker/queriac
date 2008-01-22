@@ -64,7 +64,8 @@ class CommandsController < ApplicationController
     @command.queries.create(
       :query_string => query_string,
       :run_by_default => defaulted || false,
-      :user_id => current_user.id
+      :user_id => current_user.id,
+      :referrer => request.env["HTTP_REFERER"]
     )
     
     # Needs to be constructed if commands takes arguments
@@ -113,10 +114,13 @@ class CommandsController < ApplicationController
       @command.keyword = @ancestor.keyword
       @command.url = @ancestor.url
       @command.description = @ancestor.description
-    elsif params[:keyword]
-      @command.keyword = params[:keyword]
     end
     
+    # Allow user to pre-populate form.
+    @command.name = params[:name] if params[:name]
+    @command.keyword = params[:keyword] if params[:keyword]
+    @command.url = params[:url] if params[:url]
+    @command.description = params[:description] if params[:description]
   end
 
   def edit

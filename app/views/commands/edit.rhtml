@@ -8,6 +8,7 @@
 
   <div class="floatkiller">
     <%= f.label :url, :text => " " %><br />	
-    <%= submit_tag "Save Changes", :class => "submit" %>
+    <%= submit_tag "Save Changes", :class => "submit" %> &nbsp;
+		 or <%= link_to 'Delete', @command.delete_path, :confirm => "Are you sure you want to delete this command?" %>
   </div>
 <% end %>
