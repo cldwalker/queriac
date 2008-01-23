@@ -291,25 +291,3 @@ ul.stacked li {
 .faded {
 	color: #999;
 }
-
-/* Tags
-*********************************************************************************/
-p.tags a.t1 {
-	font-size: 1em;
-	opacity: .3;
-}
-p.tags a.t2 {
-	font-size: 1.2em;
-	opacity: .5;
-}
-p.tags a.t3 {
-	font-size: 1.4em;
-	opacity: .7;
-}
-p.tags a.t4 {
-	font-size: 1.6em;
-	opacity: .9;
-}
-p.tags a.t5, p.tags a.t6, p.tags a.t7 {
-	font-size: 1.8em;
-}

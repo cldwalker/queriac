@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 12
+# Schema version: 14
 #
 # Table name: users
 #
@@ -22,7 +22,7 @@
 
 require 'digest/sha1'
 class User < ActiveRecord::Base
-  has_many :commands
+  has_many :commands, :dependent => :destroy
   has_many :queries
   has_many :tags, :through => :commands
   
@@ -49,7 +49,7 @@ class User < ActiveRecord::Base
       :url => "http://www.google.com/search?q=(q)",
       :description => "Performs a basic Google search."
     )
-    g.update_tags("google")
+    g.update_tags("google") 
     
     gms = self.commands.create!(
       :name => "Gmail Search", 

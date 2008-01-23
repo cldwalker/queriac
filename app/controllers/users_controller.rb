@@ -9,7 +9,6 @@ class UsersController < ApplicationController
   def show
     publicity = owner? ? "any" : "public"
     
-
     if @user.queries.count > 100
       @quicksearches = @user.commands.send(publicity).quicksearches.used.find(:all, {:order => "queries_count_all DESC", :include => [:user], :limit => 15})
       @shortcuts = @user.commands.send(publicity).shortcuts.used.find(:all, {:order => "queries_count_all DESC", :include => [:user], :limit => 15})
@@ -78,6 +77,18 @@ class UsersController < ApplicationController
       flash[:notice] = "Account activation complete! You are now logged in."
     end
     redirect_to "/tutorial"
+  end
+  
+  def destroy
+    raise "wtf"
+    @user = current_user
+    @user.destroy
+
+    respond_to do |format|
+      flash[:notice] = "Your account has been deleted. Sorry to see you go."      
+      format.html { redirect_to "" }
+      format.xml  { head :ok }
+    end
   end
 
 end

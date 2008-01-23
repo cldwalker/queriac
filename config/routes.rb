@@ -15,7 +15,7 @@ ActionController::Routing::Routes.draw do |map|
   map.user ':login', :controller => 'users', :action => 'show'
 
   map.command ':login/commands', :controller => 'commands', :action => 'index'
-  map.command ':login/commands/tag/:tag', :controller => 'commands', :action => 'index'
+  map.command ':login/commands/tag/*tag', :controller => 'commands', :action => 'index'
   
   map.query ':login/:command/queries', :controller => 'queries', :action => 'index'
   map.query':login/queries', :controller => 'queries', :action => 'index'

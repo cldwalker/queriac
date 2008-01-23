@@ -6,7 +6,7 @@ module ApplicationHelper
       crumbs << @user.login if @user
       crumbs << "tag" unless @tag.blank?
       crumbs << @tag unless @tag.blank?
-      crumbs << @command.keyword unless @command.blank?
+      crumbs << @command.keyword unless @command.blank? || @command.new_record?
       crumbs << "queries" if params[:controller] == "queries"
       return crumbs.join("/")
     else 
@@ -17,7 +17,7 @@ module ApplicationHelper
   def render_nav
     crumbs = [link_to("queriac", '/')]
     crumbs << link_to(@user.login, @user.home_path) if @user
-    crumbs << "commands" unless @tag.blank?
+    crumbs << link_to("commands", @user.commands_path) if @user && !@tag.blank?
     crumbs << "tag" unless @tag.blank?
     crumbs << @tag.gsub(" ", "+") unless @tag.blank?
     crumbs << link_to(@command.keyword, @command.show_path) unless @command.blank? || @command.new_record?
@@ -50,9 +50,17 @@ module ApplicationHelper
   
   def tag_cloud(otags)
     tags = {}
-    otags.each { |t| tags[t.name] = tags.has_key?(t.name) ? tags[t.name]+1 : 1 }
     
-    output = tags.sort.collect{|t| link_to(t[0], "#{@user.tag_path(t[0])}", :class => "t#{t[1]}") }.join(" ")
+    # count number of tags
+    otags.each { |t| tags[t.name] = tags.has_key?(t.name) ? tags[t.name]+1 : 1 }
+
+    output = tags.sort.collect{|t|
+      name = t[0]
+      num = t[1]
+      opacity = (50 + [num, 10].min.to_f/2*10).to_f/100
+      font_size = (80 + [num, 20].min.to_f*5).to_f
+      link_to("#{name}", "#{@user.tag_path(name)}", :title => "#{name} (#{num})", :style => "opacity:#{opacity};font-size:#{font_size}%;") 
+    }.join(" ")
     content_tag(:p, output, :class => "tags")
   end
   

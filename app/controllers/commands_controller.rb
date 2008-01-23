@@ -8,8 +8,8 @@ class CommandsController < ApplicationController
     publicity = owner? ? "any" : "public"
     
     if params[:tag]
-      @tag = params[:tag]
-      @commands = @user.commands.find_tagged_with(@tag.split(" ").join(", "), :match_all => true, :order => "commands.keyword")
+      @tag = params[:tag].first
+      @commands = @user.commands.send(publicity).find_tagged_with(@tag.split(" ").join(", "), :match_all => true, :order => "commands.keyword")
     else
       @commands = @user.commands.send(publicity).paginate({
         :order => "commands.keyword ASC", 

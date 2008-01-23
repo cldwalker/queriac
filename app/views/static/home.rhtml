@@ -31,7 +31,6 @@
 <div id="secondary">
 	<%= render :partial => "/sessions/form" unless logged_in? %>
 
-
 	<h1>users</h1>	
 	<ul class="users">
 	<% for user in @users %>
@@ -42,5 +41,10 @@
 		</li>
 	<% end %>
 	</ul>
+	
+	<h1>blog</h1>
+	<p>
+		Queriac now has a cute little tumblelog! Check out <%= link_to "queriac.tumblr.com", "http://queriac.tumblr.com" %> for updates.
+	</p>
 
 </div>

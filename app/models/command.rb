@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 12
+# Schema version: 14
 #
 # Table name: commands
 #
@@ -16,7 +16,7 @@
 #  user_id             :integer(11)     
 #  public              :boolean(1)      default(TRUE)
 #  public_queries      :boolean(1)      default(TRUE)
-#  queries_count       :integer(11)     default(0)
+#  queries_count_all   :integer(11)     default(0)
 #  queries_count_owner :integer(11)     default(0)
 #
 

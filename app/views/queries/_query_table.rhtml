@@ -1,11 +1,12 @@
 <h2>
-	Recent Queries
+	Queries
 	<%= "(Showing #{@queries.size} of #{@queries.total_entries})" unless @queries.page_count.nil? || @queries.page_count == 1 %>
 </h2>
 
 <table>
   <tr>
     <th>Query</th>
+    <th>Command</th>
     <th>Date</th>
   </tr>
 
@@ -17,6 +18,9 @@
 			<% else %>
 				<b><%= link_to query.query_string, query.command.url_for(query.query_string) %></b>
 			<% end %>
+		</td>
+	  <td>
+			<%= link_to query.command.name, query.command.show_path %>
 		</td>
 	  <td>
 			<%= time_ago_in_words query.created_at %> ago
