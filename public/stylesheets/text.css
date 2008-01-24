@@ -149,6 +149,10 @@ p {
 	padding: 0px 0 15px 0;
 }
 
+p.tags {
+  text-align: justify;
+}
+
 p.bordered {
 	background-color: #F3F3F3;
 	border: 1px solid #DDD;
