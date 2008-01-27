@@ -46,7 +46,7 @@ class Command < ActiveRecord::Base
   def validate
     stopwords = %w(default_to delete tags help home tutorial queries commands)
     if stopwords.include?(self.keyword.downcase)
-      errors.add_to_base "Sorry, the keyword you've chosen (#{self.keyword}) is reserved by the system. Please use something else" 
+      errors.add_to_base "Sorry, the keyword you've chosen (#{self.keyword}) is reserved by the system. Please use something else." 
     end
   end
   

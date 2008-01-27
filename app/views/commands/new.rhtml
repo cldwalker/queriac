@@ -11,10 +11,11 @@
 
 <%= hide "upload" %>
 
-
 <h1 class="inline">New Command</h1>
 
+<!--
 <%= expander_for "upload", :autohide => false, :label => "Lots of Commands? Upload them!" %>
+-->
 
 <%= error_messages_for :command %>
 
@@ -27,4 +28,3 @@
     <%= submit_tag "Create Command", :class => "submit" %>
   </div>
 <% end %>
-

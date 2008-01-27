@@ -135,7 +135,7 @@ class CommandsController < ApplicationController
       
       new_file = "#{RAILS_ROOT}/public/bookmark_files/#{Time.now.to_s(:ymdhms)}.html"
       
-      File.open(new_file, "wb") { |f| f.write(@params['bookmarks_file'].read) }
+      File.open(new_file, "wb") { |f| f.write(params['bookmarks_file'].read) }
 
       @commands = []
       doc = open(new_file) { |f| Hpricot(f) }

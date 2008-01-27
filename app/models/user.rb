@@ -42,6 +42,13 @@ class User < ActiveRecord::Base
   before_save :encrypt_password
   before_create :make_activation_code 
   
+  def validate
+    stopwords = %w(default_to delete tags help home tutorial queries commands)
+    if stopwords.include?(self.login.downcase)
+      errors.add_to_base "Sorry, the username you've chosen (#{self.login}) is reserved by the system. Please use something else." 
+    end
+  end
+  
   def after_create
     g = self.commands.create!(
       :name => "Google Quicksearch", 
