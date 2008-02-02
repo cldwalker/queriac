@@ -3,12 +3,12 @@
 <% form_tag sessions_path, :class => "bordered" do -%>
 
 	<div>
-		<%= label_tag "Username or Email", :for => "login", :accesskey => "U" %><br />
+		<label for="login">Username or Email</label><br />
 		<%= text_field_tag 'login' %>
 	</div>
 
 	<div>
-		<%= label_tag "Password", :for => "password", :accesskey => "P" %><br />
+		<label for="password">Password</label><br />
 		<%= password_field_tag 'password' %>
 	</div>
 
@@ -17,7 +17,8 @@
 	</div>
 
 	<div class="floater tighter checkbox">
-		<%= check_box_tag 'remember_me', '1', true %> <%= label_tag "Keep me logged in", :for => "remember_me", :accesskey => "K" %>
+		<%= check_box_tag 'remember_me', '1', true %>
+		<label for="remember_me">Keep me logged in</label>
 	</div>
 
 	<p class="floatkiller">

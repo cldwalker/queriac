@@ -27,13 +27,13 @@
 
 	<div class="floatkill">
 		<%= radio_button_tag 'use_default_command', 'no', !current_user.default_command? %> 
-		<%= label_tag "Tell me the command doesn't exist and give me some options.", :for => "use_default_command_no" %>
+		<label for="use_default_command_no">Tell me the command doesn't exist and give me some options.</label>
 	</div>
 
 
 	<div class="floatkill">
 		<%= radio_button_tag 'use_default_command', 'yes', current_user.default_command? %> 
-		<%= label_tag "Run the query using this command: ", :for => "use_default_command_yes" %>
+		<label for="use_default_command_yes">Run the query using this command: </label>
 
 		<%= f.select :default_command_id, current_user.commands.quicksearches.collect {|c| [ "#{c.keyword} - #{c.name}", c.id ] }, {}, :onfocus => "$('use_default_command_yes').checked = true" %>
 	</div>

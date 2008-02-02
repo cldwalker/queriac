@@ -34,7 +34,6 @@ class UsersController < ApplicationController
     #   flash[:warning] = "Invalid invite code! Try again."
     #   return
     # end
-
       
     @user.save!
     # self.current_user = @user

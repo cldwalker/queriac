@@ -30,7 +30,7 @@ module ApplicationHelper
   def render_mininav
     items = []
     items << "logged in as " + link_to(current_user.login, current_user.home_path, :class => "underlined") if logged_in?
-    items << link_to("settings", edit_user_path(current_user.login)) if logged_in?
+    items << link_to("settings", "/settings") if logged_in?
     items << link_to("tutorial", "/tutorial")
     items << link_to_unless_current("help", "/help")
     items << link_to("logout", session_path(session.id), :confirm => "Are you sure you want to log out?", :method => :delete) if logged_in?
