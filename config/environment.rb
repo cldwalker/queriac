@@ -62,8 +62,6 @@ end
 
 Time::DATE_FORMATS[:ymdhms] = "%Y%m%d%H%M%S"
 
-PARAM_START = "("
-PARAM_END = ")"
 DEFAULT_PARAM = "(q)"
 
 ExceptionNotifier.exception_recipients = %w(zeke@queri.ac)

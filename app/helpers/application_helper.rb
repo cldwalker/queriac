@@ -81,8 +81,23 @@ module ApplicationHelper
     return o
   end
   
-  def hide(field_id)
+  def hide field_id
     javascript_tag("Element.hide('#{field_id}');")
+  end
+  
+  def link_to_query query
+    label = query.query_string.empty? ? "(Command run with no parameters)" : query.query_string.ellipsize
+    klass = query.query_string.empty? ? "faded" : ""
+    link_to(label, query.command.url_for(query.query_string), :class => klass)
+  end
+  
+  # Use words if within the last week, otherwise use date
+  def time_ago_in_words_or_date date
+    if (Time.now-date)/60/60/24 < 7
+      time_ago_in_words(date) + " ago"
+    else
+      date.to_s(:short)
+    end
   end
     
 end

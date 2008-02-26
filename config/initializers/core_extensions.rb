@@ -16,8 +16,4 @@ class String
      self[0,offset] + delimiter + self[-offset,offset]
   end
   
-  def parameterize
-    PARAM_START + self + PARAM_END
-  end
-  
 end

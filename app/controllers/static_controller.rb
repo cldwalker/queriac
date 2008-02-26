@@ -2,9 +2,8 @@
 class StaticController < ApplicationController
   
   def home
-    @queries = Query.public.find(
-      :all, 
-      :limit => 30, 
+    @queries = Query.public.paginate(
+      :page => params[:page],
       :order => "queries.created_at DESC", 
       :include => [:command, :user]
     )  

@@ -11,7 +11,13 @@
 
 <%= hide "upload" %>
 
-<h1 class="inline">New Command</h1>
+<h1>
+	<% if @ancestor %>
+	 	Duplicate Command: <%= @ancestor.name %>
+	<% else %>
+		New Command
+	<% end %>
+</h1>
 
 <!--
 <%= expander_for "upload", :autohide => false, :label => "Lots of Commands? Upload them!" %>
@@ -23,8 +29,7 @@
 
 	<%= render :partial => "edit_form", :locals => {:f => f} %>
 
-  <div class="floatkiller">
-    <%= f.label :url, :text => " " %><br />	
+  <div class="floatkiller">	
     <%= submit_tag "Create Command", :class => "submit" %>
   </div>
 <% end %>

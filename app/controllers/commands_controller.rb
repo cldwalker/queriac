@@ -25,11 +25,13 @@ class CommandsController < ApplicationController
   end
   
   def execute
-    
     # Extract command and query string from params
     # (The join is here to bring query strings back together, as queries containing
     # slashes are broken into array elements by Rails' routing
-    param_parts = params[:command].join("/").split(' ')
+    
+    # Note: When upgrading to Rails 2, split(' ') had to be changed into split('+')
+    # ..not sure why
+    param_parts = params[:command].join("/").gsub(' ', '+').split('+')
     keyword = param_parts.shift.downcase # steal first word of the string
     
     # If first part of string is 'default_to', take note and use next
@@ -39,7 +41,14 @@ class CommandsController < ApplicationController
       defaulted = true
     end
     
-    query_string = param_parts.join(' ') # remainder of the string
+    # Handle stealth queries (allowing for presence or absence of space following the !)
+    dont_save_query = true if keyword.starts_with? "!"
+    keyword = param_parts.shift.downcase if keyword == "!"
+    keyword = keyword.slice(1, keyword.length-1) if keyword.starts_with? "!"
+    
+    # This is the remainder of the string,
+    # after command has been lopped off the beginning of string
+    query_string = param_parts.join(' ') 
     
     @command = @user.commands.find_by_keyword(keyword)
     
@@ -60,13 +69,13 @@ class CommandsController < ApplicationController
       return
     end
     
-    # Store the query in the database
+    # Store the query in the database (or not)
     @command.queries.create(
       :query_string => query_string,
       :run_by_default => defaulted || false,
       :user_id => current_user.id,
       :referrer => request.env["HTTP_REFERER"]
-    )
+    ) unless dont_save_query
     
     # Needs to be constructed if commands takes arguments
     @result = @command.parametric? ? @command.url_for(query_string) : @command.url
@@ -76,10 +85,10 @@ class CommandsController < ApplicationController
       # we simply render it so the script that called it can use it as its source.
       render :text => @result
       
-    # elsif params["js"]
+    # elsif params[:js]
       # Command is not Javascript, but is being executed in a Javascript context,
-      # so convert the URL into a javascript that will redirect to the URL.
-      # render :text => "alert(#{@yield})"
+      # so convert the URL into Javascript that will redirect to the URL.
+      # render :text => "document.window.location='http://shit.com';"
       
     else
       # Command is a simple URL to which we redirect
@@ -97,7 +106,8 @@ class CommandsController < ApplicationController
       return
     end
 
-    @queries = @command.queries.paginate(:order => "queries.created_at DESC", :page => params[:page]) if owner? || @command.public?
+    publicity = owner? ? "any" : "public"
+    @queries = @command.queries.send(publicity).paginate(:order => "queries.created_at DESC", :page => params[:page]) if owner? || @command.public?
 
     respond_to do |format|
       format.html # show.rhtml
@@ -110,6 +120,7 @@ class CommandsController < ApplicationController
     
     if params[:ancestor]
       @ancestor = Command.find(params[:ancestor])
+      raise "You cannot duplicate a private command" unless @ancestor.public? || owner?(@ancestor)
       @command.name = @ancestor.name
       @command.keyword = @ancestor.keyword
       @command.url = @ancestor.url

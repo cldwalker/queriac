@@ -18,12 +18,12 @@ class QueriesController < ApplicationController
   end
 
   def edit
-    unless owner? raise "You are not allowed to edit this query." 
+    raise "You are not allowed to edit this query." unless owner?
     @query = current_user.queries.find(params[:id])
   end
-
+  
   def update
-    unless owner? raise "You are not allowed to update this query."
+    raise "You are not allowed to update this query." unless owner?
     @query = current_user.queries.find(params[:id])
 
     respond_to do |format|
@@ -39,7 +39,7 @@ class QueriesController < ApplicationController
   end
 
   def destroy
-    unless owner? raise "You are not allowed to delete this query."
+    raise "You are not allowed to delete this query." unless owner?
 
     @query = current_user.queries.find(params[:id])
     @query.destroy
@@ -50,5 +50,6 @@ class QueriesController < ApplicationController
       format.xml  { head :ok }
     end
   end
-  
+
+
 end

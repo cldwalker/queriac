@@ -1,7 +1,45 @@
-<h1>Command: <%= @command.name %> (<%= @command.keyword %>)</h1>
+<h1 class="inline"><%= @command.name %></h1>
+
+<% if logged_in? %>
+	<ul class="options header">
+		<% if owner? @command %>
+				<li class="edit"><%= link_to 'Edit this Command', @command.edit_path %></li>
+				<li class="add"><%= link_to 'Duplicate', new_command_path({:ancestor => @command.id}) %></li>
+				<li class="delete"><%= link_to 'Delete', @command.delete_path, :confirm => "Are you sure you want to delete this command?" %></li>
+		<% else %>
+			<li class="add"><%= link_to 'Copy', new_command_path({:ancestor => @command.id}) %></li>
+		<% end %>
+	</ul>
+<% end %>
+
+<hr />
 
 <div id="primary">
-	<%= render :partial => "queries/query_table", :locals => {:queries => @queries} if owner? || @command.public? %>
+		
+	<% if owner? @command || @command.public_queries? %>
+		<h2>
+			Queries
+			<%= "(Showing #{@queries.size} of #{@queries.total_entries})" unless @queries.page_count.nil? || @queries.page_count == 1 %>
+		</h2>
+
+		<table>
+		  <tr>
+		    <th>Query</th>
+		    <th>Date</th>
+		  </tr>		
+		
+			<% for query in @queries %>
+				<tr <%= cycle('class="offset"', '') -%>>
+				  <td><%= link_to_query query %></td>
+				  <td><%= time_ago_in_words_or_date query.created_at %></td>
+				</tr>
+			<% end %>
+		</table>
+
+		<%= will_paginate @queries %>
+
+	<% end %>
+	
 </div>
 
 
@@ -9,7 +47,11 @@
 	
 	<h2>About this Command</h2>
 	
-	<p class="url"><%= @command.url.ellipsize(:max => 60, :delimiter => "......" ) %></p>
+	<% unless @command.description.blank? %>
+		<p><b>Description:</b> <%= textilize_without_paragraph @command.description %></p>
+	<% end %>
+	
+	<p><b>Keyword:</b> <%=h @command.keyword %></p>	
 	
 	<p><b>Kind:</b> <%=h @command.kind %></p>
 	
@@ -23,23 +65,9 @@
 		<p><b>Outsider queries:</b> <%= @command.queries_count_outsiders %></p>
 	<% end %>
 
-	<% unless @command.description.blank? %>
-		<p><b>Description:</b> <%= textilize_without_paragraph @command.description %></p>
-	<% end %>
-
 	<% unless @command.tags.empty? %>	
 		<p><b>Tags:</b> <%= @command.tag_string.split(" ").map{|tag| "<a href='#{@command.user.tag_path(tag)}'>#{tag}</a>"}.join(" ") %></p>	
 	<% end %>
 
-	<% if logged_in? %>
-		<ul class="options standalone">
-			<% if owner? %>
-					<li class="edit"><%= link_to 'Edit this Command', @command.edit_path %></li>
-					<li class="delete"><%= link_to 'Delete', @command.delete_path, :confirm => "Are you sure you want to delete this command?" %></li>
-			<% else %>
-				<li class="add"><%= link_to 'Copy', new_command_path({:ancestor => @command.id}) %></li>
-			<% end %>
-		</ul>
-	<% end %>
 	
 </div>

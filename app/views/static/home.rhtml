@@ -1,5 +1,5 @@
 <div id="primary">
-	<h1>Recent Public Queries</h1>
+	<h1>Latest Public Queries</h1>
 
 	<table>
 	  <tr>
@@ -26,12 +26,25 @@
 	<% end %>
 	</table>
 	
+	<%= will_paginate @queries %>
+	
 </div>
 
 <div id="secondary">
-	<%= render :partial => "/sessions/form" unless logged_in? %>
+	
+	<h1>Manifesto</h1>
+	<p class="justified">
+		Queriac allows you to manage your quicksearches, shortcuts, and bookmarklets 
+		by taking them out of your browser profile and onto the web, making them portable, 
+		taggable, shareable, and generally easier to manage. Drawing from the concept of 
+		<%= link_to "Yubnub", "http://yubnub.com" %> and extending it in the spirit of 
+		<%= link_to "del.icio.us", "http://del.icio.us" %>, Queriac effectively turns 
+		your browser's address bar into a flexible command line.
+	</p>
+	
+	<p>To start using Queriac, <%= link_to "create an account", new_user_path %>. It's easy, free, and awesome.</p>
 
-	<h1>users</h1>	
+	<h1>Users</h1>	
 	<ul class="users">
 	<% for user in @users %>
 		<li>
@@ -42,7 +55,7 @@
 	<% end %>
 	</ul>
 	
-	<h1>blog</h1>
+	<h1>Blog</h1>
 	<p>
 		Queriac now has a cute little tumblelog! Check out <%= link_to "queriac.tumblr.com", "http://queriac.tumblr.com" %> for updates.
 	</p>

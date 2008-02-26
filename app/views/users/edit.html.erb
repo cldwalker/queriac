@@ -1,44 +1,60 @@
-<h1>You	</h1>
+<div class="primary">
 
-<%= error_messages_for :user %>
+	<h1>You</h1>
+
+	<%= error_messages_for :user %>
 
 
-<% form_for(:user, :url => "/users/#{@user.id}", :html => { :method => :put }) do |f| %>
+	<% form_for(:user, :url => "/users/#{@user.id}", :html => { :method => :put }) do |f| %>
 
-	<div class="floater">
-	  <%= f.label :first_name %><br />
-	  <%= f.text_field :first_name, :size => 15  %>
-	</div>
+		<div class="floater">
+		  <%= f.label :first_name %><br />
+		  <%= f.text_field :first_name, :size => 15  %>
+		</div>
+
+		<div class="floater">
+		  <%= f.label :last_name %><br />
+		  <%= f.text_field :last_name, :size => 15  %>
+		</div>
+
+		<div class="floater">
+		  <%= f.label :email %><br />
+		  <%= f.text_field :email  %>
+		</div>
+
+
+	<h1>Settings</h1>
+
+		<p>When a query is being made and the command doesn't exist..</p>
+
+		<div class="floatkill">
+			<%= radio_button_tag 'use_default_command', 'no', !current_user.default_command? %> 
+			<label for="use_default_command_no">Tell me the command doesn't exist and give me some options.</label>
+		</div>
+
+
+		<div class="floatkill">
+			<%= radio_button_tag 'use_default_command', 'yes', current_user.default_command? %> 
+			<label for="use_default_command_yes">Run the query using this command: </label>
+
+			<%= f.select :default_command_id, current_user.commands.quicksearches.find(:all, :order => "keyword ASC").collect {|c| [ "#{c.keyword} - #{c.name.ellipsize(:max => 25)}", c.id ] }, {}, :onfocus => "$('use_default_command_yes').checked = true" %>
+		</div>
+
+	  <p>
+	    <%= submit_tag "Save Settings", :class => "submit" %>
+	  </p>
+	<% end %>	
 	
-	<div class="floater">
-	  <%= f.label :last_name %><br />
-	  <%= f.text_field :last_name, :size => 15  %>
-	</div>
+</div>
+
+<div class="secondary">
 	
-	<div class="floater">
-	  <%= f.label :email %><br />
-	  <%= f.text_field :email  %>
-	</div>
+	<h1>Configuring your browser for Queriac</h1>
+
+	<p>
+		This page will help you get Firefox/Camino set up quickly. For a more verbose explanation 
+		of Queriac and its various capabilities, visit the <%= link_to "help page", :controller => "static", :action => "help" %>.
+	</p>
+
 	
-
-<h1>Settings</h1>
-
-	<p>When a query is being made and the command doesn't exist..</p>
-
-	<div class="floatkill">
-		<%= radio_button_tag 'use_default_command', 'no', !current_user.default_command? %> 
-		<label for="use_default_command_no">Tell me the command doesn't exist and give me some options.</label>
-	</div>
-
-
-	<div class="floatkill">
-		<%= radio_button_tag 'use_default_command', 'yes', current_user.default_command? %> 
-		<label for="use_default_command_yes">Run the query using this command: </label>
-
-		<%= f.select :default_command_id, current_user.commands.quicksearches.collect {|c| [ "#{c.keyword} - #{c.name}", c.id ] }, {}, :onfocus => "$('use_default_command_yes').checked = true" %>
-	</div>
-		
-  <p>
-    <%= submit_tag "Save Settings", :class => "submit" %>
-  </p>
-<% end %>
+</div>

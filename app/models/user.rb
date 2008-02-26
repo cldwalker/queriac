@@ -128,6 +128,10 @@ class User < ActiveRecord::Base
     "/#{login}/commands/"
   end
   
+  def queries_path
+    "/#{login}/queries/"
+  end
+  
   def default_command_path(query)
     "/#{login}/default_to #{default_command.keyword} #{query}"
   end

@@ -6,7 +6,7 @@
 			The command you entered (<%= keyword %>) does not exist. What do you want to do about it?
 		</div>	
 		
-		<ul class="options standalone stacked">
+		<ul class="options header stacked">
 			<li class="edit"><%= link_to("Pick a default command and direct orphan queries to it.", edit_user_path(current_user)) %></li>
 			<li class="add"><%= link_to("Create a new command with keyword '#{keyword}'", new_command_path(:keyword => keyword)) %></li>
 		</ul>
@@ -28,9 +28,10 @@
 
 	<% if owner? %>
 		<h1>Options</h1>
-		<ul class="options standalone">
-			<li class="add"><%= link_to 'New command', new_command_path %></li>
-			<li class="add"><%= link_to 'View ALL commands', current_user.commands_path %></li>
+		<ul class="options toolbar">
+			<li class="add"><%= link_to 'Create a new command', new_command_path %></li>
+			<li class="search"><%= link_to 'View all your commands', current_user.commands_path %></li>
+			<li class="search"><%= link_to 'View all your queries', current_user.queries_path %></li>
 		</ul>
 	<% end %>
 	

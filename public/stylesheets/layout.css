@@ -118,6 +118,10 @@ table {
 /*	margin-bottom: 10px;*/
 }
 
+table.top_spaced {
+  margin-top: 25px;
+}
+
 th, td {
 	border-bottom: 1px solid #DDD;
 	border-right: 1px solid #DDD;
