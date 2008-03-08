@@ -1,46 +1,95 @@
 <div id="primary">
 
 <h1>Configuring your browser for Queriac</h1>
-
 <p>
 	This page will help you get Firefox/Camino set up quickly. For a more verbose explanation 
 	of Queriac and its various capabilities, visit the <%= link_to "help page", :controller => "static", :action => "help" %>.
-</p>
-	
-<h2>Configuring Firefox/Camino/Mozilla</h2>
-<p>Queriac will work on most modern browsers, but for now the instructions that follow are specifically for Firefox/Camino/Mozilla. Once you've created your Queriac account, do the following..</p>
+</p>	
+
+
+<h2 class="browser_header firefox">Firefox (All Versions)</h2>
 <ol class="normal">
-	<li>Open your browser and type <b>about:config</b> in the address bar. This will open up a big list of browser preferences.</li>
-	<li>In the filter field, type <b>keyword</b>. This should filter the list down to just a couple of items.</li>
-	<li>Set <b>keyword.enabled</b> to <i>true</i>.</li>
+	<li>Open Firefox and type <code>about:config</code> in the address bar. You may get a warning about being careful. That's fine. Carry on. This will open up a big list of browser preferences.</li>
+	<li>In the filter field, type <code>keyword</code>. This should filter the list down to just a couple of items.</li>
+	<li>Make sure <code>keyword.enabled</code> is set to <code>true</code></li>
 	<li>
-		Set <b>keyword.URL</b> to 
-		<%= logged_in? ? "<i>http://queri.ac/#{current_user.login}/</i>" : "<i>http://queri.ac/youraccountname/</i>, using your account name of course." %> 
+		Set <code>keyword.URL</code> to 
+		<%= logged_in? ? "<code>http://queri.ac/#{current_user.login}/</code>" : "<code>http://queri.ac/youraccountname/</code>, using your account name of course." %> 
 		<b>Don't forget the trailing slash!</b>
 	</li>
 	<li>
-		That's it! Visit your account page at 
+		That's it. Visit your account page at 
 		<%= logged_in? ? link_to("http://queri.ac/#{current_user.login}", current_user.login) : "<i>http://queri.ac/youraccountname</i>" %>
 		to start adding commands.
 	</li>
 </ol>
 
 
-<h2>MetaShortcutness</h2>
+<h2 class="browser_header ie7">Internet Explorer 7</h2>
+<p>Coming soon!</p>
+
+
+<h2 class="browser_header ie6">Internet Explorer 6</h2>
+<p>Coming soon!</p>
+
+
+<h2 class="browser_header safari">Safari 3+ on Mac OS X</h2>
+<p>Setting up Safari requires a little more work than Firefox or Internet Explorer, but it's still pretty easy. You'll need to install Keywurl, a free SIMBL plugin for that adds keyword search to Safari's address bar.</p>
+
+<ol class="normal">
+	<li>Download and install Keywurl (you may have to install SIMBL too).</li>
+	<li>Once Keywurl is installed open up Safari's preferences and click Keywurl</li>
+	<li>Delete all of Keywurl's pre-installed keywords, except for <code>default</code>. You won't be needing them.</li>
+	<li>
+		Edit the <code>default</code> keyword, and paste the following: 
+		<%= logged_in? ? "<code>http://queri.ac/#{current_user.login}/$$$</code>" : "<code>http://queri.ac/youraccountname/$$$</code>, using your account name of course." %> 
+	</li>
+	<% if logged_in? %>
+	<li>
+		If you also want to use Queriac's bookmarklet features (which you should), you'll need to add another keyword to Keywurl. Give it a keyword of <code>j</code>
+		and use the following paste the following in the 'expansion' field: 
+		<code>javascript:_s=document.createElement('script');_s.type='text/javascript';_s.src='http://queri.ac/<%= current_user.login %>/@@@';document.getElementsByTagName('head')[0].appendChild(_s);void(0);</code>
+	</li>
+	<% end %>
+</ol>
+
+
+<h2 class="browser_header opera">Opera</h2>
+<p>Coming soon!</p>
+
+<h2 class="browser_header camino">Camino</h2>
+<ol class="normal">
+	<li>Open Camino and type <code>about:config</code> in the address bar. You may get a warning about being careful. That's fine. Carry on. This will open up a big list of browser preferences.</li>
+	<li>In the filter field, type <code>keyword</code>. This should filter the list down to just a couple of items.</li>
+	<li>Set <code>keyword.enabled</code> to <code>true</code>.</li>
+	<li>
+		Set <code>keyword.URL</code> to 
+		<%= logged_in? ? "<code>http://queri.ac/#{current_user.login}/</code>" : "<code>http://queri.ac/youraccountname/</code>, using your account name of course." %> 
+		<b>Don't forget the trailing slash!</b>
+	</li>
+	<li>
+		That's it. Visit your account page at 
+		<%= logged_in? ? link_to("http://queri.ac/#{current_user.login}", current_user.login) : "<i>http://queri.ac/youraccountname</i>" %>
+		to start adding commands.
+	</li>
+</ol>
+
+
+<h1>Some commands to get you started.</h1>
 <p>
-	When you created your Queriac account a few commands were created for you automatically to get you started.
-	Among some of the more obvious starter commands like a Google quicksearch, there are some commands that give you
+	When you created your Queriac account a few commands were created for you automatically.
+	Among the more obvious starter commands like a Google quicksearch, there are some commands that give you
 	quick access to various parts of your account. Once you've got your browser set up per the above instructions, 
 	type any of the following right into your address bar..
 </p>
 
-<p class="caption">&rarr; Type <b>q</b> in the address bar and you'll be taken to your Queriac account page.</p>
+<p class="caption">&rarr; Type <code>q</code> in the address bar and you'll be taken to your Queriac account page.</p>
 
-<p class="caption">&rarr; Type <b>new</b> in the address bar and you'll be taken to Queriac's "Create a New Command" page.</p>
+<p class="caption">&rarr; Type <code>new</code> in the address bar and you'll be taken to Queriac's "Create a New Command" page.</p>
 
-<p class="caption">&rarr; Type <b>show <i>g</i></b> to view a command's summary page (g for Google Quicksearch in this case), showing you its tags, a list of recent queries you've made with the command, etc.</p>
+<p class="caption">&rarr; Type <code>show g</code> to view a command's summary page (g for Google Quicksearch in this case), showing you its tags, a list of recent queries you've made with the command, etc.</p>
 
-<p class="caption">&rarr; Type <b>edit <i>g</i></b> to edit a command. (again, g as in Google Quicksearch in this example)</p>
+<p class="caption">&rarr; Type <code>edit g</code> to edit a command. (again, g as in Google Quicksearch in this example)</p>
 
 <% if logged_in? %>
 	<h2>Using Bookmarklets</h2>
@@ -67,6 +116,7 @@
 		You don't seem to be logged in. <%= link_to "Click here to log in and start creating commands", new_session_path %>.
 	</p>
 <% end %>
+
 
 </div>
 

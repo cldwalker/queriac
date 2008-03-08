@@ -13,10 +13,11 @@
 <% end %>
 
 <hr />
+<p class="small-url"><%= @command.url.ellipsize(:max => 150, :delimiter => " . . . . . ") %></p>
 
 <div id="primary">
 		
-	<% if owner? @command || @command.public_queries? %>
+	<% if @command.public_queries? || owner?(@command) %>
 		<h2>
 			Queries
 			<%= "(Showing #{@queries.size} of #{@queries.total_entries})" unless @queries.page_count.nil? || @queries.page_count == 1 %>

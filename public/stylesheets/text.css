@@ -30,6 +30,13 @@ p.tag_list {
   font-size: 10px;
 }
 
+p.small-url {
+	padding: 0;
+	margin: 0;
+	font-size: 1em;
+	color: #999;
+}
+
 p.tag_list a {
   color: #666;
   text-decoration: none;
@@ -48,6 +55,15 @@ p.command_title {
 p.command_title a {
   text-decoration: none;
 }
+
+code {
+	color: #000;
+	background-color: #f1f1f1;
+	padding: 2px;
+	font-size: 1em;
+	border:1px solid #cccccc;
+}
+
 /* TEXT
 *********************************************************************************/
 
@@ -79,13 +95,38 @@ h2 {
 	color: #333;
 }
 
-
-
 h2 a {
 	color: #666;
 }
 
+h2.browser_header {;
+	padding: 15px 0 0 50px;
+	height: 35px;
+}
 
+h2.firefox {
+	background: url(../images/icons/browser/firefox.png) no-repeat 0 center;
+}
+
+h2.safari {
+	background: url(../images/icons/browser/safari.png) no-repeat 0 center;
+}
+
+h2.camino {
+	background: url(../images/icons/browser/camino.png) no-repeat 0 center;
+}
+
+h2.ie6 {
+	background: url(../images/icons/browser/ie6.png) no-repeat 0 center;
+}
+
+h2.ie7 {
+	background: url(../images/icons/browser/ie7.png) no-repeat 0 center;
+}
+
+h2.opera {
+	background: url(../images/icons/browser/opera.png) no-repeat 0 center;
+}
 
 /* FLASH / MESSAGE BOXES
 *********************************************************************************/
@@ -218,16 +259,19 @@ ul.users li {
 
 
 ol.normal {
+	margin-left: 5px;
 	list-style-type: decimal;
 	padding-left: 15px;
 	color: #444;
+	list-style-position: inside;
 }
 
 ol.normal li {
 	font-size: 1.2em;
-	padding-bottom: 10px;
+	padding: 10px 0 10px 0;
 	list-style-position: outside;
-	line-height: 1.3em;
+	line-height: 1.7em;
+	border-bottom: thin solid #CCC;
 }
 
 
