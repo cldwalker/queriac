@@ -1,22 +1,42 @@
 class CommandsController < ApplicationController
 
-  before_filter :login_required, :except => [:execute, :show]
-  before_filter :load_user, :only => [:index, :execute, :show, :edit]
+  before_filter :login_required, :except => [:index, :execute, :show]
+  before_filter :load_user_from_param, :only => [:index, :execute, :show, :edit]
 
   def index
-    
+
+    # Possiblities..
+    # /commands                   => public commands
+    # /commands/tag/google        => public commands for a tag or tags
+    # /zeke/commands/             => all || public commands for a specific user
+    # /zeke/commands/tag/google   => all || public commands for a specific user for a tag or tags
+
     publicity = owner? ? "any" : "public"
+
+    @tags = params[:tag].first.gsub(" ", "+").split("+") if params[:tag]
     
-    if params[:tag]
-      @tag = params[:tag].first
-      @commands = @user.commands.send(publicity).find_tagged_with(@tag.split(" ").join(", "), :match_all => true, :order => "commands.keyword")
+    pagination_params = {:order => "commands.queries_count_all DESC", :page => params[:page], :include => [:tags]}
+    
+    if @tags
+      if @user
+        @commands = @user.commands.send(publicity).find_tagged_with(@tags.join(", "), :match_all => true, :order => "commands.queries_count_all DESC").paginate(pagination_params)
+      else
+        @commands = Command.send("public").find_tagged_with(@tags.join(", "), :match_all => true, :order => "commands.queries_count_all DESC").paginate(pagination_params)
+      end
     else
-      @commands = @user.commands.send(publicity).paginate({
-        :order => "commands.keyword ASC", 
-        :page => params[:page],
-        :include => [:tags]
-      })
+      if @user
+        @commands = @user.commands.send(publicity).paginate(pagination_params)
+      else
+        @commands = Command.send("public").paginate(pagination_params)
+      end
     end
+    
+    if @commands.empty?
+      flash[:warning] = "Sorry, no queries matched your request."
+      redirect_to ""
+      return
+    end
+
     
     respond_to do |format|
       format.html # show.rhtml
@@ -64,8 +84,13 @@ class CommandsController < ApplicationController
     end
 
     # Don't allow outsiders to run private commands
+    
     if @command.private? && !owner?
-      render :text => "This command (#{@command.keyword}) is not shared by this user (#{@user.login})."
+      if logged_in?
+       redirect_to @user.home_path + "?private_command=#{keyword}"
+      else 
+        redirect_to "" + "?bad_command=#{keyword}"
+      end
       return
     end
     

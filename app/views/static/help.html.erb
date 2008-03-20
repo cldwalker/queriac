@@ -2,7 +2,7 @@
 
 <h1>Help!</h1>
 
-<p>Note: If you just want setup instructions, go to the <%= link_to "tutorial page", "/tutorial" %>.</p>
+<p>Note: If you just want setup instructions, go to your <%= link_to "settings page", "/settings" %>.</p>
 
 <h2>What does Queriac do?</h2>
 <p>
@@ -21,6 +21,22 @@
 <p>A quicksearch (also called a keymark in Mozilla-speak) allows you to define a keyword for searching a site. For example, a keyworded bookmark could be set up so that a user could type 'g spam and eggs' in your address bar and thereby trigger a Google search for the words "spam and eggs."</p>
 
 <p>Read more about quicksearches at the <%= link_to "Mozilla Developer Center", "http://developer.mozilla.org/en/docs/Bookmark_Keywords" %></p>
+
+<h2>How do I create a quicksearch?</h2>
+<p>Creating a quicksearch is easy. It's probably most easily explained with an example, so let's say you want to create a Yahoo quicksearch..</p>
+
+<ol class="normal">
+	<li>Go to yahoo.com in your browser.</li>
+	<li>Search for something; let's say 'dog'</li>
+	<li>You will be taken to a new page with a URL that looks something like <code>http://search.yahoo.com/search?p=dog</code>. Copy this URL to your clipboard.</li>
+	<li>Assuming you've <%= link_to "set up your browser for use with Queriac", "/settings" %>, simply type the word <code>new</code> in your address bar and hit Enter. This will take you to a Queriac page for creating a new command.</li>
+	<li>Give the command a meaningful name like <code>Yahoo Search</code> and a simple keyword like <code>y</code>.</li>
+	<li>Paste the URL you copied earlier into the URL field and replace the search portion of the string <i>(dog)</i> with the letter q in parentheses: <code>(q)</code>.</li>
+	<li>You can optionally write a description of the command and give it some tags, e.g. 'yahoo', 'search', etc..</li>
+	<li>Save the command and that's it! You can now type <code>y dog</code> in your address bar to do a Yahoo search for 'dog'.</li>
+</ol>
+
+<p>Browsing through other users' commands is another great way to get started. Click the <b>'Copy'</b> link next to any user's command to add a command to your account. <%= link_to "Click here", "/zeke" %> to visit <%= link_to "Zeke", "/zeke" %>'s profile. He has lots of commands.</p>
 
 <h2>What is a bookmarklet?</h2>
 <p>I'm gonna go ahead and steal Wikipedia's definition for this one: "A bookmarklet is a small JavaScript program stored as a URL within a bookmark in most popular web browsers, or stored within a hyperlink on a web page." The following are some generic examples of what bookmarklets can be used for..</p>
@@ -52,7 +68,7 @@
 
 <h2>I'm ready. How do I set it up?</h2>
 <% if logged_in? %>
-	<p>It looks like you're already logged in, so go ahead and proceed to the <%= link_to "tutorial page", "/tutorial" %>.</p>
+	<p>It looks like you're already logged in, so go ahead and proceed to your <%= link_to "settings page", "/settings" %>.</p>
 <% else %>
 	<p>
 		You don't seem to be logged in. First you'll need to <%= link_to "log in", new_session_path %> or 

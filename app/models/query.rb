@@ -19,6 +19,7 @@ class Query < ActiveRecord::Base
   has_many :tags, :through => :command
 
   has_finder :public, :include => [:command], :conditions => ["commands.public_queries = 1"]
+  has_finder :non_empty, :conditions => ["LENGTH(query_string) > 0"]
   has_finder :any
 
   def after_create

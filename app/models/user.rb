@@ -43,9 +43,8 @@ class User < ActiveRecord::Base
   before_create :make_activation_code 
   
   def validate
-    stopwords = %w(default_to delete tags help home tutorial queries commands)
-    if stopwords.include?(self.login.downcase)
-      errors.add_to_base "Sorry, the username you've chosen (#{self.login}) is reserved by the system. Please use something else." 
+    if STOPWORDS.include?(self.login.downcase)
+      errors.add_to_base "Sorry, the username you've chosen (#{self.login}) is reserved by the system. Please use something else."
     end
   end
   
@@ -120,16 +119,20 @@ class User < ActiveRecord::Base
     "/#{login}/"
   end
   
-  def tag_path(tag)
-    "/#{login}/commands/tag/#{tag}"
-  end
-  
   def commands_path
     "/#{login}/commands/"
   end
   
+  def commands_tag_path(tag)
+    "/#{login}/commands/tag/#{tag}"
+  end
+  
   def queries_path
     "/#{login}/queries/"
+  end
+  
+  def queries_tag_path(tag)
+    "/#{login}/queries/tag/#{tag}"
   end
   
   def default_command_path(query)

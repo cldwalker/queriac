@@ -30,6 +30,7 @@ class Command < ActiveRecord::Base
   has_finder :unused, :conditions => ["commands.queries_count_all = 0"]
   has_finder :popular, :conditions => ["commands.queries_count_all > 50"]
   has_finder :public, :conditions => {:public => true}
+  has_finder :publicly_queriable, :conditions => {:public_queries => true}
   has_finder :quicksearches, :conditions => {:kind => "parametric", :bookmarklet => false}
   has_finder :bookmarklets, :conditions => {:bookmarklet => true}
   has_finder :shortcuts, :conditions => {:kind => "shortcut", :bookmarklet => false}
@@ -44,8 +45,7 @@ class Command < ActiveRecord::Base
   #------------------------------------------------------------------------------------------------------------------
 
   def validate
-    stopwords = %w(default_to delete tags help home tutorial queries commands)
-    if stopwords.include?(self.keyword.downcase)
+    if STOPWORDS.include?(self.keyword.downcase)
       errors.add_to_base "Sorry, the keyword you've chosen (#{self.keyword}) is reserved by the system. Please use something else." 
     end
   end

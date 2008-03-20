@@ -1,3 +1,48 @@
-<div id="primary">
-	<%= render :partial => "query_table", :locals => {:queries => @queries}	 %>
-</div>
+<h1 class="inline">
+	<%= @user ? whose_commands(@queries.first.command) : "All" %> queries
+	<%= "tagged with '#{@tags.join("+").gsub("+", "' and '")}'" unless @tags.blank? %>
+</h1>
+
+<ul class="bolder options header">
+	<% unless @user == current_user %>
+		<li class="search"><%= link_to 'Yours', (@tags.blank? ? current_user.queries_path : current_user.queries_tag_path(@tags.join("+"))) %></li>
+	<% end %>
+	<% if @user %>
+		<li class="search"><%= link_to 'All', (@tags.blank? ? "/queries" : "/queries/tag/#{@tags.join("+")}") %></li>
+	<% end %>
+</ul>
+
+<hr />
+
+<table class="top_spaced">
+  <tr>
+    <th>User</th>
+    <th>Query</th>
+    <th>Command</th>
+    <th>Date</th>
+  </tr>
+
+<% for query in @queries %>
+	<tr <%= cycle('class="offset"', '') -%>>	
+		<td>
+			<%= link_to query.command.user.login, query.command.user.home_path %>
+		</td>
+	  <td>
+			<% if query.query_string.empty? %>
+				<%= link_to "(Command run with no parameters)", query.command.url_for(query.query_string), :class => "faded" %>
+			<% else %>
+				<b><%= link_to query.query_string, query.command.url_for(query.query_string) %></b>
+			<% end %>
+		</td>
+	  <td>
+			<%= link_to query.command.name, query.command.show_path %>
+		</td>
+	  <td>
+			<%= time_ago_in_words_or_date query.created_at %>
+		</td>
+	</tr>
+<% end %>
+
+</table>
+
+<%= will_paginate @queries %>

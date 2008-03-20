@@ -2,7 +2,7 @@
 
 <% if logged_in? %>
 	<ul class="options header">
-		<% if owner? @command %>
+		<% if current_user_owns_command? @command %>
 				<li class="edit"><%= link_to 'Edit this Command', @command.edit_path %></li>
 				<li class="add"><%= link_to 'Duplicate', new_command_path({:ancestor => @command.id}) %></li>
 				<li class="delete"><%= link_to 'Delete', @command.delete_path, :confirm => "Are you sure you want to delete this command?" %></li>
@@ -17,7 +17,7 @@
 
 <div id="primary">
 		
-	<% if @command.public_queries? || owner?(@command) %>
+	<% if @command.public_queries? || current_user_owns_command?(@command) %>
 		<h2>
 			Queries
 			<%= "(Showing #{@queries.size} of #{@queries.total_entries})" unless @queries.page_count.nil? || @queries.page_count == 1 %>
@@ -67,7 +67,7 @@
 	<% end %>
 
 	<% unless @command.tags.empty? %>	
-		<p><b>Tags:</b> <%= @command.tag_string.split(" ").map{|tag| "<a href='#{@command.user.tag_path(tag)}'>#{tag}</a>"}.join(" ") %></p>	
+		<p><b>Tags:</b> <%= @command.tag_string.split(" ").map{|tag| "<a href='#{@command.user.commands_tag_path(tag)}'>#{tag}</a>"}.join(" ") %></p>	
 	<% end %>
 
 	

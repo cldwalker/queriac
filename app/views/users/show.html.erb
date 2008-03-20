@@ -1,15 +1,18 @@
 <div id="primary">
 	
-	<% if params[:bad_command] && owner? %>
+	<% if params[:bad_command] && current_user_is_the_user? %>
 		<% keyword = params[:bad_command] %>
-		<div class="flash-msg warning">
-			The command you entered (<%= keyword %>) does not exist. What do you want to do about it?
-		</div>	
 		
-		<ul class="options header stacked">
-			<li class="edit"><%= link_to("Pick a default command and direct orphan queries to it.", edit_user_path(current_user)) %></li>
-			<li class="add"><%= link_to("Create a new command with keyword '#{keyword}'", new_command_path(:keyword => keyword)) %></li>
-		</ul>
+		<div class="msg">
+			<p>The command you entered (<%= keyword %>) does not exist. What do you want to do about it?</p>
+		
+			<ul class="options toolbar">
+				<li class="edit"><%= link_to("Pick a default command and direct orphan queries to it.", "/settings") %></li>
+				<li class="add"><%= link_to("Create a new command with keyword '#{keyword}'", new_command_path(:keyword => keyword)) %></li>
+			</ul>
+		
+		</div>
+		
 	<% end %>
 	
 	
@@ -26,14 +29,14 @@
 
 <div id="secondary">
 
-	<% if owner? %>
-		<h1>Options</h1>
+	<h1>Options</h1>
 		<ul class="options toolbar">
-			<li class="add"><%= link_to 'Create a new command', new_command_path %></li>
-			<li class="search"><%= link_to 'View all your commands', current_user.commands_path %></li>
-			<li class="search"><%= link_to 'View all your queries', current_user.queries_path %></li>
+			<% if current_user_is_the_user? %>
+				<li class="add"><%= link_to "Create a new command", new_command_path %></li>
+			<% end %>
+			<li class="command"><%= link_to "View all #{whose} commands", @user.commands_path %></li>
+			<li class="search"><%= link_to "View all #{whose} queries", @user.queries_path %></li>
 		</ul>
-	<% end %>
 	
 	<h1>Tags</h1>
 	

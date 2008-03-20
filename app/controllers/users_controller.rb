@@ -1,7 +1,7 @@
 
 class UsersController < ApplicationController
   before_filter :login_required, :only => [:account]
-  before_filter :load_user, :only => [:show]
+  before_filter :load_user_from_param, :only => [:show]
 
   def new
   end
@@ -47,10 +47,8 @@ class UsersController < ApplicationController
   end
   
   def edit
-    @user = current_user
-    raise "You are not allowed to edit this user." if @user != current_user
+    @user = current_user if logged_in?
   end
-  
   
   def update
     @user = current_user
@@ -76,7 +74,7 @@ class UsersController < ApplicationController
       current_user.activate
       flash[:notice] = "Account activation complete! You are now logged in."
     end
-    redirect_to "/tutorial"
+    redirect_to "/settings"
   end
   
   def destroy

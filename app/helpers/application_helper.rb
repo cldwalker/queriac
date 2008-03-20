@@ -30,8 +30,7 @@ module ApplicationHelper
   def render_mininav
     items = []
     items << "logged in as " + link_to(current_user.login, current_user.home_path, :class => "underlined") if logged_in?
-    items << link_to("settings", "/settings") if logged_in?
-    items << link_to("tutorial", "/tutorial")
+    items << link_to("settings", "/settings")
     items << link_to_unless_current("help", "/help")
     items << link_to("logout", session_path(session.id), :confirm => "Are you sure you want to log out?", :method => :delete) if logged_in?
     items << link_to("sign up", new_user_path) unless logged_in?
@@ -59,7 +58,7 @@ module ApplicationHelper
       num = t[1]
       opacity = (50 + [num, 10].min.to_f/2*10).to_f/100
       font_size = (80 + [num, 20].min.to_f*5).to_f
-      link_to("#{name}", "#{@user.tag_path(name)}", :title => "#{name} (#{num})", :style => "opacity:#{opacity};font-size:#{font_size}%;") 
+      link_to("#{name}", "#{@user.commands_tag_path(name)}", :title => "#{name} (#{num})", :style => "opacity:#{opacity};font-size:#{font_size}%;") 
     }.join(" ")
     content_tag(:p, output, :class => "tags")
   end
@@ -91,13 +90,21 @@ module ApplicationHelper
     link_to(label, query.command.url_for(query.query_string), :class => klass)
   end
   
-  # Use words if within the last week, otherwise use date
+  # Use words if within the last week
+  # otherwise use date (show year if not this year)
   def time_ago_in_words_or_date date
     if (Time.now-date)/60/60/24 < 7
       time_ago_in_words(date) + " ago"
-    else
+    elsif date.year == Time.now.year
       date.to_s(:short)
+    else
+      date.to_s(:medium)
     end
   end
     
+  def whose_commands command
+    command.user == current_user ? "Your" : "#{@user.login}'s public"
+  end
+
+
 end

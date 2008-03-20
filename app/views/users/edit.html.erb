@@ -1,60 +1,174 @@
-<div class="primary">
+<div id="primary">	
 
-	<h1>You</h1>
-
-	<%= error_messages_for :user %>
-
-
-	<% form_for(:user, :url => "/users/#{@user.id}", :html => { :method => :put }) do |f| %>
-
-		<div class="floater">
-		  <%= f.label :first_name %><br />
-		  <%= f.text_field :first_name, :size => 15  %>
-		</div>
-
-		<div class="floater">
-		  <%= f.label :last_name %><br />
-		  <%= f.text_field :last_name, :size => 15  %>
-		</div>
-
-		<div class="floater">
-		  <%= f.label :email %><br />
-		  <%= f.text_field :email  %>
-		</div>
+<h1>Configuring your browser for Queriac</h1>
+<p>
+	This page will help you get your browser set up for use with Queriac. For a more verbose explanation 
+	of Queriac and its various capabilities, visit the <%= link_to "help page", :controller => "static", :action => "help" %>.
+</p>	
 
 
-	<h1>Settings</h1>
+<h2 class="browser_header firefox">Firefox (All Versions)</h2>
+<ol class="normal">
+	<li>Open Firefox and type <code>about:config</code> in the address bar. You may get a warning about being careful. That's fine. Carry on. This will open up a big list of browser preferences.</li>
+	<li>In the filter field, type <code>keyword</code>. This should filter the list down to just a couple of items.</li>
+	<li>Make sure <code>keyword.enabled</code> is set to <code>true</code></li>
+	<li>
+		Set <code>keyword.URL</code> to 
+		<%= logged_in? ? "<code>http://queri.ac/#{current_user.login}/</code>" : "<code>http://queri.ac/youraccountname/</code>, using your account name of course." %> 
+		<b>Don't forget the trailing slash!</b>
+	</li>
+	<li>
+		That's it. Visit your account page at 
+		<%= logged_in? ? link_to("http://queri.ac/#{current_user.login}", current_user.login) : "<i>http://queri.ac/youraccountname</i>" %>
+		to start adding commands.
+	</li>
+</ol>
 
-		<p>When a query is being made and the command doesn't exist..</p>
 
-		<div class="floatkill">
-			<%= radio_button_tag 'use_default_command', 'no', !current_user.default_command? %> 
-			<label for="use_default_command_no">Tell me the command doesn't exist and give me some options.</label>
-		</div>
+<h2 class="browser_header ie7">Internet Explorer 7</h2>
+<p>Coming soon!</p>
 
 
-		<div class="floatkill">
-			<%= radio_button_tag 'use_default_command', 'yes', current_user.default_command? %> 
-			<label for="use_default_command_yes">Run the query using this command: </label>
+<h2 class="browser_header ie6">Internet Explorer 6</h2>
+<p>Coming soon!</p>
 
-			<%= f.select :default_command_id, current_user.commands.quicksearches.find(:all, :order => "keyword ASC").collect {|c| [ "#{c.keyword} - #{c.name.ellipsize(:max => 25)}", c.id ] }, {}, :onfocus => "$('use_default_command_yes').checked = true" %>
-		</div>
 
-	  <p>
-	    <%= submit_tag "Save Settings", :class => "submit" %>
-	  </p>
-	<% end %>	
-	
-</div>
+<h2 class="browser_header safari">Safari 3+ on Mac OS X</h2>
+<p>Setting up Safari requires a little more work than Firefox or Internet Explorer, but it's still pretty easy. You'll need to install Keywurl, a free SIMBL plugin for that adds keyword search to Safari's address bar.</p>
 
-<div class="secondary">
-	
-	<h1>Configuring your browser for Queriac</h1>
+<ol class="normal">
+	<li>Download and install Keywurl (you may have to install SIMBL too).</li>
+	<li>Once Keywurl is installed open up Safari's preferences and click Keywurl</li>
+	<li>Delete all of Keywurl's pre-installed keywords, except for <code>default</code>. You won't be needing them.</li>
+	<li>
+		Edit the <code>default</code> keyword, and paste the following: 
+		<%= logged_in? ? "<code>http://queri.ac/#{current_user.login}/$$$</code>" : "<code>http://queri.ac/youraccountname/$$$</code>, using your account name of course." %> 
+	</li>
+	<% if logged_in? %>
+	<li>
+		If you also want to use Queriac's bookmarklet features (which you should), you'll need to add another keyword to Keywurl. Give it a keyword of <code>j</code>
+		and use the following paste the following in the 'expansion' field: 
+		<code>javascript:_s=document.createElement('script');_s.type='text/javascript';_s.src='http://queri.ac/<%= current_user.login %>/@@@';document.getElementsByTagName('head')[0].appendChild(_s);void(0);</code>
+	</li>
+	<% end %>
+</ol>
 
-	<p>
-		This page will help you get Firefox/Camino set up quickly. For a more verbose explanation 
-		of Queriac and its various capabilities, visit the <%= link_to "help page", :controller => "static", :action => "help" %>.
+
+<h2 class="browser_header opera">Opera</h2>
+<p>Coming soon!</p>
+
+<h2 class="browser_header camino">Camino</h2>
+<ol class="normal">
+	<li>Open Camino and type <code>about:config</code> in the address bar. You may get a warning about being careful. That's fine. Carry on. This will open up a big list of browser preferences.</li>
+	<li>In the filter field, type <code>keyword</code>. This should filter the list down to just a couple of items.</li>
+	<li>Set <code>keyword.enabled</code> to <code>true</code>.</li>
+	<li>
+		Set <code>keyword.URL</code> to 
+		<%= logged_in? ? "<code>http://queri.ac/#{current_user.login}/</code>" : "<code>http://queri.ac/youraccountname/</code>, using your account name of course." %> 
+		<b>Don't forget the trailing slash!</b>
+	</li>
+	<li>
+		That's it. Visit your account page at 
+		<%= logged_in? ? link_to("http://queri.ac/#{current_user.login}", current_user.login) : "<i>http://queri.ac/youraccountname</i>" %>
+		to start adding commands.
+	</li>
+</ol>
+
+
+<h1>Some commands to get you started.</h1>
+<p>
+	When you created your Queriac account a few commands were generated for you automatically.
+	Among the more obvious starter commands like a Google quicksearch, there are some commands that give you
+	quick access to various parts of your account. Once you've got your browser set up per the above instructions, 
+	type any of the following right into your address bar..
+</p>
+
+<p class="caption">&rarr; Type <code>q</code> in the address bar and you'll be taken to your Queriac account page.</p>
+
+<p class="caption">&rarr; Type <code>new</code> in the address bar and you'll be taken to Queriac's "Create a New Command" page.</p>
+
+<p class="caption">&rarr; Type <code>show g</code> to view a command's summary page (g for Google Quicksearch in this case), showing you its tags, a list of recent queries you've made with the command, etc.</p>
+
+<p class="caption">&rarr; Type <code>edit g</code> to edit a command. (again, g as in Google Quicksearch in this example)</p>
+
+<% if logged_in? %>
+	<h2>Using Bookmarklets</h2>
+	<p>If you want to use bookmarklets through Queriac, you'll need to add the following bookmarklet to your local
+		bookmarks in your browser. Because of Javascript's client-side nature, this bookmarklet is needed to download 
+		the Javascript source from your Queriac commands and it evaluates it locally.
 	</p>
+	<p>
+		<b>To install:</b> Right-click on the link below and save it as a local bookmakrk. You'll need to give it a keyword 
+		(or shortcut in Camino).. something like <b>j</b> or <b>js</b>. If you don't see the keyword/shortcut column in
+		your browser's bookmarks window, you'll need to enable it by clicking the little dropdown doohicky on the right
+		side of the column header.
+	</p>
+	<p class="bordered">
+		Right-click to install: <a href="javascript:_s=document.createElement('script');_s.type='text/javascript';_s.src='http://queri.ac/<%= current_user.login %>/%s?js=1';document.getElementsByTagName('head')[0].appendChild(_s);void(0);">Queriac Bookmarklet Enabler</a>
+	</p>
+<% end %>
+
+<h2>Done?</h2>
+<% if logged_in? %>
+	<p>It looks like you're already logged in, so go ahead and proceed to <%= link_to "your home page", current_user.home_path %>.</p>
+<% else %>
+	<p>
+		You don't seem to be logged in. <%= link_to "Click here to log in and start creating commands", new_session_path %>.
+	</p>
+<% end %>
+
+
+</div>
+
 
 	
-</div>
+<% if logged_in? %>
+	<div id="secondary" class="boxed">
+		<h1>Your Account</h1>
+
+		<%= error_messages_for :user %>
+
+
+		<% form_for(:user, :url => "/users/#{@user.id}", :html => { :method => :put }) do |f| %>
+
+			<div>
+			  <%= f.label :first_name %><br />
+			  <%= f.text_field :first_name  %>
+			</div>
+
+			<div>
+			  <%= f.label :last_name %><br />
+			  <%= f.text_field :last_name  %>
+			</div>
+
+			<div>
+			  <%= f.label :email %><br />
+			  <%= f.text_field :email  %>
+			</div>
+
+			<h2>Orphan Queries</h2>
+			<p>When a query is made and the command doesn't exist..</p>
+
+			<div class="floatkill">
+				<%= radio_button_tag 'use_default_command', 'no', !current_user.default_command? %> 
+				<label for="use_default_command_no">Tell me the command doesn't exist.</label>
+			</div>
+
+			<div class="floatkill">
+				<%= radio_button_tag 'use_default_command', 'yes', current_user.default_command? %> 
+				<label for="use_default_command_yes">Run the query using this command: </label>
+
+				<%= f.select :default_command_id, current_user.commands.quicksearches.find(:all, :order => "keyword ASC").collect {|c| [ "#{c.keyword} - #{c.name.ellipsize(:max => 25)}", c.id ] }, {}, :onfocus => "$('use_default_command_yes').checked = true" %>
+			</div>
+
+		  <p>
+		    <%= submit_tag "Save Settings", :class => "submit" %>
+		  </p>
+		<% end %>
+	</div>
+<% else %>
+	<div id="secondary">
+		<%= render :partial => "/sessions/form" unless logged_in? %>
+	</div>
+<% end %>
+	
