@@ -7,6 +7,7 @@ ActionController::Routing::Routes.draw do |map|
   map.account   ':login/account',                 :controller => 'users', :action => 'account'
 
   map.connect   'settings',                       :controller => 'users', :action => 'edit'
+  map.connect   'tutorial',                       :controller => 'users', :action => 'edit'
   map.connect   'help',                           :controller => 'static', :action => 'help'
   map.connect   '',                               :controller => "static", :action => "home"
 
