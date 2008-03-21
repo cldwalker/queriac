@@ -3,43 +3,35 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :users, :sessions
   map.resources :commands, :member => { :execute => :get }
     
-  map.activate '/activate/:activation_code', :controller => 'users', :action => 'activate'
+  map.activate  '/activate/:activation_code',     :controller => 'users', :action => 'activate'
+  map.account   ':login/account',                 :controller => 'users', :action => 'account'
 
-  map.account ':login/account', :controller => 'users', :action => 'account'
+  map.connect   'settings',                       :controller => 'users', :action => 'edit'
+  map.connect   'help',                           :controller => 'static', :action => 'help'
+  map.connect   '',                               :controller => "static", :action => "home"
 
-  map.connect 'settings', :controller => "users", :action => "edit"  
-  map.connect 'help', :controller => 'static', :action => 'help'
-  map.connect 'tutorial', :controller => 'static', :action => 'tutorial'
 
   # map.user '/rss/:login', :controller => 'users', :action => 'show'
-  map.user ':login', :controller => 'users', :action => 'show'
+  map.query     'queries',                        :controller => 'queries', :action => 'index'
 
-  map.command ':login/commands', :controller => 'commands', :action => 'index'
-  map.command ':login/commands/tag/*tag', :controller => 'commands', :action => 'index'
+  map.user      ':login',                         :controller => 'users', :action => 'show'
   
-  map.query ':login/:command/queries', :controller => 'queries', :action => 'index'
-  map.query':login/queries', :controller => 'queries', :action => 'index'
-  
-  map.command ':login/:command/show', :controller => 'commands', :action => 'show'  
-  map.command ':login/:command/edit', :controller => 'commands', :action => 'edit'
-  map.command ':login/:command/delete', :controller => 'commands', :action => 'destroy', :method => :delete
-  map.command ':login/*command', :controller => 'commands', :action => 'execute'
-  
-  
-  # The priority is based upon order of creation: first created -> highest priority.
-  
-  # Sample of regular route:
-  # map.connect 'products/:id', :controller => 'catalog', :action => 'view'
-  # Keep in mind you can assign values other than :controller and :action
 
-  # Sample of named route:
-  # map.purchase 'products/:id/purchase', :controller => 'catalog', :action => 'purchase'
-  # This route can be invoked with purchase_url(:id => product.id)
+  map.query     'queries/tag/*tag',               :controller => 'queries', :action => 'index'
+  map.query     ':login/:command/queries',        :controller => 'queries', :action => 'index'
+  map.query     ':login/queries',                 :controller => 'queries', :action => 'index'
+  map.query     ':login/queries/tag/*tag',        :controller => 'queries', :action => 'index'
   
-  map.connect '', :controller => "static", :action => "home"
-
-
-
+  map.command   'commands',                       :controller => 'commands',  :action => 'index'
+  map.command   'commands/tag/*tag',              :controller => 'commands',  :action => 'index'
+  map.command   ':login/commands',                :controller => 'commands',  :action => 'index'
+  map.command   ':login/commands/tag/*tag',       :controller => 'commands',  :action => 'index'
+  
+  map.command   ':login/:command/show',           :controller => 'commands', :action => 'show'  
+  map.command   ':login/:command/edit',           :controller => 'commands', :action => 'edit'
+  map.command   ':login/:command/delete',         :controller => 'commands', :action => 'destroy', :method => :delete
+  map.command   ':login/*command',                :controller => 'commands', :action => 'execute'  
+  
   # Allow downloading Web Service WSDL as a file with an extension
   # instead of a file named 'wsdl'
   map.connect ':controller/service.wsdl', :action => 'wsdl'
@@ -47,8 +39,6 @@ ActionController::Routing::Routes.draw do |map|
   # Install the default route as the lowest priority.
   map.connect ':controller/:action/:id.:format'
   map.connect ':controller/:action/:id'
-  # map.connect ':controller/:action/:id', :uri => /.+,/
-  
-  
+  # map.connect ':controller/:action/:id', :uri => /.+,/  
   
 end

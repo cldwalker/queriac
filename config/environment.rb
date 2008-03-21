@@ -62,7 +62,12 @@ Rails::Initializer.run do |config|
   # config.active_record.default_timezone = :utc
 end
 
-Time::DATE_FORMATS[:ymdhms] = "%Y%m%d%H%M%S"
+Time::DATE_FORMATS[:short] = "%B %d, %l:%M%p"
+Time::DATE_FORMATS[:medium] = "%B %d, %Y"
+Time::DATE_FORMATS[:blog] = "%A, %B %d at %l:%M%p"
+Time::DATE_FORMATS[:long] = "%A, %B %d at %l:%M%p"
+Time::DATE_FORMATS[:ymdhms] = Time::DATE_FORMATS[:batch] = "%Y%m%d%H%M%S"
+
 
 DEFAULT_PARAM = "(q)"
 
@@ -75,3 +80,5 @@ gem 'has_finder'
 require 'has_finder'
 require 'open-uri'
 require 'hpricot'
+
+STOPWORDS = %w(default_to delete tags help home tutorial settings queries commands)
