@@ -14,7 +14,7 @@ label, kbd {
 
 label, label.enabled {
 	font-size: 1.1em;
-	padding: 2px 2px 2px 0;
+	padding: 2px 2px 0px 0;
 	color: #666;
 }
 
@@ -91,7 +91,7 @@ form div.submit {
 }
 
 input[type=text], input[type=password], input.text, textarea, select {
-	margin: 10px 0 5px 0;
+	margin: 4px 0 5px 0;
 	padding: 1px;
 	font-size: 1.3em;
 }
@@ -114,4 +114,8 @@ input[type=submit], input.button, input.submit {
 	margin: 10px 0 5px 0;
 	padding: 2px;
 	font-size: 1.3em;
+}
+
+input.password {
+  width: 100px;
 }

@@ -83,7 +83,7 @@ h1 {
 
 h1.inline {
   display: inline;
-  width: 50%;
+  width: 60%;
   float: left;
   margin-bottom: 2px;
 }
@@ -283,21 +283,27 @@ ol.normal li {
 ul.options li {
 	display: inline;
 	float: left;
-	padding: 2px 10px 2px 20px;
 	/*border: 1px solid navy;*/
+	padding: 2px 0px 2px 0px;
 }
 
 ul.options li a {
-	font-size: 1.1em;
+/*  border: 1px dashed pink;*/
+	padding: 0px 10px 6px 20px;
 }
 
 ul.options li.no_icon {
 	padding: 0 2px 0 2px;
 }
 
+ul.options li.no_icon a {
+	padding: 0;
+}
+
+
 /* This is for the lists that are typically at the bottoms of the tables */
 ul.bolder li {
-	padding: 5px 20px 5px 23px;
+/*  padding: 5px 20px 5px 23px;*/
 }
 
 ul.bolder li a {
@@ -306,7 +312,7 @@ ul.bolder li a {
 }
 
 ul.options li.add {
-	background: url(../images/icons/add.png) no-repeat left center;
+	background: url(../images/icons/add.png) no-repeat left top;
 }
 
 ul.options li.edit {
@@ -321,11 +327,19 @@ ul.options li.search {
 	background: url(../images/icons/search.png) no-repeat left center;
 }
 
+ul.options li.command {
+	background: url(../images/icons/cog.png) no-repeat left center;
+}
+
+ul.options li.check {
+	background: url(../images/icons/tick.png) no-repeat left center;
+}
+
 ul.options li.add a, ul.options li.approve a, ul.options li.reserve a {
 	color: #427f0b;
 }
 
-ul.options li.edit a,ul.options li.expore a, ul.options li.view a, ul.options li.search a {
+ul.options li.edit a,ul.options li.expore a, ul.options li.search a, ul.options li.check {
 	color: saddlebrown;
 }
 
@@ -333,15 +347,10 @@ ul.options li.delete a, ul.options li.reject a {
 	color: firebrick;
 }
 
-ul.stacked li {
-  margin: 15px 0 15px 0;
-  float: none;
-}
-
 ul.options.header {
   margin-top: 30px;
   float: right;
-  width: 45%;
+  width: 35%;
   text-align: right;
 }
 
@@ -351,7 +360,6 @@ ul.options.header li {
 
 ul.options.toolbar {
   float: none;
-  margin-bottom: 20px;
   overflow: hidden;
   display: block;
 }

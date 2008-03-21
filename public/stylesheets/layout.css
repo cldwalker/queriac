@@ -105,6 +105,13 @@ body {
 	/*border: 1px solid darkkhaki;*/
 }
 
+#secondary.boxed {
+	width: 320px;
+  padding: 0 10px 0 10px;
+  border: 1px solid #DDDDCC;
+  background-color: #FFFFEE;
+}
+
 
 /* ***** TABLES ***** */
 
@@ -132,6 +139,10 @@ th {
 	color: #999;
 	font-size: 1.1em;
 	color: #999;
+}
+
+th b {
+  color: #333;
 }
 
 tr.offset {
@@ -230,6 +241,21 @@ td.bookmarklet {
 
 /* MISCELLANEOUS
 *********************************************************************************/
+div.msg {
+  padding: 10px;
+  border: 1px solid saddlebrown;
+  background-color: #FFFFEE;
+  overflow: hidden;
+	font-size: 1.1em;
+}
+
+div.msg li {
+  
+}
+
+div.msg p {
+  padding-bottom: 10px;
+}
 .centered {
 	text-align: center;
 }
