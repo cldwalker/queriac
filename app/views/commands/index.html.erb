@@ -4,7 +4,7 @@
 </h1>
 
 <ul class="bolder options header">
-	<% unless @user == current_user %>
+	<% if logged_in? && @user != current_user %>
 		<li class="search"><%= link_to 'Yours', (@tags.blank? ? current_user.commands_path : current_user.commands_tag_path(@tags.join("+"))) %></li>
 	<% end %>
 	<% if @user %>
