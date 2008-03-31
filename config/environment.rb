@@ -74,7 +74,7 @@ Time::DATE_FORMATS[:ymdhms] = Time::DATE_FORMATS[:batch] = "%Y%m%d%H%M%S"
 DEFAULT_PARAM = "(q)"
 
 ExceptionNotifier.exception_recipients = %w(zeke@queri.ac)
-ExceptionNotifier.sender_address = %("Application Error" <zeke@queri.ac>)
+ExceptionNotifier.sender_address = %("Application Error" <admin@queri.ac>)
 ExceptionNotifier.email_prefix = "[queriac] "
 
 # Include your application configuration below
