@@ -95,5 +95,5 @@ set :apache_default_vhost, true # force use of apache_default_vhost_config
 # set :keep_releases, 3
 
 task :after_update_code do
-   run "cp ~deploy/secrets.rb #{release_path}/config/initializers/secrets.rb" 
+   run "cp ~deploy/secrets.rb #{release_path}/config/secrets.rb" 
 end

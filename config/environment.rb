@@ -7,6 +7,9 @@
 # Specifies gem version of Rails to use when vendor/rails is not present
 RAILS_GEM_VERSION = '2.0.2' unless defined? RAILS_GEM_VERSION
 
+# Load sensitive data like database and SMTP passwords into the environment..
+require File.join(File.dirname(__FILE__), 'secrets')
+
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
 
