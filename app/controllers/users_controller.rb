@@ -2,6 +2,7 @@
 class UsersController < ApplicationController
   before_filter :login_required, :only => [:account]
   before_filter :load_user_from_param, :only => [:show]
+  before_filter :redirect_invalid_user, :only=>[:show]
 
   def new
   end

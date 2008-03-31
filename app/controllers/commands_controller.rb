@@ -2,6 +2,7 @@ class CommandsController < ApplicationController
 
   before_filter :login_required, :except => [:index, :execute, :show]
   before_filter :load_user_from_param, :only => [:index, :execute, :show, :edit]
+  before_filter :redirect_invalid_user, :only=>[:execute, :show, :edit]
 
   def index
 
@@ -160,7 +161,10 @@ class CommandsController < ApplicationController
   end
 
   def edit
-    raise "You are not allowed to edit this command." unless owner?
+    if ! owner?
+      flash[:warning] = "You are not allowed to edit this command." 
+      redirect_to @user.home_path
+    end
     @command = current_user.commands.find_by_keyword(params[:command], :include => [:user])
   end
 

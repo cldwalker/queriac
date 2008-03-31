@@ -10,7 +10,15 @@ class ApplicationController < ActionController::Base
   before_filter :login_from_cookie
   
   def load_user_from_param
-    @user = (logged_in? && current_user.login==params[:login]) ? current_user : User.find_by_login(params[:login])    
+    @user = (logged_in? && current_user.login==params[:login]) ? current_user : User.find_by_login(params[:login])
+  end
+  
+  def redirect_invalid_user
+    if @user.nil?
+      flash[:warning] = "The user '#{params[:login]}' doesn't exist."
+      redirect_to ''
+      return false
+    end
   end
   
   def owner?
