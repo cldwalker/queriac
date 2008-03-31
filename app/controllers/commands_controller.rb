@@ -166,6 +166,10 @@ class CommandsController < ApplicationController
       redirect_to @user.home_path
     end
     @command = current_user.commands.find_by_keyword(params[:command], :include => [:user])
+    if @command.nil?
+      flash[:warning] = "Command '#{params[:command]}' doesn't exist."
+      redirect_to @user.home_path
+    end
   end
 
   def create
