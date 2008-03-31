@@ -146,7 +146,10 @@ class CommandsController < ApplicationController
     
     if params[:ancestor]
       @ancestor = Command.find(params[:ancestor])
-      raise "You cannot duplicate a private command" unless @ancestor.public? || owner?(@ancestor)
+      unless @ancestor.public? || (current_user == @ancestor.user)
+        flash[:warning] = "You cannot duplicate a private command." 
+        redirect_back_or_default ''
+      end
       @command.name = @ancestor.name
       @command.keyword = @ancestor.keyword
       @command.url = @ancestor.url
