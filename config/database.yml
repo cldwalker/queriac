@@ -16,4 +16,4 @@ production:
   adapter: mysql
   database: monoquery_production
   username: mq_production
-  password: <%= ENV['QUERIAC_DB_PASSWORD'] %>
+  password: <%= QUERIAC_DB_PASSWORD %>

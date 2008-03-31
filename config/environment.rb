@@ -68,7 +68,6 @@ Time::DATE_FORMATS[:blog] = "%A, %B %d at %l:%M%p"
 Time::DATE_FORMATS[:long] = "%A, %B %d at %l:%M%p"
 Time::DATE_FORMATS[:ymdhms] = Time::DATE_FORMATS[:batch] = "%Y%m%d%H%M%S"
 
-
 DEFAULT_PARAM = "(q)"
 
 ExceptionNotifier.exception_recipients = %w(zeke@queri.ac)

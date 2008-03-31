@@ -24,6 +24,6 @@ ActionMailer::Base.smtp_settings = {
   :domain => "gmail.com", 
   :authentication => :plain,
   :user_name => "admin@queri.ac",
-  :password => ENV['QUERIAC_SMTP_PASSWORD']
+  :password => QUERIAC_SMTP_PASSWORD
 }
 ActionMailer::Base.delivery_method = :smtp
