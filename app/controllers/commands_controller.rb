@@ -169,29 +169,21 @@ class CommandsController < ApplicationController
     # If user uploaded a bookmark file
     if params['bookmarks_file']
       
-      new_file = "#{RAILS_ROOT}/public/bookmark_files/#{Time.now.to_s(:ymdhms)}.html"
-      
-      File.open(new_file, "wb") { |f| f.write(params['bookmarks_file'].read) }
-
-      @commands = []
-      doc = open(new_file) { |f| Hpricot(f) }
-      (doc/"a").each do |a|
-        unless a.attributes['shortcuturl'].blank?
-          name = a.inner_html
-          keyword = a.attributes['shortcuturl']
-          url = a.attributes['href']
-          @commands << current_user.commands.create(
-            :name => name,
-            :keyword => keyword,
-            :url => url, 
-            :origin => "import"
-          )
-        end
+      new_file = "#{RAILS_ROOT}/public/bookmark_files/#{Time.now.to_s(:ymdhms)}.html"  
+      unless params['bookmarks_file'].blank?
+        File.open(new_file, "wb") { |f| f.write(params['bookmarks_file'].read) }
+        valid_commands, invalid_commands = Command.create_commands_for_user_from_bookmark_file(current_user, new_file)
       end
 
-      respond_to do |format|      
-          flash[:notice] = "Imported #{@commands.size} new commands from your uploaded bookmarks file."
-          format.html { redirect_to current_user.home_path }
+      respond_to do |format|
+          if params['bookmarks_file'].blank?
+            flash[:warning] = 'Not a valid bookmark file, try again.'
+            new
+            format.html { render :action => "new" }
+          else
+            flash[:notice] = "Imported #{valid_commands.size} of #{(valid_commands + invalid_commands).size} commands from your uploaded bookmarks file."
+            format.html { redirect_to current_user.home_path }
+          end
       end
             
     else

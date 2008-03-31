@@ -112,4 +112,29 @@ class Command < ActiveRecord::Base
     queries_count_all - queries_count_owner
   end
   
+  def self.create_commands_for_user_from_bookmark_file(user, file)
+    valid_commands = []
+    invalid_commands = []
+    doc = open(file) { |f| Hpricot(f) }
+    (doc/"a").each do |a|
+      unless a.attributes['shortcuturl'].blank?
+        name = a.inner_html
+        keyword = a.attributes['shortcuturl']
+        url = a.attributes['href']
+        command = user.commands.create(:name => name, :keyword => keyword,
+          :url => url, :origin => "import")
+        if command.valid?
+          valid_commands << command
+        else
+          invalid_commands << command
+        end
+      end
+    end
+    invalid_commands.each {|c|
+      logger.error "INVALID_COMMAND: " + c.inspect
+      logger.error c.errors.full_messages.join(', ')
+    } 
+    return [valid_commands, invalid_commands]
+  end
+  
 end
