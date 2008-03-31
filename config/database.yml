@@ -16,4 +16,5 @@ production:
   adapter: mysql
   database: monoquery_production
   username: mq_production
-  password: <%= QUERIAC_DB_PASSWORD %>
+  password: ereiamJH
+  # password: <%= QUERIAC_DB_PASSWORD %>
