@@ -20,6 +20,20 @@ Spec::Runner.configure do |config|
   #
   # If you declare global fixtures, be aware that they will be declared
   # for all of your examples, even those that don't use them.
+  def valid_user_attributes
+    {
+      :login => "bozo",
+      :email => "bozo@email.com",
+      :password  => "partyfavors",
+      :password_confirmation  => "partyfavors"
+    }
+  end
+  
+  def login_user(user=nil)
+    user ||= User.create(valid_user_attributes)
+    @controller.should_receive(:login_required).and_return(true)
+    @controller.stub!(:current_user).and_return(user)
+  end
 end
 
 ##

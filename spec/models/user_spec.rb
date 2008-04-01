@@ -1,15 +1,4 @@
 require File.dirname(__FILE__) + '/../spec_helper'
-
-module UserSpecHelper
-  
-  def valid_user_attributes
-    {
-      :login => "bozo",
-      :email => "bozo@email.com",
-      :password  => "partyfavors",
-      :password_confirmation  => "partyfavors"
-    }
-  end
   
   # validates_presence_of     :login, :email
   # validates_presence_of     :password,                   :if => :password_required?
@@ -20,12 +9,7 @@ module UserSpecHelper
   # validates_length_of       :email,    :within => 3..100
   # validates_uniqueness_of   :login, :email, :case_sensitive => false
   
-end
-
-
 describe User do
-  
-  include UserSpecHelper
   
   before(:each) do
     @user = User.new
