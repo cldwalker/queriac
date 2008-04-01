@@ -9,13 +9,11 @@
 	</form>
 </div>
 
-<%# hide "upload" %>
+<%= hide "upload" %>
 
 <h1><%= @ancestor ? "Duplicate Command: #{@ancestor.name}" : "New Command" %></h1>
 
-<!--
 <%= expander_for "upload", :autohide => false, :label => "Lots of Commands? Upload them!" %>
--->
 
 <% if current_user.commands.count < 10 %>
 <div class="msg">
