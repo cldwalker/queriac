@@ -29,11 +29,24 @@ Spec::Runner.configure do |config|
     }
   end
   
-  def login_user(user=nil)
-    user ||= User.create(valid_user_attributes)
+  def unique_valid_user_attributes
+    num = rand(10000)
+    {:login=>"bozo_#{num}", :email=>"bozo_#{num}@email.com", :password=>'partyfavors', :password_confirmation=>'partyfavors'}
+  end
+  
+  #should use mocks here once controller specs focus only controller logic
+  def create_user(hash={})
+    User.create(unique_valid_user_attributes.merge(hash))
+  end
+  
+  def login_user(hash={})
+    user = create_user(hash)
     @controller.should_receive(:login_required).and_return(true)
     @controller.stub!(:current_user).and_return(user)
   end
+  
+  def current_user; @controller.current_user; end
+  
 end
 
 ##

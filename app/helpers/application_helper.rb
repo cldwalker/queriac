@@ -32,7 +32,7 @@ module ApplicationHelper
     items << "logged in as " + link_to(current_user.login, current_user.home_path, :class => "underlined") if logged_in?
     items << link_to("settings", "/settings")
     items << link_to_unless_current("help", "/help")
-    items << link_to("logout", session_path(session.id), :confirm => "Are you sure you want to log out?", :method => :delete) if logged_in?
+    items << link_to("logout", session_path(session), :confirm => "Are you sure you want to log out?", :method => :delete) if logged_in?
     items << link_to("sign up", new_user_path) unless logged_in?
     items << link_to("log in", new_session_path) unless logged_in?
     output = ""

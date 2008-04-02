@@ -167,6 +167,7 @@ class CommandsController < ApplicationController
     if ! owner?
       flash[:warning] = "You are not allowed to edit this command." 
       redirect_to @user.home_path
+      return
     end
     @command = current_user.commands.find_by_keyword(params[:command], :include => [:user])
     if @command.nil?
