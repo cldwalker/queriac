@@ -29,20 +29,38 @@ Spec::Runner.configure do |config|
     }
   end
   
-  def unique_valid_user_attributes
+  
+  def generate_random_alphanumeric(len=8)
+      chars = ("a".."z").to_a + ("A".."Z").to_a + ("0".."9").to_a
+      string = ""
+      1.upto(len) { |i| string << chars[rand(chars.size-1)] }
+      return string
+  end
+  
+  def random_valid_command_attributes
+    seed = generate_random_alphanumeric(3)
+    {:url=>"http://#{seed}.com/(q)", :keyword=>seed, :name=>"name for #{seed}"}
+  end
+  
+  def random_valid_user_attributes
     num = rand(10000)
     {:login=>"bozo_#{num}", :email=>"bozo_#{num}@email.com", :password=>'partyfavors', :password_confirmation=>'partyfavors'}
   end
   
-  #should use mocks here once controller specs focus only controller logic
+  #should use mocks for create_* once controller specs focus only on controller logic
   def create_user(hash={})
-    User.create(unique_valid_user_attributes.merge(hash))
+    User.create(random_valid_user_attributes.merge(hash))
+  end
+  
+  def create_command(hash={})
+    Command.create(random_valid_command_attributes.merge(hash))
   end
   
   def login_user(hash={})
-    user = create_user(hash)
+    user = hash.is_a?(User) ? hash : create_user(hash)
     @controller.should_receive(:login_required).and_return(true)
     @controller.stub!(:current_user).and_return(user)
+    user
   end
   
   def current_user; @controller.current_user; end

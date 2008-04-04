@@ -1,8 +1,14 @@
 class CommandsController < ApplicationController
 
   before_filter :login_required, :except => [:index, :execute, :show]
-  before_filter :load_user_from_param, :only => [:index, :execute, :show, :edit]
-  before_filter :redirect_invalid_user, :only=>[:execute, :show, :edit]
+  before_filter :load_user_from_param, :only => [:index, :execute, :show, :edit, :destroy]
+  #remaining filters dependent on load_user filter
+  before_filter :redirect_invalid_user, :only=>[:execute, :show, :edit, :destroy]
+  before_filter :permission_required_for_user, :only=>[:edit, :destroy]
+  #double check this filter if changing method names ie show->display
+  before_filter :load_command_by_user_and_keyword, :only=>[:show, :edit, :destroy]
+  
+  #TODO: verify :method => :delete, :only => :destroy
 
   def index
 
@@ -18,6 +24,7 @@ class CommandsController < ApplicationController
     
     pagination_params = {:order => "commands.queries_count_all DESC", :page => params[:page], :include => [:tags]}
     
+    #FIXME: nil @user returns valid results?
     if @tags
       if @user
         @commands = @user.commands.send(publicity).find_tagged_with(@tags.join(", "), :match_all => true, :order => "commands.queries_count_all DESC").paginate(pagination_params)
@@ -123,15 +130,15 @@ class CommandsController < ApplicationController
 
   end
 
+  #desired behavior for private queries is just a sidebar?
   def show
-    @command = @user.commands.find_by_keyword(params[:command])
-    
-    if @command.nil?
-      flash[:warning] = "User #{@user.login} has no command with keyword '#{params[:command]}'"
+    if @command.private? && !owner?
+      flash[:warning] = "Sorry, the command '#{params[:command]}' is private for #{@user.login}."
       redirect_to @user.home_path
       return
     end
 
+    #FIXME: conditionals should match ones in the template
     publicity = owner? ? "any" : "public"
     @queries = @command.queries.send(publicity).paginate(:order => "queries.created_at DESC", :page => params[:page]) if owner? || @command.public?
 
@@ -164,18 +171,8 @@ class CommandsController < ApplicationController
   end
 
   def edit
-    if ! owner?
-      flash[:warning] = "You are not allowed to edit this command." 
-      redirect_to @user.home_path
-      return
-    end
-    @command = current_user.commands.find_by_keyword(params[:command], :include => [:user])
-    if @command.nil?
-      flash[:warning] = "Command '#{params[:command]}' doesn't exist."
-      redirect_to @user.home_path
-    end
   end
-
+  
   def create
 
     # If user uploaded a bookmark file
@@ -237,8 +234,6 @@ class CommandsController < ApplicationController
   end
 
   def destroy
-    @command = current_user.commands.find_by_keyword(params[:command], :include => [:queries])
-    @command.queries.destroy_all
     @command.destroy
 
     respond_to do |format|
@@ -248,4 +243,30 @@ class CommandsController < ApplicationController
     end
   end
   
+  protected
+  
+  def load_command_by_user_and_keyword
+    action_include_hash = {'edit'=>[:user], 'destroy'=>[:queries]}
+    @command = @user.commands.find_by_keyword(params[:command], :include=>action_include_hash[self.action_name] || [])
+    command_is_nil? ? false : true
+  end
+  
+  def permission_required_for_user
+    if ! owner?
+      flash[:warning] = "You are not allowed to modify this command!" 
+      redirect_to current_user.home_path
+      return false
+    end
+    true
+  end
+  
+  def command_is_nil?
+    if @command.nil?
+      flash[:warning] = "User #{@user.login} has no command with keyword '#{params[:command]}'"
+      redirect_to @user.home_path
+      return true
+    end
+    false
+  end
+
 end
