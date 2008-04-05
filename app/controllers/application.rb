@@ -8,17 +8,24 @@ class ApplicationController < ActionController::Base
   
   include AuthenticatedSystem
   before_filter :login_from_cookie
+
+  def load_valid_user
+    load_user_from_param
+    redirect_invalid_user
+  end
   
   def load_user_from_param
     @user = (logged_in? && current_user.login==params[:login]) ? current_user : User.find_by_login(params[:login])
   end
   
+  #this won't redirect actions that don't need params[:login] to be reached ie commands/index
   def redirect_invalid_user
-    if @user.nil?
+    if @user.nil? && ! params[:login].nil?
       flash[:warning] = "The user '#{params[:login]}' doesn't exist."
       redirect_to ''
       return false
     end
+    true
   end
   
   def owner?

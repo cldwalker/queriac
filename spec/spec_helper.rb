@@ -53,7 +53,9 @@ Spec::Runner.configure do |config|
   end
   
   def create_command(hash={})
-    Command.create(random_valid_command_attributes.merge(hash))
+    user = hash[:user] || create_user
+    user.commands.create(random_valid_command_attributes.merge(hash))
+    #Command.create(random_valid_command_attributes.merge(hash))
   end
   
   def login_user(hash={})

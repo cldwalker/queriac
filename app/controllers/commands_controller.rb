@@ -1,9 +1,8 @@
 class CommandsController < ApplicationController
 
   before_filter :login_required, :except => [:index, :execute, :show]
-  before_filter :load_user_from_param, :only => [:index, :execute, :show, :edit, :destroy]
-  #remaining filters dependent on load_user filter
-  before_filter :redirect_invalid_user, :only=>[:execute, :show, :edit, :destroy]
+  before_filter :load_valid_user, :only => [:index, :execute, :show, :edit, :destroy]
+  #remaining filters dependent on load_valid_user
   before_filter :permission_required_for_user, :only=>[:edit, :destroy]
   #double check this filter if changing method names ie show->display
   before_filter :load_command_by_user_and_keyword, :only=>[:show, :edit, :destroy]
@@ -24,7 +23,6 @@ class CommandsController < ApplicationController
     
     pagination_params = {:order => "commands.queries_count_all DESC", :page => params[:page], :include => [:tags]}
     
-    #FIXME: nil @user returns valid results?
     if @tags
       if @user
         @commands = @user.commands.send(publicity).find_tagged_with(@tags.join(", "), :match_all => true, :order => "commands.queries_count_all DESC").paginate(pagination_params)
@@ -178,7 +176,7 @@ class CommandsController < ApplicationController
     # If user uploaded a bookmark file
     if params['bookmarks_file']
       
-      new_file = "#{RAILS_ROOT}/public/bookmark_files/#{Time.now.to_s(:ymdhms)}.html"  
+      new_file = "#{RAILS_ROOT}/public/bookmark_files/#{Time.now.to_s(:ymdhms)}.html"
       unless params['bookmarks_file'].blank?
         File.open(new_file, "wb") { |f| f.write(params['bookmarks_file'].read) }
         valid_commands, invalid_commands = Command.create_commands_for_user_from_bookmark_file(current_user, new_file)
@@ -187,7 +185,7 @@ class CommandsController < ApplicationController
       respond_to do |format|
           if params['bookmarks_file'].blank?
             flash[:warning] = 'Not a valid bookmark file, try again.'
-            new
+            @command = Command.new
             format.html { render :action => "new" }
           else
             flash[:notice] = "Imported #{valid_commands.size} of #{(valid_commands + invalid_commands).size} commands from your uploaded bookmarks file."
@@ -200,7 +198,6 @@ class CommandsController < ApplicationController
       # User filled out form to create single command
       
       @command = current_user.commands.new(params[:command])
-      @command.user = current_user
       
       respond_to do |format|      
         if @command.save
@@ -219,6 +216,10 @@ class CommandsController < ApplicationController
 
   def update
     @command = Command.find(params[:id])
+    if @command.user != current_user
+      redirect_failed_permission
+      return
+    end
 
     respond_to do |format|
       if @command.update_attributes(params[:command])
@@ -251,10 +252,14 @@ class CommandsController < ApplicationController
     command_is_nil? ? false : true
   end
   
+  def redirect_failed_permission
+    flash[:warning] = "You are not allowed to modify this command!" 
+    redirect_to current_user.home_path
+  end
+  
   def permission_required_for_user
     if ! owner?
-      flash[:warning] = "You are not allowed to modify this command!" 
-      redirect_to current_user.home_path
+      redirect_failed_permission
       return false
     end
     true
