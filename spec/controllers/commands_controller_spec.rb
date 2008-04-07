@@ -45,7 +45,7 @@ end
 
 describe 'commands/index:' do
   setup_commands_controller_example_group
-  before(:all) { @command = create_command }
+  before(:all) { @command = create_command; @tag = create_tag }
   
   def basic_expectations
     response.should be_success
@@ -59,15 +59,35 @@ describe 'commands/index:' do
     basic_expectations
   end
   
-  it 'all w/ tags'
+  it 'all w/ tags' do
+    @command.tags << @tag
+    get :index, :tag=>[@tag.name]
+    basic_expectations
+    assigns[:tags].should_not be_empty
+    @command.tags.clear
+  end
+  
+  it 'all w/ more than one tag'
+  it 'publicity of your own command vs another command'
   
   it 'user w/o tags' do
     get :index, :login=>@command.user.login
     basic_expectations
   end
   
-  it 'user w/ tags'
-  it 'basic w/ invalid tags'
+  it 'user w/ tags' do
+    @command.tags << @tag
+    get :index, :login=>@command.user.login, :tag=>[@tag.name]
+    basic_expectations
+    assigns[:tags].should_not be_empty
+    @command.tags.clear
+  end
+  
+  it 'user w/ an empty tag' do
+    get :index, :login=>@command.user.login, :tag=>[]
+    response.should be_redirect
+    flash[:warning].should_not be_blank
+  end
   
   it 'redirects when no commands are found' do
     Command.should_receive(:public).and_return([])
@@ -79,17 +99,86 @@ describe 'commands/index:' do
 end
 
 describe 'commands/execute:' do
-  controller_name :commands
-  integrate_views
+  setup_commands_controller_example_group
   
-  it 'basic w/o args'
-  it 'basic w/ args'
+  before(:all) {@command = create_command}
+  
+  def basic_expectations
+    response.should be_redirect
+    assigns[:command].should be_an_instance_of(Command)
+    assigns[:result].should_not be_blank
+  end
+  
+  def get_request(hash={})
+    get :execute, {:command=>["#{@command.keyword}+blues"], :login=>@command.user.login}.merge(hash)
+  end
+  
+  it 'basic as logged-in user' do
+    login_user(@command.user)
+    lambda { get_request}.should change(Query, :count).by(1)
+    basic_expectations
+    query = Query.find_last
+    query.command.should == @command
+    query.user_id.should eql(@command.user_id)
+  end
+  
+  it 'basic as anonymous user' do
+    lambda { get_request}.should change(Query, :count).by(1)
+    basic_expectations
+    query = Query.find_last
+    query.command.should == @command
+    query.user_id.should be_nil
+  end
+  
+  it "basic as user running another's command" do
+    login_user
+    lambda { get_request}.should change(Query, :count).by(1)
+    basic_expectations
+    query = Query.find_last
+    query.command.should == @command
+    query.user_id.should_not eql(@command.user_id)
+  end
+  
+  it 'basic w/ no args' do
+    lambda { get_request(:command=>[@command.keyword])}.should change(Query, :count).by(1)
+    basic_expectations
+  end
+  
   it 'default_to query'
+  it 'basic w/ spaces b/n command + arg'
   it 'nil command w/ default command'
-  it 'nil command w/o default command'
-  it 'private command'
-  it 'stealth query starting w/ !'
-  it 'stealth query w/ separate !'
+  
+  it 'nil command w/o default command' do
+    lambda { get_request(:command=>['invalid_command'])}.should_not change(Query, :count)
+    response.should be_redirect
+    assigns[:command].should be_nil
+    assigns[:result].should be_nil
+    #flash[:warning].should_not be_blank
+  end
+  
+  it 'private command as anonymous user' do
+    @command = create_command(:public=>false)
+    lambda { get_request}.should_not change(Query, :count)
+    response.should be_redirect
+    assigns[:command].should be_an_instance_of(Command)
+    assigns[:result].should be_nil
+  end
+  
+  it 'your own private command'
+  it "someone else's private command"
+  
+  it 'stealth query starting w/ !' do
+    lambda { get_request(:command=>["!#{@command.keyword}"])}.should_not change(Query, :count)
+    response.should be_redirect
+    assigns[:result].should_not be_blank
+  end
+  
+  it 'stealth query w/ separate !' do
+    lambda { get_request(:command=>["!+#{@command.keyword}"])}.should_not change(Query, :count)
+    response.should be_redirect
+    assigns[:result].should_not be_blank
+  end
+  
   it 'bookmarklet'
 end
 

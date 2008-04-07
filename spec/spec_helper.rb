@@ -58,9 +58,15 @@ Spec::Runner.configure do |config|
     #Command.create(random_valid_command_attributes.merge(hash))
   end
   
+  def create_tag(hash={})
+    seed = generate_random_alphanumeric(3)
+    Tag.create({:name=>"tag_#{seed}"}.merge(hash))
+  end
+  
+  #@controller of each example is reset so no need to logout users
   def login_user(hash={})
     user = hash.is_a?(User) ? hash : create_user(hash)
-    @controller.should_receive(:login_required).and_return(true)
+    @controller.stub!(:login_required).and_return(true)
     @controller.stub!(:current_user).and_return(user)
     user
   end
@@ -108,4 +114,12 @@ class Hash
     self.reject { |k,v| !keys.include?(k || k.to_sym) }
   end
 
+end
+
+module ActiveRecord
+  class Base
+    def self.find_last
+      find(:first, :order=>'id DESC')
+    end
+  end
 end

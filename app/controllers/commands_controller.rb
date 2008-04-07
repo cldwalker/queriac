@@ -19,7 +19,15 @@ class CommandsController < ApplicationController
 
     publicity = owner? ? "any" : "public"
 
-    @tags = params[:tag].first.gsub(" ", "+").split("+") if params[:tag]
+    if params[:tag]
+      if params[:tag].first
+        @tags = params[:tag].first.gsub(" ", "+").split("+") 
+      else
+        flash[:warning] = 'No tag was specified. Please try again'
+        redirect_to commands_path
+        return
+      end
+    end
     
     pagination_params = {:order => "commands.queries_count_all DESC", :page => params[:page], :include => [:tags]}
     
@@ -38,7 +46,7 @@ class CommandsController < ApplicationController
     end
     
     if @commands.empty?
-      flash[:warning] = "Sorry, no queries matched your request."
+      flash[:warning] = "Sorry, no commands matched your request."
       redirect_to ""
       return
     end
@@ -46,7 +54,7 @@ class CommandsController < ApplicationController
     
     respond_to do |format|
       format.html # show.rhtml
-      format.xml  { render :xml => @queries.to_xml }
+      format.xml  { render :xml => @commands.to_xml }
     end
   end
   
@@ -80,7 +88,7 @@ class CommandsController < ApplicationController
     
     # If command doesn't exist, route the query to the user's default command,
     # or redirect to user's home path and show options, depending on their settings.
-    if @command.nil? 
+    if @command.nil?
       if @user.default_command?
         redirect_to @user.default_command_path(params[:command].join("/"))
       else
@@ -104,7 +112,7 @@ class CommandsController < ApplicationController
     @command.queries.create(
       :query_string => query_string,
       :run_by_default => defaulted || false,
-      :user_id => current_user.id,
+      :user_id => logged_in? ? current_user.id : nil,
       :referrer => request.env["HTTP_REFERER"]
     ) unless dont_save_query
     
