@@ -58,6 +58,12 @@ Spec::Runner.configure do |config|
     #Command.create(random_valid_command_attributes.merge(hash))
   end
   
+  def create_query(hash={})
+    command = hash[:command] || create_command
+    user_id = hash[:user_id] || command.user_id
+    command.queries.create({:user_id=>user_id, :query_string=>'blah'}.merge(hash))
+  end
+  
   def create_tag(hash={})
     seed = generate_random_alphanumeric(3)
     Tag.create({:name=>"tag_#{seed}"}.merge(hash))

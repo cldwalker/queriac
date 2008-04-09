@@ -68,7 +68,7 @@ describe 'commands/index:' do
   end
   
   it 'all w/ more than one tag'
-  it 'publicity of your own command vs another command'
+  it "publicity of user's own command vs another's command"
   
   it 'user w/o tags' do
     get :index, :login=>@command.user.login
@@ -145,8 +145,20 @@ describe 'commands/execute:' do
   end
   
   it 'default_to query'
-  it 'basic w/ spaces b/n command + arg'
-  it 'nil command w/ default command'
+  
+  #this happens when querying other ppl's commands from browser
+  it 'basic w/ spaces b/n command + arg' do
+    lambda { get_request(:command=>["#{@command.keyword} blues"])}.should change(Query, :count).by(1)
+    basic_expectations
+  end
+  
+  it 'nil command w/ default command' do
+    @command.user.update_attribute(:default_command_id, create_command(:user=>@user).id)
+    lambda { get_request(:command=>['invalid_command'])}.should_not change(Query, :count)
+    response.should be_redirect
+    assigns[:command].should be_nil
+    assigns[:result].should be_nil
+  end
   
   it 'nil command w/o default command' do
     lambda { get_request(:command=>['invalid_command'])}.should_not change(Query, :count)
@@ -164,8 +176,21 @@ describe 'commands/execute:' do
     assigns[:result].should be_nil
   end
   
-  it 'your own private command'
-  it "someone else's private command"
+  it "logged-in user's own private command" do
+    @command = create_command(:public=>false)
+    login_user(@command.user)
+    lambda { get_request}.should change(Query, :count).by(1)
+    basic_expectations
+  end
+  
+  it "logged-in user executing someone else's private command" do
+    @command = create_command(:public=>false)
+    login_user
+    lambda { get_request}.should change(Query, :count).by(0)
+    response.should be_redirect
+    assigns[:command].should be_an_instance_of(Command)
+    assigns[:result].should be_nil
+  end
   
   it 'stealth query starting w/ !' do
     lambda { get_request(:command=>["!#{@command.keyword}"])}.should_not change(Query, :count)
@@ -196,8 +221,8 @@ describe 'commands/show (default as anonymous user):' do
   
   it "basic" do
     command = create_command(:user=>@user)
-    command.queries.create(:user_id=>@user.id, :query_string=>'blah')
-    get 'show', :login=>@user.login, :command=>command.keyword
+    create_query(:command=>command)
+    get :show, :login=>@user.login, :command=>command.keyword
     basic_expectations
     assigns[:queries][0].should be_an_instance_of(Query)
   end
@@ -208,23 +233,31 @@ describe 'commands/show (default as anonymous user):' do
   
   it "private queries" do
     command = create_command(:user=>@user, :public_queries=>false)
-    command.queries.create(:user_id=>@user.id, :query_string=>'blah')
-    get 'show', :login=>@user.login, :command=>command.keyword
+    create_query(:command=>command)
+    get :show, :login=>@user.login, :command=>command.keyword
     basic_expectations
     pending("handle querying for private queries correctly")
     assigns[:queries].should be_nil
   end
   
-  it "private command" do
-    command = create_command(:user=>@user, :public=>false)
-    command.queries.create(:user_id=>@user.id, :query_string=>'blah')
-    get 'show', :login=>@user.login, :command=>command.keyword
+  it "viewing someone else's private command" do
+    command = create_command(:public=>false)
+    create_query(:command=>command)
+    get :show, :login=>command.user.login, :command=>command.keyword
     response.should be_redirect
     flash[:warning].should_not be_nil
   end
   
-  it "as logged-in user viewing own command"
-  it "as logged-in user viewing someone else's command"
+  it "logged-in user viewing their own private command" do
+    command = create_command(:public=>false, :user=>@user)
+    create_query(:command=>command)
+    login_user(@user)
+    get :show, :login=>command.user.login, :command=>command.keyword
+    basic_expectations
+    assigns[:queries][0].should be_an_instance_of(Query)
+  end
+  
+  it "publicity of user's own command vs another's command"
 end
 
 describe 'commands/new:' do
