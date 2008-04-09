@@ -24,7 +24,7 @@ class UsersController < ApplicationController
     @tag = params[:tag]
     # @commands.select!{|c| c.tags.map(&:name).include? @tag } if @tag
     
-    @users = User.find(:all, :order => :login)
+    @users = User.find(:all, :conditions => ["activation_code IS NULL"], :order => :login)
   end
 
   def create

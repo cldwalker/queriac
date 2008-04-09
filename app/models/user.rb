@@ -28,6 +28,10 @@ class User < ActiveRecord::Base
   
   belongs_to :default_command, :class_name => "Command", :foreign_key => :default_command_id
   
+  # Why do these break shit?
+  # has_finder :activated, :conditions => ["activation_code IS NOT NULL"]
+  # has_finder :any
+  
   # Virtual attribute for the unencrypted password
   attr_accessor :password
 

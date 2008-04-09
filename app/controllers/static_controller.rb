@@ -7,7 +7,7 @@ class StaticController < ApplicationController
       :order => "queries.created_at DESC", 
       :include => [:command, :user]
     )  
-    @users = User.find(:all, :order => :login)
+    @users = User.find(:all, :conditions => ["activation_code IS NULL"], :order => :login)
   end
   
 end
