@@ -1,9 +1,9 @@
 class CommandsController < ApplicationController
 
   before_filter :login_required, :except => [:index, :execute, :show]
-  before_filter :load_valid_user, :only => [:index, :execute, :show, :edit, :destroy]
+  before_filter :load_valid_user, :only => [:index, :execute, :show, :edit, :destroy, :search]
   #remaining filters dependent on load_valid_user
-  before_filter :permission_required_for_user, :only=>[:edit, :destroy]
+  before_filter :permission_required_for_user, :only=>[:edit, :destroy, :search]
   #double check this filter if changing method names ie show->display
   before_filter :load_command_by_user_and_keyword, :only=>[:show, :edit, :destroy]
   
@@ -22,6 +22,7 @@ class CommandsController < ApplicationController
     if params[:tag]
       if params[:tag].first
         @tags = params[:tag].first.gsub(" ", "+").split("+") 
+      #handles /:user/commands/tag case
       else
         flash[:warning] = 'No tag was specified. Please try again'
         redirect_to commands_path
@@ -29,7 +30,7 @@ class CommandsController < ApplicationController
       end
     end
     
-    pagination_params = {:order => "commands.queries_count_all DESC", :page => params[:page], :include => [:tags]}
+    pagination_params = index_pagination_params.dup
     
     if @tags
       if @user
@@ -56,6 +57,17 @@ class CommandsController < ApplicationController
       format.html # show.rhtml
       format.xml  { render :xml => @commands.to_xml }
     end
+  end
+  
+  def search
+    if params[:q].blank?
+      flash[:warning] = "Your search is empty. Try again."
+      @commands = [].paginate
+    else
+      all_commands = @user.commands.find(:all, :conditions=>["keyword REGEXP ? OR url REGEXP ?", params[:q], params[:q]])
+      @commands = all_commands.paginate(index_pagination_params)
+    end
+    render :action=>'index'
   end
   
   def execute
@@ -253,6 +265,10 @@ class CommandsController < ApplicationController
   end
   
   protected
+  
+  def index_pagination_params
+    {:order => "commands.queries_count_all DESC", :page => params[:page], :include => [:tags]}
+  end
   
   def load_command_by_user_and_keyword
     action_include_hash = {'edit'=>[:user], 'destroy'=>[:queries]}

@@ -1,6 +1,10 @@
 <h1 class="inline">
+	<% if @controller.action_name == 'search' %>
+		Search Results for '<%= params[:q] %>'
+	<% else %>
 	<%= @user ? whose_commands(@commands.first) : "All" %> commands
 	<%= "tagged with '#{@tags.join("+").gsub("+", "' and '")}'" unless @tags.blank? %>
+	<% end %>
 </h1>
 
 <ul class="bolder options header">

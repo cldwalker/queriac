@@ -27,6 +27,7 @@ ActionController::Routing::Routes.draw do |map|
   map.command   'commands/tag/*tag',              :controller => 'commands',  :action => 'index'
   map.command   ':login/commands',                :controller => 'commands',  :action => 'index'
   map.command   ':login/commands/tag/*tag',       :controller => 'commands',  :action => 'index'
+  map.command   ':login/commands/search',         :controller => 'commands', :action => 'search'
   
   map.command   ':login/:command/show',           :controller => 'commands', :action => 'show'  
   map.command   ':login/:command/edit',           :controller => 'commands', :action => 'edit'

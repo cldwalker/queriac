@@ -98,6 +98,31 @@ describe 'commands/index:' do
   end
 end
 
+describe 'commands/search:' do
+  setup_commands_controller_example_group
+  
+  setup_login_user
+  before(:all) {@command = create_command(:user=>@user)}
+  
+  it 'basic' do
+    get :search, :login=>@command.user.login, :q=>@command.keyword
+    response.should be_success
+    response.should render_template('index')
+    assigns[:commands][0].should be_an_instance_of(Command)
+  end
+
+  it 'basic w/ empty string' do
+    get :search, :login=>@command.user.login, :q=>''
+    response.should be_success
+    response.should render_template('index')
+    flash[:warning].should_not be_blank
+    assigns[:commands].should be_empty
+  end
+  
+  #user executing another user's private action
+  should_redirect_prohibited_action('search')
+end
+
 describe 'commands/execute:' do
   setup_commands_controller_example_group
   
