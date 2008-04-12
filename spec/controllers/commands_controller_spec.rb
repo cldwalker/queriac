@@ -123,6 +123,26 @@ describe 'commands/search:' do
   should_redirect_prohibited_action('search')
 end
 
+describe 'commands/tag_edit:' do
+  setup_commands_controller_example_group
+  
+  setup_login_user
+  before(:all) {@command = create_command(:user=>@user)}
+  
+  it 'basic' do
+    command2 = create_command(:user=>@user)
+    lambda {
+      get :tag_edit, :login=>@user.login, :v=>"#{@command.keyword},#{command2.keyword} so awesome"
+    }.should change(Tag, :count).by(2)
+    response.should be_redirect
+    flash[:notice].should_not be_blank
+    @command.tag_list.should == ['so', 'awesome']
+  end
+  it 'warns on blank tags'
+  it 'warns on no commands found'
+  should_redirect_prohibited_action('tag_edit')
+end
+
 describe 'commands/execute:' do
   setup_commands_controller_example_group
   

@@ -1,9 +1,9 @@
 class CommandsController < ApplicationController
 
   before_filter :login_required, :except => [:index, :execute, :show]
-  before_filter :load_valid_user, :only => [:index, :execute, :show, :edit, :destroy, :search]
+  before_filter :load_valid_user, :except=>[:new, :create, :update]
   #remaining filters dependent on load_valid_user
-  before_filter :permission_required_for_user, :only=>[:edit, :destroy, :search]
+  before_filter :permission_required_for_user, :only=>[:edit, :destroy, :search, :tag_edit]
   #double check this filter if changing method names ie show->display
   before_filter :load_command_by_user_and_keyword, :only=>[:show, :edit, :destroy]
   
@@ -68,6 +68,30 @@ class CommandsController < ApplicationController
       @commands = all_commands.paginate(index_pagination_params)
     end
     render :action=>'index'
+  end
+  
+  def tag_edit
+    edited_commands = []
+    keyword_string, tags = params[:v].split(/\s+/, 2)
+    keywords = keyword_string.split(',')
+    unless tags.blank?
+      keywords.each do |n| 
+        if (cmd = @user.commands.find_by_keyword(n))
+          cmd.update_tags(tags)
+          edited_commands << cmd
+        end
+      end
+    end
+    if tags.blank?
+      flash[:warning] = "No tags specified. Please try again."
+      redirect_to @user.commands_path
+    elsif edited_commands.empty?
+      flash[:warning] = "Failed to find commands: #{keywords.to_sentence}"
+      redirect_to @user.commands_path
+    else
+      flash[:notice] = "Updated tags for commands: #{edited_commands.map(&:keyword).to_sentence}."
+      redirect_to edited_commands[0].show_path
+    end
   end
   
   def execute
