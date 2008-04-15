@@ -123,7 +123,31 @@ describe 'commands/search:' do
   should_redirect_prohibited_action('search')
 end
 
-describe 'commands/tag_edit:' do
+describe 'commands/tag_add_remove:' do
+  setup_commands_controller_example_group
+  setup_login_user
+  before(:all) {@command = create_command(:user=>@user)}
+  
+  it 'basic' do
+    tag1 = create_tag
+    @command.tags << tag1
+    command2 = create_command(:user=>@user)
+    tag2 = create_tag
+    tag3 = create_tag
+    command2.tags << tag2
+    command2.tags << tag3
+    
+    lambda {
+      get :tag_add_remove, :v=>"#{@command.keyword},#{command2.keyword} -#{tag2.name} -#{tag3.name} sweet"
+    }.should change(Tag, :count).by(1)
+    response.should be_redirect
+    flash[:notice].should_not be_blank
+    @command.tag_list.should == [tag1.name, 'sweet']
+    command2.tag_list.should == ['sweet']
+  end
+end
+
+describe 'commands/tag_set:' do
   setup_commands_controller_example_group
   
   setup_login_user
@@ -132,15 +156,16 @@ describe 'commands/tag_edit:' do
   it 'basic' do
     command2 = create_command(:user=>@user)
     lambda {
-      get :tag_edit, :login=>@user.login, :v=>"#{@command.keyword},#{command2.keyword} so awesome"
+      get :tag_set, :v=>"#{@command.keyword},#{command2.keyword} so awesome"
     }.should change(Tag, :count).by(2)
     response.should be_redirect
     flash[:notice].should_not be_blank
     @command.tag_list.should == ['so', 'awesome']
+    command2.tag_list.should == ['so', 'awesome']
   end
-  it 'warns on blank tags'
+  
+  it 'warns on blank tags'  
   it 'warns on no commands found'
-  should_redirect_prohibited_action('tag_edit')
 end
 
 describe 'commands/execute:' do
@@ -303,6 +328,28 @@ describe 'commands/show (default as anonymous user):' do
   end
   
   it "publicity of user's own command vs another's command"
+end
+
+describe 'commands/copy_yubnub_command:' do
+  setup_commands_controller_example_group
+  
+  setup_login_user
+  
+  #need to mock out open + Hpricot calls
+  it "basic"
+  it "warns if parsing yubnub man page yields fails"
+  
+  it "warns if an invalid keyword is given to yubnub" do
+    get :copy_yubnub_command, :keyword=>':.junk'
+    response.should redirect_to(current_user.home_path)
+    flash[:warning].should match(/not.*valid/)
+  end
+  
+  it "warns if no keyword is given to yubnub" do
+    get :copy_yubnub_command
+    response.should redirect_to(current_user.home_path)
+    flash[:warning].should match(/not.*valid/)
+  end
 end
 
 describe 'commands/new:' do

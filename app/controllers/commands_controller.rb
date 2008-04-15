@@ -1,9 +1,9 @@
 class CommandsController < ApplicationController
 
   before_filter :login_required, :except => [:index, :execute, :show]
-  before_filter :load_valid_user, :except=>[:new, :create, :update]
+  before_filter :load_valid_user, :except=>[:new, :create, :update, :copy_yubnub, :tag_set, :tag_add_remove]
   #remaining filters dependent on load_valid_user
-  before_filter :permission_required_for_user, :only=>[:edit, :destroy, :search, :tag_edit]
+  before_filter :permission_required_for_user, :only=>[:edit, :destroy, :search]
   #double check this filter if changing method names ie show->display
   before_filter :load_command_by_user_and_keyword, :only=>[:show, :edit, :destroy]
   
@@ -70,28 +70,38 @@ class CommandsController < ApplicationController
     render :action=>'index'
   end
   
-  def tag_edit
-    edited_commands = []
-    keyword_string, tags = params[:v].split(/\s+/, 2)
-    keywords = keyword_string.split(',')
-    unless tags.blank?
+  def tag_add_remove
+    keywords, tag_string = parse_tag_input
+    
+    successful_commands = []
+    unless tag_string.blank?
+      #TODO: should move \w+ to a validation regex constant
+      remove_list, add_list = tag_string.scan(/-?\w+/).partition {|e| e[0,1] == '-' }
+      remove_list.map! {|e| e[1..-1]}
       keywords.each do |n| 
-        if (cmd = @user.commands.find_by_keyword(n))
-          cmd.update_tags(tags)
+        if (cmd = current_user.commands.find_by_keyword(n))
+          cmd.tag_list.add(add_list)
+          cmd.tag_list.remove(remove_list)
+          cmd.save
+          successful_commands << cmd
+        end
+      end
+    end
+    render_tag_action(tag_string, keywords, successful_commands)
+  end
+  
+  def tag_set
+    edited_commands = []
+    keywords, tag_string = parse_tag_input
+    unless tag_string.blank?
+      keywords.each do |n| 
+        if (cmd = current_user.commands.find_by_keyword(n))
+          cmd.update_tags(tag_string)
           edited_commands << cmd
         end
       end
     end
-    if tags.blank?
-      flash[:warning] = "No tags specified. Please try again."
-      redirect_to @user.commands_path
-    elsif edited_commands.empty?
-      flash[:warning] = "Failed to find commands: #{keywords.to_sentence}"
-      redirect_to @user.commands_path
-    else
-      flash[:notice] = "Updated tags for commands: #{edited_commands.map(&:keyword).to_sentence}."
-      redirect_to edited_commands[0].show_path
-    end
+    render_tag_action(tag_string, keywords, edited_commands)
   end
   
   def execute
@@ -190,6 +200,31 @@ class CommandsController < ApplicationController
     end
   end
 
+  def copy_yubnub_command
+    #keyword regex is strict for now, should find out what is an acceptable yubnub command
+    if params[:keyword] && (keyword = params[:keyword].scan(/^\w+/).first)
+      begin
+        if (doc = Hpricot(open("http://yubnub.org/kernel/man?args=#{keyword}")))
+          if (url = (doc/"span.muted")[0].inner_html)
+            new_params = {:action=>'new', :keyword=>keyword, :url=>url}
+            description = (doc/"pre").first.inner_html rescue nil
+            new_params.merge!(:description=>description) if description
+            redirect_to new_params #{:action=>'new'}.merge(new_params)
+            return
+          end
+        end
+      rescue
+        flash[:warning] = "Failed to parse yubnub keyword '#{params[:keyword]}'"
+        redirect_back_or_default current_user.home_path
+        return
+      end
+      flash[:warning] = "Failed to parse yubnub keyword '#{params[:keyword]}'"
+    else
+      flash[:warning] = "The keyword '#{params[:keyword]}' is not a valid keyword. Please try again."      
+    end
+    redirect_back_or_default current_user.home_path
+  end
+  
   def new  
     @command = Command.new
     
@@ -289,6 +324,25 @@ class CommandsController < ApplicationController
   end
   
   protected
+  
+  def parse_tag_input
+    keyword_string, tags = params[:v].split(/\s+/, 2)
+    keywords = keyword_string.split(',')
+    return keywords, tags
+  end
+  
+  def render_tag_action(tag_string, keywords, successful_commands)
+    if tag_string.blank?
+      flash[:warning] = "No tags specified. Please try again."
+      redirect_to current_user.commands_path
+    elsif successful_commands.empty?
+      flash[:warning] = "Failed to find commands: #{keywords.to_sentence}"
+      redirect_to current_user.commands_path
+    else
+      flash[:notice] = "Updated tags for commands: #{successful_commands.map(&:keyword).to_sentence}."
+      redirect_to successful_commands[0].show_path
+    end
+  end
   
   def index_pagination_params
     {:order => "commands.queries_count_all DESC", :page => params[:page], :include => [:tags]}

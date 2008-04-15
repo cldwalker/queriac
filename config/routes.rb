@@ -1,4 +1,8 @@
 ActionController::Routing::Routes.draw do |map|
+  map.command   'commands/copy_yubnub_command',   :controller => 'commands', :action => 'copy_yubnub_command'
+  map.command   'commands/tag_set',               :controller => 'commands', :action => 'tag_set'
+  map.command   'commands/tag_add_remove',        :controller => 'commands', :action => 'tag_add_remove'
+  
   map.resources :commands, :member => { :import => :get }
   map.resources :users, :sessions
   map.resources :commands, :member => { :execute => :get }
@@ -28,7 +32,6 @@ ActionController::Routing::Routes.draw do |map|
   map.command   ':login/commands',                :controller => 'commands',  :action => 'index'
   map.command   ':login/commands/tag/*tag',       :controller => 'commands',  :action => 'index'
   map.command   ':login/commands/search',         :controller => 'commands', :action => 'search'
-  map.command   ':login/commands/tag_edit',       :controller => 'commands', :action => 'tag_edit'
   
   map.command   ':login/:command/show',           :controller => 'commands', :action => 'show'  
   map.command   ':login/:command/edit',           :controller => 'commands', :action => 'edit'
