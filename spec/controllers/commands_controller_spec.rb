@@ -14,7 +14,7 @@ module CommandsControllerHelper
     it "redirect nonexistent user" do
       get action, :login=>'invalid_login', :command=>'valid'
       response.should be_redirect
-      flash[:warning].should_not be_nil
+      flash[:warning].should_not be_blank
     end
   end
 
@@ -49,7 +49,6 @@ describe 'commands/index:' do
   
   def basic_expectations
     response.should be_success
-    response.should render_template('index')
     assigns[:commands][0].should be_an_instance_of(Command)
   end
   
@@ -315,7 +314,7 @@ describe 'commands/show (default as anonymous user):' do
     create_query(:command=>command)
     get :show, :login=>command.user.login, :command=>command.keyword
     response.should be_redirect
-    flash[:warning].should_not be_nil
+    flash[:warning].should_not be_blank
   end
   
   it "logged-in user viewing their own private command" do
@@ -365,7 +364,6 @@ describe 'commands/new:' do
   
   def basic_expectations
     response.should be_success
-    response.should render_template(:new)
     assigns[:command].should be_an_instance_of(Command)
   end
   
@@ -399,7 +397,7 @@ describe 'commands/new:' do
     Command.should_receive(:find).and_return(ancestor)
     get 'new', :ancestor=>'mock_id'
     response.should be_redirect
-    flash[:warning].should_not be_nil
+    flash[:warning].should_not be_blank
   end
 end
 
@@ -476,7 +474,7 @@ describe 'commands/update:' do
     put :update, :id=>command.id, :command=>{:name=>'another name'}, :tags=>''
     command.reload.name.should eql('another name')
     response.should be_redirect
-    flash[:notice].should_not be_nil
+    flash[:notice].should_not be_blank
   end
   
   it "redirect a prohibited action" do
@@ -514,7 +512,7 @@ describe 'commands/destroy:' do
       get 'destroy', :login=>current_user.login, :command=>command.keyword
     }.should change(Command, :count).by(-1)
     response.should be_redirect
-    flash[:notice].should_not be_nil
+    flash[:notice].should_not be_blank
   end
   
   should_redirect_nonexistent_user('destroy')
