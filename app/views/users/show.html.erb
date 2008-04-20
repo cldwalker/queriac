@@ -12,7 +12,11 @@
 			</ul>
 		
 		</div>
-		
+	
+	<% elsif params[:private_command] %>	
+		<div class="flash-msg warning">The <b><%= params[:private_command] %></b> command is private. You must <%= link_to("log in", new_session_path) %> to use it.</div>
+	<% elsif params[:illegal_command] %>
+		<div class="flash-msg warning">Sorry, <b><%= @user.login %></b> has privatized the <b><%= params[:illegal_command] %></b> command.</div>		
 	<% end %>
 	
 	

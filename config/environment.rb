@@ -83,4 +83,4 @@ require 'has_finder'
 require 'open-uri'
 require 'hpricot'
 
-STOPWORDS = %w(default_to delete tags help home tutorial settings queries commands)
+STOPWORDS = %w(default_to delete tags help home tutorial settings queries commands opensearch)

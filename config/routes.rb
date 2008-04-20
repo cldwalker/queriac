@@ -4,8 +4,9 @@ ActionController::Routing::Routes.draw do |map|
   map.command   'commands/tag_add_remove',        :controller => 'commands', :action => 'tag_add_remove'
   
   map.resources :commands, :member => { :import => :get }
-  map.resources :users, :sessions
   map.resources :commands, :member => { :execute => :get }
+  map.resources :users, :sessions
+  map.resources :users, :member => { :opensearch => :get }
     
   map.activate  '/activate/:activation_code',     :controller => 'users', :action => 'activate'
   map.account   ':login/account',                 :controller => 'users', :action => 'account'
@@ -15,12 +16,11 @@ ActionController::Routing::Routes.draw do |map|
   map.connect   'help',                           :controller => 'static', :action => 'help'
   map.connect   '',                               :controller => "static", :action => "home"
 
-
   # map.user '/rss/:login', :controller => 'users', :action => 'show'
   map.query     'queries',                        :controller => 'queries', :action => 'index'
 
   map.user      ':login',                         :controller => 'users', :action => 'show'
-  
+  map.user      ':login/opensearch',              :controller => 'users', :action => 'opensearch'
 
   map.query     'queries/tag/*tag',               :controller => 'queries', :action => 'index'
   map.query     ':login/:command/queries',        :controller => 'queries', :action => 'index'

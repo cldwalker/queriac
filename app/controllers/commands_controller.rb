@@ -143,15 +143,11 @@ class CommandsController < ApplicationController
       return
     end
 
-    # Don't allow outsiders to run private commands
-    
+    # Don't allow outsiders to run private commands  
     if @command.private? && !owner?
-      if logged_in?
-       redirect_to @user.home_path + "?private_command=#{keyword}"
-      else 
-        redirect_to "" + "?bad_command=#{keyword}"
-      end
-      return
+      redirect_path = @user.home_path
+      redirect_path << (logged_in? ? "?illegal_command=#{keyword}" : "?private_command=#{keyword}")
+      redirect_to(redirect_path) and return
     end
     
     # Store the query in the database (or not)

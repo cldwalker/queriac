@@ -1,7 +1,7 @@
 
 class UsersController < ApplicationController
   before_filter :login_required, :only => [:account]
-  before_filter :load_user_from_param, :only => [:show]
+  before_filter :load_user_from_param, :only => [:show, :opensearch]
   before_filter :redirect_invalid_user, :only=>[:show]
 
   def new
@@ -25,6 +25,12 @@ class UsersController < ApplicationController
     # @commands.select!{|c| c.tags.map(&:name).include? @tag } if @tag
     
     @users = User.find(:all, :conditions => ["activation_code IS NULL"], :order => :login)
+  end
+  
+  def opensearch
+    respond_to do |format|
+      format.xml  { render :actions => "opensearch" }
+    end
   end
 
   def create

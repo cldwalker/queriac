@@ -7,7 +7,18 @@
 </p>	
 
 
-<h2 class="browser_header firefox">Firefox (All Versions)</h2>
+<h2 class="browser_header firefox">Firefox (All recent versions)</h2>
+
+<% if logged_in? %>
+<h3>Option A: Add Queriac to your Search Bar</h3>
+<ol class="normal">
+	<%= image_tag "screenshots/firefox_opensearch_screenshot.png" %>
+	<li><a href="#" onclick="javascript:addp('http://localhost:3000<%= current_user.opensearch_path %>');">Click here to install Queriac in your search bar.</a>
+</ol>
+
+<h3>Option B: Add Queriac to your Address Bar (aka Location Bar)</h3>
+<% end %>
+
 <ol class="normal">
 	<li>Open Firefox and type <code>about:config</code> in the address bar. You may get a warning about being careful. That's fine. Carry on. This will open up a big list of browser preferences.</li>
 	<li>In the filter field, type <code>keyword</code>. This should filter the list down to just a couple of items.</li>

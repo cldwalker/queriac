@@ -128,6 +128,14 @@ h2.opera {
 	background: url(../images/icons/browser/opera.png) no-repeat 0 center;
 }
 
+h3 {
+	line-height: 1em;
+	font-size: 1.4em;
+	margin: 15px 0 0px 0;
+	color: #444;
+}
+
+
 /* FLASH / MESSAGE BOXES
 *********************************************************************************/
 

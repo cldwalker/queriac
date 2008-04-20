@@ -15,3 +15,11 @@ function handle_publicity_checkboxes(input) {
     l.addClassName("disabled");
   }  
 }
+
+function addp(csurl) {
+  try {
+    window.external.AddSearchProvider(csurl);
+  } catch (e) {
+    alert("You need to use Internet Explorer (7.0 or later) or Firefox (2.0 or later) to install the OpenSearch plug-in.");
+  }
+}
