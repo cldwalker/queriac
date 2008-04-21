@@ -27,3 +27,5 @@ ActionMailer::Base.smtp_settings = {
   :password => ENV['QUERIAC_SMTP_PASSWORD']
 }
 ActionMailer::Base.delivery_method = :smtp
+
+HOST = 'http://queri.ac'

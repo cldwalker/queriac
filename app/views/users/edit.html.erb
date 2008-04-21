@@ -13,7 +13,7 @@
 <h3>Option A: Add Queriac to your Search Bar</h3>
 <ol class="normal">
 	<%= image_tag "screenshots/firefox_opensearch_screenshot.png" %>
-	<li><a href="#" onclick="javascript:addp('http://localhost:3000<%= current_user.opensearch_path %>');">Click here to install Queriac in your search bar.</a>
+	<li><a href="#" onclick="javascript:addp('<%= HOST + current_user.opensearch_path %>');">Click here to install Queriac in your search bar.</a>
 </ol>
 
 <h3>Option B: Add Queriac to your Address Bar (aka Location Bar)</h3>
@@ -25,12 +25,12 @@
 	<li>Make sure <code>keyword.enabled</code> is set to <code>true</code></li>
 	<li>
 		Set <code>keyword.URL</code> to 
-		<%= logged_in? ? "<code>http://queri.ac/#{current_user.login}/</code>" : "<code>http://queri.ac/youraccountname/</code>, using your account name of course." %> 
+		<%= logged_in? ? "<code>#{HOST}/#{current_user.login}/</code>" : "<code>#{HOST}/youraccountname/</code>, using your account name of course." %> 
 		<b>Don't forget the trailing slash!</b>
 	</li>
 	<li>
 		That's it. Visit your account page at 
-		<%= logged_in? ? link_to("http://queri.ac/#{current_user.login}", current_user.login) : "<i>http://queri.ac/youraccountname</i>" %>
+		<%= logged_in? ? link_to("#{HOST}/#{current_user.login}", current_user.login) : "<i>#{HOST}/youraccountname</i>" %>
 		to start adding commands.
 	</li>
 </ol>
@@ -53,7 +53,7 @@
 	<li>Delete all of Keywurl's pre-installed keywords, except for <code>default</code>. You won't be needing them.</li>
 	<li>
 		Edit the <code>default</code> keyword, and paste the following: 
-		<%= logged_in? ? "<code>http://queri.ac/#{current_user.login}/$$$</code>" : "<code>http://queri.ac/youraccountname/$$$</code>, using your account name of course." %> 
+		<%= logged_in? ? "<code>#{HOST}/#{current_user.login}/$$$</code>" : "<code>#{HOST}/youraccountname/$$$</code>, using your account name of course." %> 
 	</li>
 	<% if logged_in? %>
 	<li>
@@ -75,12 +75,12 @@
 	<li>Set <code>keyword.enabled</code> to <code>true</code>.</li>
 	<li>
 		Set <code>keyword.URL</code> to 
-		<%= logged_in? ? "<code>http://queri.ac/#{current_user.login}/</code>" : "<code>http://queri.ac/youraccountname/</code>, using your account name of course." %> 
+		<%= logged_in? ? "<code>#{HOST}/#{current_user.login}/</code>" : "<code>#{HOST}/youraccountname/</code>, using your account name of course." %> 
 		<b>Don't forget the trailing slash!</b>
 	</li>
 	<li>
 		That's it. Visit your account page at 
-		<%= logged_in? ? link_to("http://queri.ac/#{current_user.login}", current_user.login) : "<i>http://queri.ac/youraccountname</i>" %>
+		<%= logged_in? ? link_to("#{HOST}/#{current_user.login}", current_user.login) : "<i>#{HOST}/youraccountname</i>" %>
 		to start adding commands.
 	</li>
 </ol>

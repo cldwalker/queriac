@@ -84,3 +84,5 @@ require 'open-uri'
 require 'hpricot'
 
 STOPWORDS = %w(default_to delete tags help home tutorial settings queries commands opensearch)
+
+HOST = 'http://localhost:3000' unless Object.const_defined?('HOST')
