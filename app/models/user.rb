@@ -47,7 +47,7 @@ class User < ActiveRecord::Base
   before_create :make_activation_code 
   
   def validate
-    if STOPWORDS.include?(self.login.downcase)
+    if self.login && STOPWORDS.include?(self.login.downcase)
       errors.add_to_base "Sorry, the username you've chosen (#{self.login}) is reserved by the system. Please use something else."
     end
   end

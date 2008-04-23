@@ -49,13 +49,24 @@ Spec::Runner.configure do |config|
   
   #should use mocks for create_* once controller specs focus only on controller logic
   def create_user(hash={})
-    User.create(random_valid_user_attributes.merge(hash))
+    #User.create(random_valid_user_attributes.merge(hash))
+    #hacky but done in order to avoid expensive @user.after_create
+    user = User.new(random_valid_user_attributes.merge(hash))
+    user.send(:create_without_callbacks)
+    user
   end
   
   def create_command(hash={})
     user = hash[:user] || create_user
-    user.commands.create(random_valid_command_attributes.merge(hash))
-    #Command.create(random_valid_command_attributes.merge(hash))
+    hash = random_valid_command_attributes.merge(hash)
+    #these should match what's in after_validation()
+    if hash[:kind] == 'shortcut'
+      hash[:url].gsub!(DEFAULT_PARAM, '')
+    end
+    if hash[:bookmarklet]
+      hash[:url].sub!('http', 'javascript')
+    end
+    user.commands.create(hash)
   end
   
   def create_query(hash={})
@@ -75,6 +86,13 @@ Spec::Runner.configure do |config|
     @controller.stub!(:login_required).and_return(true)
     @controller.stub!(:current_user).and_return(user)
     user
+  end
+  
+  #using before(:all) to minimize db calls (speed up tests) until objects can be mocked
+  #coupling examples to the same test object is a no-no: http://rspec.info/documentation/before_and_after.html
+  def setup_login_user
+    before(:all) { @user = create_user }
+    before(:each) { login_user(@user)}
   end
   
   def current_user; @controller.current_user; end

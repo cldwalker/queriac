@@ -1,14 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 module CommandsControllerHelper
-  
-  #using before(:all) to minimize db calls (speed up tests) until objects can be mocked
-  #coupling examples to the same test object is a no-no: http://rspec.info/documentation/before_and_after.html
-  def setup_login_user
-    before(:all) { @user = create_user }
-    before(:each) { login_user(@user)}
-  end
-
   #common examples
   def should_redirect_nonexistent_user(action)
     it "redirect nonexistent user" do
@@ -163,8 +155,17 @@ describe 'commands/tag_set:' do
     command2.tag_list.should == ['so', 'awesome']
   end
   
-  it 'warns on blank tags'  
-  it 'warns on no commands found'
+  it 'warns on blank tags' do
+    get :tag_set, :v=>@command.keyword
+    response.should be_redirect
+    flash[:warning].should match(/No tags/)
+  end
+   
+  it 'warns on no commands found' do
+    get :tag_set, :v=>"invalid_command cool"
+    response.should be_redirect
+    flash[:warning].should match(/Failed.*commands/)
+  end
 end
 
 describe 'commands/execute:' do
@@ -500,7 +501,7 @@ describe 'commands/update:' do
   end
 end
 
-#TODO: update get to delete when update is done in code
+#update get to delete when changed in code
 describe 'commands/destroy:' do
   setup_commands_controller_example_group
   

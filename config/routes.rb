@@ -1,10 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
-  map.command   'commands/copy_yubnub_command',   :controller => 'commands', :action => 'copy_yubnub_command'
-  map.command   'commands/tag_set',               :controller => 'commands', :action => 'tag_set'
-  map.command   'commands/tag_add_remove',        :controller => 'commands', :action => 'tag_add_remove'
-  
-  map.resources :commands, :member => { :import => :get }
-  map.resources :commands, :member => { :execute => :get }
+  map.resources :commands, :member => { :execute => :get } , :collection=>{:tag_set=>:get, :tag_add_remove=>:get,
+    :copy_yubnub_command=>:get}
   map.resources :users, :sessions
   map.resources :users, :member => { :opensearch => :get }
     

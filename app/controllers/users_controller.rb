@@ -1,6 +1,6 @@
 
 class UsersController < ApplicationController
-  before_filter :login_required, :only => [:account]
+  before_filter :login_required, :only => [:destroy]
   before_filter :load_user_from_param, :only => [:show, :opensearch]
   before_filter :redirect_invalid_user, :only=>[:show]
 
