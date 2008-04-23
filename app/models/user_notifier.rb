@@ -1,10 +1,7 @@
 class UserNotifier < ActionMailer::Base
   def signup_notification(user)
     setup_email(user)
-    @subject    += 'Please activate your new account'
-  
     @body[:url]  = "http://queri.ac/activate/#{user.activation_code}"
-  
   end
   
   def activation(user)
@@ -16,8 +13,8 @@ class UserNotifier < ActionMailer::Base
   protected
     def setup_email(user)
       @recipients  = "#{user.email}"
-      @from        = "admin@queri.ac"
-      @subject     = "queri.ac Signup "
+      @from        = "Queriac Admin <admin@queri.ac>"
+      @subject     = "Welcome to Queriac!"
       @sent_on     = Time.now
       @body[:user] = user
     end
