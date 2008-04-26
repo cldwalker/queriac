@@ -7,7 +7,7 @@
 			<p>The command you entered (<%= keyword %>) does not exist. What do you want to do about it?</p>
 		
 			<ul class="options toolbar">
-				<li class="edit"><%= link_to("Pick a default command and direct orphan queries to it.", "/settings") %></li>
+				<li class="edit"><%= link_to("Pick a default command and direct orphan queries to it.", settings_path) %></li>
 				<li class="add"><%= link_to("Create a new command with keyword '#{keyword}'", new_command_path(:keyword => keyword)) %></li>
 			</ul>
 		

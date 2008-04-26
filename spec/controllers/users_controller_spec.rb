@@ -67,9 +67,21 @@ describe 'users/show:' do
     assigns[:bookmarklets][0].should be_an_instance_of(Command)
   end
   
+  it 'redirect when no user specified' do
+    get :show
+    response.should be_redirect
+    flash[:warning].should_not be_blank
+  end
+  
   it 'show bad command'
   it 'show private command'
   it 'show illegal command'
+end
+
+describe 'users/opensearch:' do
+  setup_users_controller_example_group
+  
+  it 'basic'
 end
 
 describe 'users/create:' do
@@ -77,7 +89,7 @@ describe 'users/create:' do
   
   it 'basic' do
     lambda {
-    lambda { post :create, :user=>random_valid_user_attributes }.should change(User, :count).by(1)
+      lambda { post :create, :user=>random_valid_user_attributes }.should change(User, :count).by(1)
     }.should change(Command, :count).by_at_least(8)
     response.should be_redirect
     flash[:notice].should_not be_blank
@@ -106,10 +118,63 @@ describe 'users/edit:' do
   it 'basic as anonymous user (tutorial)'
 end
 
-
-describe 'misc' do
+describe 'users/update:' do
   setup_users_controller_example_group
-  it 'users/update'
-  it 'users/activate'
-  it 'users/destroy'
+  
+  it 'basic' do
+    login_user :default_command_id=>1
+    current_user.default_command_id.should_not be_nil
+    put :update, :user=>{:login=>'cool'}, :use_default_command=>'no'
+    response.should be_redirect
+    flash[:notice].should_not be_blank
+    current_user.reload
+    current_user.login.should == 'cool'
+    current_user.default_command_id.should be_nil
+  end
+  
+  it 'handles failed update' do
+    user = create_user
+    user.stub!(:update_attributes).and_return(false)
+    login_user user
+    put :update, :user=>{:login=>'cool'}
+    response.should be_success
+    response.should render_template('edit')
+    assigns[:user].should be_an_instance_of(User)
+    current_user.reload.login.should_not == 'cool'
+  end
+end
+
+describe 'users/activate:' do
+  setup_users_controller_example_group
+  
+  before(:each) { @user = create_user; @user.send(:make_activation_code); @user.save}
+  
+  it 'activates user' do
+    get :activate, :activation_code=>@user.activation_code
+    response.should redirect_to(settings_path)
+    flash[:notice].should_not be_blank
+    @user.reload.should be_activated
+  end
+  
+  it 'fails silently' do
+    get :activate, :activation_code=>'XXXXXXX'
+    response.should redirect_to(settings_path)
+    flash[:notice].should be_blank
+    @user.reload.should_not be_activated
+  end
+end
+
+describe 'users/destroy:' do
+  setup_users_controller_example_group
+  before(:each) {@user = login_user; create_command(:user=>@user)}
+  
+  it 'basic' do
+    lambda {
+    lambda {
+      delete :destroy
+    }.should change(User, :count).by(-1)
+    }.should change(Command, :count).by(-1)
+    response.should be_redirect
+    flash[:notice].should_not be_blank
+  end
 end

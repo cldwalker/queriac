@@ -1,8 +1,8 @@
 
 class UsersController < ApplicationController
-  before_filter :login_required, :only => [:destroy]
-  before_filter :load_user_from_param, :only => [:show, :opensearch]
-  before_filter :redirect_invalid_user, :only=>[:show]
+  before_filter :login_required, :only => [:destroy, :update]
+  before_filter :load_valid_user, :only=>:show
+  before_filter :load_user_from_param, :only => [:opensearch]
 
   def new
   end
@@ -48,7 +48,7 @@ class UsersController < ApplicationController
     # redirect_back_or_default('/')
     flash[:notice] = "Thanks for signing up! Before you can log in, you'll have to verify your account by checking your email."
     # flash[:notice] = "Thanks for signing up! A few commands were automatically created for you to get you started.."
-    redirect_to ""
+    redirect_to home_path
   rescue ActiveRecord::RecordInvalid
     render :action => 'new'
   end
@@ -81,17 +81,16 @@ class UsersController < ApplicationController
       current_user.activate
       flash[:notice] = "Account activation complete! You are now logged in."
     end
-    redirect_to "/settings"
+    redirect_to settings_path
   end
   
   def destroy
-    raise "wtf"
     @user = current_user
     @user.destroy
 
     respond_to do |format|
       flash[:notice] = "Your account has been deleted. Sorry to see you go."      
-      format.html { redirect_to "" }
+      format.html { redirect_to home_path }
       format.xml  { head :ok }
     end
   end

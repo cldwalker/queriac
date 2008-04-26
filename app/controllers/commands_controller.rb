@@ -1,8 +1,9 @@
 class CommandsController < ApplicationController
 
   before_filter :login_required, :except => [:index, :execute, :show]
-  before_filter :load_valid_user, :except=>[:new, :create, :update, :copy_yubnub, :tag_set, :tag_add_remove]
-  #remaining filters dependent on load_valid_user
+  before_filter :load_valid_user, :except=>[:index, :new, :create, :update, :copy_yubnub_command, :tag_set, :tag_add_remove]
+  before_filter :load_valid_user_if_specified, :only=>:index
+  #remaining filters dependent on load_valid_user*
   before_filter :permission_required_for_user, :only=>[:edit, :destroy, :search]
   #double check this filter if changing method names ie show->display
   before_filter :load_command_by_user_and_keyword, :only=>[:show, :edit, :destroy]
@@ -48,7 +49,7 @@ class CommandsController < ApplicationController
     
     if @commands.empty?
       flash[:warning] = "Sorry, no commands matched your request."
-      redirect_to ""
+      redirect_to home_path
       return
     end
 

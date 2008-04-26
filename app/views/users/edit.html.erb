@@ -3,7 +3,7 @@
 <h1>Configuring your browser for Queriac</h1>
 <p>
 	This page will help you get your browser set up for use with Queriac. For a more verbose explanation 
-	of Queriac and its various capabilities, visit the <%= link_to "help page", :controller => "static", :action => "help" %>.
+	of Queriac and its various capabilities, visit the <%= link_to "help page", help_path %>.
 </p>	
 
 
@@ -139,8 +139,7 @@
 
 		<%= error_messages_for :user %>
 
-
-		<% form_for(:user, :url => "/users/#{@user.id}", :html => { :method => :put }) do |f| %>
+		<% form_for(:user, @user, :url => user_path(@user), :html => { :method => :put }) do |f| %>
 
 			<div>
 			  <%= f.label :first_name %><br />

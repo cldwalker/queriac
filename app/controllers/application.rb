@@ -11,6 +11,11 @@ class ApplicationController < ActionController::Base
 
   def load_valid_user
     load_user_from_param
+    redirect_no_user
+  end
+  
+  def load_valid_user_if_specified
+    load_user_from_param
     redirect_invalid_user
   end
   
@@ -18,11 +23,20 @@ class ApplicationController < ActionController::Base
     @user = (logged_in? && current_user.login==params[:login]) ? current_user : User.find_by_login(params[:login])
   end
   
+  def redirect_no_user
+    if @user.nil?
+      flash[:warning] = "The user '#{params[:login]}' doesn't exist."
+      redirect_to home_path
+      return false
+    end
+    true
+  end
+  
   #this won't redirect actions that don't need params[:login] to be reached ie commands/index
   def redirect_invalid_user
     if @user.nil? && ! params[:login].nil?
       flash[:warning] = "The user '#{params[:login]}' doesn't exist."
-      redirect_to ''
+      redirect_to home_path
       return false
     end
     true

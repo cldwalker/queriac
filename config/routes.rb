@@ -1,16 +1,16 @@
 ActionController::Routing::Routes.draw do |map|
   map.resources :commands, :member => { :execute => :get } , :collection=>{:tag_set=>:get, :tag_add_remove=>:get,
     :copy_yubnub_command=>:get}
-  map.resources :users, :sessions
+  map.resources :sessions
   map.resources :users, :member => { :opensearch => :get }
     
   map.activate  '/activate/:activation_code',     :controller => 'users', :action => 'activate'
   map.account   ':login/account',                 :controller => 'users', :action => 'account'
 
-  map.connect   'settings',                       :controller => 'users', :action => 'edit'
+  map.settings   'settings',                      :controller => 'users', :action => 'edit'
   map.connect   'tutorial',                       :controller => 'users', :action => 'edit'
-  map.connect   'help',                           :controller => 'static', :action => 'help'
-  map.connect   '',                               :controller => "static", :action => "home"
+  map.help      'help',                           :controller => 'static', :action => 'help'
+  map.home      '',                               :controller => "static", :action => "home"
 
   # map.user '/rss/:login', :controller => 'users', :action => 'show'
   map.query     'queries',                        :controller => 'queries', :action => 'index'
