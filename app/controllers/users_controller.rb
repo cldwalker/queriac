@@ -4,6 +4,11 @@ class UsersController < ApplicationController
   before_filter :load_valid_user, :only=>:show
   before_filter :load_user_from_param, :only => [:opensearch]
 
+  def index
+    pagination_params = {:order => "users.created_at DESC", :page => params[:page]}
+    @users = User.paginate({:conditions => ["activation_code IS NULL"]}.merge(pagination_params))
+  end
+
   def new
   end
   
@@ -25,6 +30,7 @@ class UsersController < ApplicationController
     # @commands.select!{|c| c.tags.map(&:name).include? @tag } if @tag
     
     @users = User.find(:all, :conditions => ["activation_code IS NULL"], :order => :login)
+    @users.reject! {|u| u.commands.count < 15 }
   end
   
   def opensearch

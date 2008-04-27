@@ -320,7 +320,7 @@ ul.bolder li a {
 }
 
 ul.options li.add {
-	background: url(../images/icons/add.png) no-repeat left top;
+	background: url(../images/icons/add.png) no-repeat left center;
 }
 
 ul.options li.edit {

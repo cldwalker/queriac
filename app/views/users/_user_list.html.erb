@@ -1,0 +1,19 @@
+<h1>Top Users</h1>	
+
+<table>
+	<tr>
+		<th>Username</th>
+		<th class="centered">Commands</th>
+		<th class="centered">Queries</th>
+	</tr>
+	
+	<% for user in @users %>
+		<tr <%= cycle('class="offset"', '') -%>>	
+			<td><b><%= link_to user.login, user.home_path %></b></td>
+			<td class="centered"><%= user.commands.empty? ? "<span class=\"faded\">0</span>" : link_to(user.commands.count, user.commands_path) %> </td>
+			<td class="centered"><%= user.queries.empty? ? "<span class=\"faded\">0</span>" : link_to(user.queries.count, user.queries_path) %> </td>
+		</tr>
+	<% end %>
+</table>
+
+<p><%= link_to "View all active users", "/users", :class => "faded"  %></p>

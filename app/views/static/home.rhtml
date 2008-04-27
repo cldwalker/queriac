@@ -58,15 +58,6 @@
 	<p>Queri.ac is a one-man project at the moment so it's got its share of minor issues. If you find something, please submit a ticket at <%= link_to "Queriac's Google Code Project Page", "http://code.google.com/p/monoquery/issues/list" %>.</p>
 	
 
-	<h1>Users</h1>	
-	<ul class="users">
-	<% for user in @users %>
-		<li>
-			<b><%= link_to user.login, user.home_path %></b>
-			(<%= pluralize(user.commands.count, "command") %>, 
-			<%= pluralize(user.queries.count, "query") %>)
-		</li>
-	<% end %>
-	</ul>
+	<%= render :partial => "users/user_list"  %>
 
 </div>

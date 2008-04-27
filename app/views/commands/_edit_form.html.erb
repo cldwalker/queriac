@@ -35,9 +35,13 @@
 </div>
 
 <div class="floater">
-  <%= f.check_box :public, {:onclick => "handle_publicity_checkboxes(this);"} %> <%= f.label :public, "Publicize this command" %>
+  <%= f.check_box :public, {:onclick => "handle_publicity_checkboxes(this);"} %> <%= f.label :public, "Share this with the public" %>
 </div>
 
 <div class="floater">
-  <%= f.check_box :public_queries %> <%= f.label :public_queries, "Publicize queries on this command too", :id => "command_public_queries_label" %>
+  <%= f.check_box :public_queries %> <%= f.label :public_queries, "Share my queries too", :id => "command_public_queries_label" %>
+</div>
+
+<div class="floater">
+  <%= f.check_box :http_post %> <%= f.label :http_post, "Use HTTP POST" %>
 </div>

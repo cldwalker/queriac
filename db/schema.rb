@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 14) do
+ActiveRecord::Schema.define(:version => 15) do
 
   create_table "commands", :force => true do |t|
     t.string   "name"
@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(:version => 14) do
     t.boolean  "public_queries",      :default => true
     t.integer  "queries_count_all",   :default => 0
     t.integer  "queries_count_owner", :default => 0
+    t.boolean  "http_post",           :default => false
   end
 
   create_table "queries", :force => true do |t|

@@ -52,7 +52,6 @@ class CommandsController < ApplicationController
       redirect_to home_path
       return
     end
-
     
     respond_to do |format|
       format.html # show.rhtml
@@ -68,43 +67,9 @@ class CommandsController < ApplicationController
       all_commands = @user.commands.find(:all, :conditions=>["keyword REGEXP ? OR url REGEXP ?", params[:q], params[:q]])
       @commands = all_commands.paginate(index_pagination_params)
     end
-    render :action=>'index'
+    render :action => 'index'
   end
-  
-  def tag_add_remove
-    keywords, tag_string = parse_tag_input
     
-    successful_commands = []
-    unless tag_string.blank?
-      #TODO: should move \w+ to a validation regex constant
-      remove_list, add_list = tag_string.scan(/-?\w+/).partition {|e| e[0,1] == '-' }
-      remove_list.map! {|e| e[1..-1]}
-      keywords.each do |n| 
-        if (cmd = current_user.commands.find_by_keyword(n))
-          cmd.tag_list.add(add_list)
-          cmd.tag_list.remove(remove_list)
-          cmd.save
-          successful_commands << cmd
-        end
-      end
-    end
-    render_tag_action(tag_string, keywords, successful_commands)
-  end
-  
-  def tag_set
-    edited_commands = []
-    keywords, tag_string = parse_tag_input
-    unless tag_string.blank?
-      keywords.each do |n| 
-        if (cmd = current_user.commands.find_by_keyword(n))
-          cmd.update_tags(tag_string)
-          edited_commands << cmd
-        end
-      end
-    end
-    render_tag_action(tag_string, keywords, edited_commands)
-  end
-  
   def execute
     # Extract command and query string from params
     # (The join is here to bring query strings back together, as queries containing
@@ -171,6 +136,9 @@ class CommandsController < ApplicationController
       # Command is not Javascript, but is being executed in a Javascript context,
       # so convert the URL into Javascript that will redirect to the URL.
       # render :text => "document.window.location='http://shit.com';"
+      
+    elsif @command.http_post?
+      raise "POST!!!"
       
     else
       # Command is a simple URL to which we redirect
@@ -246,6 +214,41 @@ class CommandsController < ApplicationController
 
   def edit
   end
+  
+  def tag_add_remove
+    keywords, tag_string = parse_tag_input
+    
+    successful_commands = []
+    unless tag_string.blank?
+      #TODO: should move \w+ to a validation regex constant
+      remove_list, add_list = tag_string.scan(/-?\w+/).partition {|e| e[0,1] == '-' }
+      remove_list.map! {|e| e[1..-1]}
+      keywords.each do |n| 
+        if (cmd = current_user.commands.find_by_keyword(n))
+          cmd.tag_list.add(add_list)
+          cmd.tag_list.remove(remove_list)
+          cmd.save
+          successful_commands << cmd
+        end
+      end
+    end
+    render_tag_action(tag_string, keywords, successful_commands)
+  end
+  
+  def tag_set
+    edited_commands = []
+    keywords, tag_string = parse_tag_input
+    unless tag_string.blank?
+      keywords.each do |n| 
+        if (cmd = current_user.commands.find_by_keyword(n))
+          cmd.update_tags(tag_string)
+          edited_commands << cmd
+        end
+      end
+    end
+    render_tag_action(tag_string, keywords, edited_commands)
+  end
+
   
   def create
 

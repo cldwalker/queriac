@@ -1,9 +1,11 @@
 module ApplicationHelper
 
   def render_page_title
-    if @user || @command || @tag
+    if @user || @command || @tag || params[:controller] == "users"
       crumbs = ["queriac"]
+      crumbs << "users" if params[:controller] == "users" && params[:action] == "index"
       crumbs << @user.login if @user
+      crumbs << "commands" unless @commands.nil?
       crumbs << "tag" unless @tag.blank?
       crumbs << @tag unless @tag.blank?
       crumbs << @command.keyword unless @command.blank? || @command.new_record?
@@ -16,12 +18,14 @@ module ApplicationHelper
   
   def render_nav
     crumbs = [link_to("queriac", '/')]
+    crumbs << link_to("users", "/users") if params[:controller] == "users" && params[:action] == "index"
     crumbs << link_to(@user.login, @user.home_path) if @user
-    crumbs << link_to("commands", @user.commands_path) if @user && !@tag.blank?
+    crumbs << link_to("commands", @user.commands_path) if @user && !@commands.nil?
     crumbs << "tag" unless @tag.blank?
     crumbs << @tag.gsub(" ", "+") unless @tag.blank?
     crumbs << link_to(@command.keyword, @command.show_path) unless @command.blank? || @command.new_record?
-    crumbs << "queries" if params[:controller] == "queries"
+    crumbs << link_to("queries", @user.queries_path) if params[:controller] == "queries" && @user
+    crumbs << link_to("queries") if params[:controller] == "queries" && @user.nil?
     crumbs << params[:action] if params[:controller] == "static" && params[:action] != "home"
     crumbs << "<form><input type='text'></input></form>" if nil # !command.blank? && commmand.parametric? && !command.bookmarklet? 
     return crumbs.join(" &raquo; ")

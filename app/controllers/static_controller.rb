@@ -8,6 +8,7 @@ class StaticController < ApplicationController
       :include => [:command, :user]
     )  
     @users = User.find(:all, :conditions => ["activation_code IS NULL"], :order => :login)
+    @users.reject! {|u| u.commands.count < 15 }
   end
   
 end

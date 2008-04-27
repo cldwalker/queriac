@@ -12,7 +12,9 @@ ActionController::Routing::Routes.draw do |map|
   map.help      'help',                           :controller => 'static', :action => 'help'
   map.home      '',                               :controller => "static", :action => "home"
 
-  # map.user '/rss/:login', :controller => 'users', :action => 'show'
+  map.users     'users',                          :controller => 'users', :action => 'index'
+
+  # map.user '/rss/:login', :controller => 'users', :action => 'show'  
   map.query     'queries',                        :controller => 'queries', :action => 'index'
 
   map.user      ':login',                         :controller => 'users', :action => 'show'

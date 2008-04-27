@@ -37,7 +37,7 @@ class Command < ActiveRecord::Base
   has_finder :any
   
   validates_presence_of :name, :keyword, :url
-  validates_format_of :keyword, :with => /^\w+$/i, :message => "can only contain letters and numbers."
+  # validates_format_of :keyword, :with => /^\w+$/i, :message => "can only contain letters and numbers."
 
   validates_uniqueness_of :keyword, :scope => :user_id
   validates_uniqueness_of :url, :scope => :user_id
@@ -69,6 +69,7 @@ class Command < ActiveRecord::Base
   def public?; read_attribute(:public); end
   def private?; !public?; end
   def public_queries?; self.public_queries; end
+  def http_post?; self.http_post; end
   
   # Paths
   #------------------------------------------------------------------------------------------------------------------
