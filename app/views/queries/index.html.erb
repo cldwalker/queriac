@@ -8,7 +8,7 @@
 		<li class="search"><%= link_to 'Yours', (@tags.blank? ? current_user.queries_path : current_user.queries_tag_path(@tags.join("+"))) %></li>
 	<% end %>
 	<% if @user %>
-		<li class="search"><%= link_to 'All', (@tags.blank? ? "/queries" : "/queries/tag/#{@tags.join("+")}") %></li>
+		<li class="search"><%= link_to 'All', (@tags.blank? ? queries_path : tagged_queries_path(@tags.join("+"))) %></li>
 	<% end %>
 </ul>
 

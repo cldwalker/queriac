@@ -15,26 +15,29 @@ ActionController::Routing::Routes.draw do |map|
   map.users     'users',                          :controller => 'users', :action => 'index'
 
   # map.user '/rss/:login', :controller => 'users', :action => 'show'  
-  map.query     'queries',                        :controller => 'queries', :action => 'index'
+  map.queries     'queries',                      :controller => 'queries', :action => 'index'
 
   map.user      ':login',                         :controller => 'users', :action => 'show'
   map.user      ':login/opensearch',              :controller => 'users', :action => 'opensearch'
 
-  map.query     'queries/tag/*tag',               :controller => 'queries', :action => 'index'
-  map.query     ':login/:command/queries',        :controller => 'queries', :action => 'index'
-  map.query     ':login/queries',                 :controller => 'queries', :action => 'index'
-  map.query     ':login/queries/tag/*tag',        :controller => 'queries', :action => 'index'
+  map.with_options(:controller=>'queries', :action=>'index') do |c|
+    c.tagged_queries        'queries/tag/*tag'
+    c.user_command_queries  ':login/:command/queries'
+    c.user_queries          ':login/queries'
+    c.user_tagged_queries   ':login/queries/tag/*tag'
+  end
   
-  map.command   'commands',                       :controller => 'commands',  :action => 'index'
-  map.command   'commands/tag/*tag',              :controller => 'commands',  :action => 'index'
-  map.command   ':login/commands',                :controller => 'commands',  :action => 'index'
-  map.command   ':login/commands/tag/*tag',       :controller => 'commands',  :action => 'index'
-  map.command   ':login/commands/search',         :controller => 'commands', :action => 'search'
-  
-  map.command   ':login/:command/show',           :controller => 'commands', :action => 'show'  
-  map.command   ':login/:command/edit',           :controller => 'commands', :action => 'edit'
-  map.command   ':login/:command/delete',         :controller => 'commands', :action => 'destroy', :method => :delete
-  map.command   ':login/*command',                :controller => 'commands', :action => 'execute'  
+  map.with_options(:controller=>'commands') do |c|
+    c.tagged_commands           'commands/tag/*tag',              :action => 'index'
+    c.user_commands             ':login/commands',                :action => 'index'
+    c.user_tagged_commands      ':login/commands/tag/*tag',       :action => 'index'
+    c.search_user_commands      ':login/commands/search',         :action => 'search'
+
+    c.user_command              ':login/:command/show',           :action => 'show'  
+    c.user_command_edit         ':login/:command/edit',           :action => 'edit'
+    c.user_command_delete       ':login/:command/delete',         :action => 'destroy', :method => :delete
+    c.user_command_execute      ':login/*command',                :action => 'execute'  
+  end
   
   # Allow downloading Web Service WSDL as a file with an extension
   # instead of a file named 'wsdl'

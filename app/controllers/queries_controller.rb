@@ -1,6 +1,7 @@
 class QueriesController < ApplicationController
 
-  before_filter :load_user_from_param
+  before_filter :load_valid_user_if_specified, :only=>:index
+  before_filter :load_tags_if_specified, :only=>:index
   before_filter :owner_required, :only => [:edit, :update, :destroy]
 
   def index
@@ -12,30 +13,28 @@ class QueriesController < ApplicationController
     # /zeke/queries             => all || public queries for a specific user
     # /zeke/queries/tag/google  => all || public queries for a specific user for a tag or tags
     
-    @tags = params[:tag].first.gsub(" ", "+").split("+") if params[:tag]
-    
     pagination_params = {:order => "queries.created_at DESC", :page => params[:page], :include => [:command => [:user]]}
     
-    if params[:command]
-      # => /zeke/g/queries
-      @command = @user.commands.find_by_keyword(params[:command])
-      check_command_query_publicity
-      @queries = @command.queries.paginate(pagination_params)
-
-    elsif @user
-      publicity = owner? ? "any" : "public"
-      query_publicity = owner? ? "any" : "publicly_queriable"
-      
-      if @tags
-        # => /zeke/queries/tag/google
-        commands = @user.commands.send(query_publicity).find_tagged_with(@tags.join(", "), :match_all => true, :select => [:id])
-        command_ids = commands.map(&:id).join(", ")
-        @queries = Query.non_empty.paginate({:conditions => ["command_id IN (#{command_ids})"]}.merge(pagination_params)) unless command_ids.blank?
+    if @user
+      if params[:command]
+        # => /zeke/g/queries
+        @command = @user.commands.find_by_keyword(params[:command])
+        return unless command_query_is_public?
+        @queries = @command.queries.paginate(pagination_params)
       else
-        # => /zeke/queries
-        @queries = @user.queries.non_empty.send(publicity).paginate(pagination_params)
+        publicity = owner? ? "any" : "public"
+        query_publicity = owner? ? "any" : "publicly_queriable"
+      
+        if @tags
+          # => /zeke/queries/tag/google
+          commands = @user.commands.send(query_publicity).find_tagged_with(@tags.join(", "), :match_all => true, :select => [:id])
+          command_ids = commands.map(&:id).join(", ")
+          @queries = Query.non_empty.paginate({:conditions => ["command_id IN (#{command_ids})"]}.merge(pagination_params)) unless command_ids.blank?
+        else
+          # => /zeke/queries
+          @queries = @user.queries.non_empty.send(publicity).paginate(pagination_params)
+        end
       end
-
     else
       if @tags
         # => /queries/tag/google
@@ -53,9 +52,9 @@ class QueriesController < ApplicationController
       end
     end
     
-    if @queries.blank? || @queries.empty?
+    if @queries.blank?
       flash[:warning] = "Sorry, no queries matched your request."
-      redirect_to ""
+      redirect_to home_path
       return
     end
     
@@ -94,5 +93,34 @@ class QueriesController < ApplicationController
       format.xml  { head :ok }
     end
   end
-
+  
+  protected
+  def owner_required
+    unless owner?
+      flash[:warning] = "You are not allowed to administer this query. "
+      if logged_in?
+        redirect_to @user.home_path
+      else
+        flash[:warning] += "If it's your query, you'll need to log in to make any changes to it."
+        redirect_to ""
+      end
+      return
+    end
+  end
+  
+  # Don't display private queries to anyone but their commands' owners.
+  def command_query_is_public?
+    unless owner? || @command.public_queries?
+      flash[:warning] = "Sorry, that command's queries are private. "
+      if logged_in?
+        redirect_to @user.home_path
+      else
+        flash[:warning] += "If it's your command, you'll need to log in to view its queries."
+        redirect_to home_path
+      end
+      return false
+    end
+    true
+  end
+  
 end

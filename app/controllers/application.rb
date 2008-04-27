@@ -9,6 +9,8 @@ class ApplicationController < ActionController::Base
   include AuthenticatedSystem
   before_filter :login_from_cookie
 
+  protected
+  
   def load_valid_user
     load_user_from_param
     redirect_no_user
@@ -46,31 +48,21 @@ class ApplicationController < ActionController::Base
     logged_in? && current_user == @user
   end
   
-  def owner_required
-    unless owner?
-      flash[:warning] = "You are not allowed to administer this query. "
-      if logged_in?
-        redirect_to @user.home_path
+  def load_tags_if_specified
+    if params[:tag]
+      if params[:tag].first
+        @tags = params[:tag].first.gsub(" ", "+").split("+") 
+      #handles nil tags ie /:user/commands/tag or /:user/queries/tag
       else
-        flash[:warning] += "If it's your query, you'll need to log in to make any changes to it."
-        redirect_to ""
+        flash[:warning] = 'No tag was specified. Please try again'
+        if params[:controller] == 'queries'
+          redirect_path = @user ? @user.queries_path : queries_path
+        else
+          redirect_path = @user ? @user.commands_path : commands_path
+        end
+        redirect_to redirect_path
+        return
       end
-      return
     end
   end
-  
-  # Don't display private queries to anyone but their commands' owners.
-  def check_command_query_publicity
-    unless owner? || @command.public_queries?
-      flash[:warning] = "Sorry, that command's queries are private. "
-      if logged_in?
-        redirect_to @user.home_path
-      else
-        flash[:warning] += "If it's your command, you'll need to log in to view its queries."
-        redirect_to ""
-      end
-      return
-    end
-  end
-  
 end

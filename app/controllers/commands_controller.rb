@@ -3,6 +3,7 @@ class CommandsController < ApplicationController
   before_filter :login_required, :except => [:index, :execute, :show]
   before_filter :load_valid_user, :except=>[:index, :new, :create, :update, :copy_yubnub_command, :tag_set, :tag_add_remove]
   before_filter :load_valid_user_if_specified, :only=>:index
+  before_filter :load_tags_if_specified, :only=>:index
   #remaining filters dependent on load_valid_user*
   before_filter :permission_required_for_user, :only=>[:edit, :destroy, :search]
   #double check this filter if changing method names ie show->display
@@ -19,18 +20,6 @@ class CommandsController < ApplicationController
     # /zeke/commands/tag/google   => all || public commands for a specific user for a tag or tags
 
     publicity = owner? ? "any" : "public"
-
-    if params[:tag]
-      if params[:tag].first
-        @tags = params[:tag].first.gsub(" ", "+").split("+") 
-      #handles /:user/commands/tag case
-      else
-        flash[:warning] = 'No tag was specified. Please try again'
-        redirect_to commands_path
-        return
-      end
-    end
-    
     pagination_params = index_pagination_params.dup
     
     if @tags

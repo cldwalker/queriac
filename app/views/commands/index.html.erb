@@ -12,7 +12,7 @@
 		<li class="search"><%= link_to 'Yours', (@tags.blank? ? current_user.commands_path : current_user.commands_tag_path(@tags.join("+"))) %></li>
 	<% end %>
 	<% if @user %>
-		<li class="search"><%= link_to 'All', (@tags.blank? ? "/commands" : "/commands/tag/#{@tags.join("+")}") %></li>
+		<li class="search"><%= link_to 'All', (@tags.blank? ? commands_path : tagged_commands_path("#{@tags.join("+")}")) %></li>
 	<% end %>
 </ul>
 
@@ -32,7 +32,7 @@
 	<tr <%= cycle('class="offset"', '') -%>>
     <td class="<%= command.kind %>">
 			<p class="command_title"><%= link_to command.name, command.show_path, :title=>command.url %></p>
-			<p class="tag_list">Tags: <%= command.tags.map{|t| link_to(t.name, "/#{command.user.login}/commands/tag/#{t.name}") }.join(" ") %></p>
+			<p class="tag_list">Tags: <%= command.tags.map{|t| link_to(t.name, user_tagged_commands_path(command.user.login,t.name)) }.join(" ") %></p>
 		</td>
     <td class="centered <%= "faded" if command.queries.size == 0 %>"><%= command.queries.size %></td>	
     <td class="centered"><%= command.keyword %></td>

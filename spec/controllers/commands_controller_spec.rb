@@ -64,6 +64,7 @@ describe 'commands/index:' do
   it 'user w/o tags' do
     get :index, :login=>@command.user.login
     basic_expectations
+    assigns[:user].should be_an_instance_of(User)
   end
   
   it 'user w/ tags' do
@@ -71,6 +72,7 @@ describe 'commands/index:' do
     get :index, :login=>@command.user.login, :tag=>[@tag.name]
     basic_expectations
     assigns[:tags].should_not be_empty
+    assigns[:user].should be_an_instance_of(User)
     @command.tags.clear
   end
   

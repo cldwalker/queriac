@@ -12,7 +12,7 @@
 
 <%= error_messages_for :command %>
 
-<% form_for(:command, :url => "/commands/#{@command.id}", :html => { :method => :put }) do |f| %>
+<% form_for(:command, :url => command_path(@command.id), :html => { :method => :put }) do |f| %>
 
 	<%= render :partial => "edit_form", :locals => {:f => f} %>
 

@@ -17,8 +17,8 @@ module ApplicationHelper
   end
   
   def render_nav
-    crumbs = [link_to("queriac", '/')]
-    crumbs << link_to("users", "/users") if params[:controller] == "users" && params[:action] == "index"
+    crumbs = [link_to("queriac", home_path)]
+    crumbs << link_to("users", users_path) if params[:controller] == "users" && params[:action] == "index"
     crumbs << link_to(@user.login, @user.home_path) if @user
     crumbs << link_to("commands", @user.commands_path) if @user && !@commands.nil?
     crumbs << "tag" unless @tag.blank?
@@ -34,8 +34,8 @@ module ApplicationHelper
   def render_mininav
     items = []
     items << "logged in as " + link_to(current_user.login, current_user.home_path, :class => "underlined") if logged_in?
-    items << link_to("settings", "/settings")
-    items << link_to_unless_current("help", "/help")
+    items << link_to("settings", settings_path)
+    items << link_to_unless_current("help", help_path)
     items << link_to("logout", session_path(session), :confirm => "Are you sure you want to log out?", :method => :delete) if logged_in?
     items << link_to("sign up", new_user_path) unless logged_in?
     items << link_to("log in", new_session_path) unless logged_in?
