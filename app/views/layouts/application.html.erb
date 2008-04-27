@@ -5,6 +5,11 @@
 		<title><%= render_page_title %></title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<link rel="alternate" type="application/rss+xml" title="Queriac Blog" href="http://queriac.tumblr.com/rss">
+
+		<% if logged_in? %>
+			<link rel="search" href="<%= HOST + current_user.opensearch_path %>" type="application/opensearchdescription+xml" title="queri.ac/<%= current_user.login %>" />
+		<% end %>
+		
 		<%= stylesheet_link_tag 'base' %>
 		<%= javascript_include_tag :defaults %>	
 	</head>
@@ -32,6 +37,15 @@
 		</div><!-- end #container -->
 	
 		<div id="footer">
+			
+			<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+			<input type="hidden" name="cmd" value="_s-xclick">
+			<input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-butcc-donate.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+			<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+			<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----MIIHPwYJKoZIhvcNAQcEoIIHMDCCBywCAQExggEwMIIBLAIBADCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwDQYJKoZIhvcNAQEBBQAEgYCHXQgCjgWtw0Fl3Nm/uEIImEORXk7br1AwMGPpAKyRxQoFmneZasjUTG0OAZ4RkmMjL8pohzGU+ZZfS05MTA5FR9sAa9yh8EioPKY4C9cMlRndjZPc1NpPXXys732k36sPJsQKE3go2mIyIpa71sFwJ7TCUd6iYD3i0h5fL2DuUzELMAkGBSsOAwIaBQAwgbwGCSqGSIb3DQEHATAUBggqhkiG9w0DBwQIoSJMQLn5p3aAgZiZJXO89yZEJ0bzdBDP2LkW8oTjfiCK4bLJKitNSybjfKoMwn6GFPXIshSazagMoxkfViYmoU6DC+n8pRoyX9EhPIKwqALiHmaVH9vtBBGBsq6JzH0jUF0s4N4+cAvWs8r2FGpykKAVvEqbCHU4zuV+t+mBsE+Z2sfTbflYQbrjKGdwuehQedP5grcGwd0I+3UkI84vXaBJz6CCA4cwggODMIIC7KADAgECAgEAMA0GCSqGSIb3DQEBBQUAMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbTAeFw0wNDAyMTMxMDEzMTVaFw0zNTAyMTMxMDEzMTVaMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAwUdO3fxEzEtcnI7ZKZL412XvZPugoni7i7D7prCe0AtaHTc97CYgm7NsAtJyxNLixmhLV8pyIEaiHXWAh8fPKW+R017+EmXrr9EaquPmsVvTywAAE1PMNOKqo2kl4Gxiz9zZqIajOm1fZGWcGS0f5JQ2kBqNbvbg2/Za+GJ/qwUCAwEAAaOB7jCB6zAdBgNVHQ4EFgQUlp98u8ZvF71ZP1LXChvsENZklGswgbsGA1UdIwSBszCBsIAUlp98u8ZvF71ZP1LXChvsENZklGuhgZSkgZEwgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tggEAMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADgYEAgV86VpqAWuXvX6Oro4qJ1tYVIT5DgWpE692Ag422H7yRIr/9j/iKG4Thia/Oflx4TdL+IFJBAyPK9v6zZNZtBgPBynXb048hsP16l2vi0k5Q2JKiPDsEfBhGI+HnxLXEaUWAcVfCsQFvd2A1sxRr67ip5y2wwBelUecP3AjJ+YcxggGaMIIBlgIBATCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwCQYFKw4DAhoFAKBdMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTA4MDQyNzA5NTU0M1owIwYJKoZIhvcNAQkEMRYEFKHfoQ2ZEJj3FIq4MJ/dwS8/zNfKMA0GCSqGSIb3DQEBAQUABIGAZHKDMQmo+DuB5rySmI96hdPLdNXuD8iZFmumCTpL6WPBikrRLtmRjnR5D4rVSu+eanMqyEPx1Vvlw+38/9FukTVyyRjKXZM+p1+HWzBF2SKEtb0d0OSOpQenwevcCL0o2iziL4qlDBFngF3rDabwXTw8WVkA+MxYLNMn0EXctwI=-----END PKCS7-----
+			">
+			</form>
+			
 		</div>
 		<!-- end #footer -->
 		

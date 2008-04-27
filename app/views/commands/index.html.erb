@@ -30,8 +30,11 @@
  
 <% for command in @commands %>
 	<tr <%= cycle('class="offset"', '') -%>>
-    <td class="<%= command.kind %>">
-			<p class="command_title"><%= link_to command.name, command.show_path, :title=>command.url %></p>
+    <td>
+			<p class="command_title">
+				<%= render_favicon_for_command command %>
+				<%= link_to command.name, command.show_path, :title=>command.url, :class => "iconed" %>
+			</p>
 			<p class="tag_list">Tags: <%= command.tags.map{|t| link_to(t.name, user_tagged_commands_path(command.user.login,t.name)) }.join(" ") %></p>
 		</td>
     <td class="centered <%= "faded" if command.queries.size == 0 %>"><%= command.queries.size %></td>	

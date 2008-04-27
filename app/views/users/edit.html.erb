@@ -7,16 +7,16 @@
 </p>	
 
 
-<h2 class="browser_header firefox">Firefox (All recent versions)</h2>
+<h2 class="browser_header firefox">Firefox (All recent PC, Mac, and Linux versions)</h2>
 
 <% if logged_in? %>
-<h3>Option A: Add Queriac to your Search Bar</h3>
+<h3>Option A: Add Queriac to Firefox's Search Bar</h3>
 <ol class="normal">
-	<%= image_tag "screenshots/firefox_opensearch_screenshot.png" %>
-	<li><a href="#" onclick="javascript:addp('<%= HOST + current_user.opensearch_path %>');">Click here to install Queriac in your search bar.</a>
+	<a href="#" onclick="javascript:addp('<%= HOST + current_user.opensearch_path %>');"><%= image_tag "screenshots/firefox_opensearch_screenshot.png" %></a>
+	<li><a href="#" onclick="javascript:addp('<%= HOST + current_user.opensearch_path %>');">Click here to install Queriac in your search bar.</a></li>
 </ol>
 
-<h3>Option B: Add Queriac to your Address Bar (aka Location Bar)</h3>
+<h3>Option B: Add Queriac to Firefox's Address Bar (Location Bar)</h3>
 <% end %>
 
 <ol class="normal">
@@ -37,18 +37,31 @@
 
 
 <h2 class="browser_header ie7">Internet Explorer 7</h2>
-<p>Coming soon!</p>
-
-
-<h2 class="browser_header ie6">Internet Explorer 6</h2>
-<p>Coming soon!</p>
-
-
-<h2 class="browser_header safari">Safari 3+ on Mac OS X</h2>
-<p>Setting up Safari requires a little more work than Firefox or Internet Explorer, but it's still pretty easy. You'll need to install Keywurl, a free SIMBL plugin for that adds keyword search to Safari's address bar.</p>
+<p>Microsoft provides a website with a nice little form for adding search providers. Installing Queriac is just a matter of copy and paste..</p>
 
 <ol class="normal">
-	<li>Download and install Keywurl (you may have to install SIMBL too).</li>
+	<li>
+		Copy the following text (including the <i>TEST</i> part): 
+		<%= logged_in? ? "<code>#{HOST}/#{current_user.login}/TEST</code>" : "<code>#{HOST}/youraccountname/TEST</code>, using your account name of course." %> 
+	</li>
+	<li>Visit Microsoft's <%= link_to "Add Search Providers to Internet Explorer", "http://www.microsoft.com/windows/ie/searchguide/en-en/default.mspx" %> page and paste the URL you just copied into the form.</li>
+	<li>Note: You may get a warning saying that your default search will be "switched away from Google" (Side Note: I wonder how much Google paid Microsoft for that alert.. More on that <%= link_to "here", "http://blogs.zdnet.com/BTL/?p=6715" %>). Anyway, do this:</li>
+</ol>
+<%= image_tag "screenshots/ie_opensearch_changed_from_google.png" %>
+
+
+<!--
+<h2 class="browser_header ie6">Internet Explorer 6</h2>
+<p>Coming soon!</p>
+-->
+
+<h2 class="browser_header safari">Safari 3+ on Mac OS X</h2>
+<p>Apple is <%= link_to "in bed with Google", "http://blogs.zdnet.com/BTL/?p=5356" %> in terms of the Safari search bar, 
+	so configuring Safari for Queriac requires a little finagling, but it's still pretty easy. 
+	You'll need to install <%= link_to "Keywurl", "http://purefiction.net/keywurl/" %>, a free <%= link_to "SIMBL", "http://www.culater.net/software/SIMBL/SIMBL.php" %> plugin that lets you customize Safari's address bar.</p>
+
+<ol class="normal">
+	<li><%= link_to "Download and install Keywurl", "http://purefiction.net/keywurl/" %> (you may have to download install <%= link_to "SIMBL", "http://www.culater.net/software/SIMBL/SIMBL.php" %> too).</li>
 	<li>Once Keywurl is installed open up Safari's preferences and click Keywurl</li>
 	<li>Delete all of Keywurl's pre-installed keywords, except for <code>default</code>. You won't be needing them.</li>
 	<li>
@@ -64,11 +77,38 @@
 	<% end %>
 </ol>
 
+<h2 class="browser_header opera">Opera (All recent versions)</h2>
+<p>In the days before Firefox, Opera was the coolguy browser, with lots of innovative features that were ahead their time.
+	In fact, Opera may have been the first browser to featured the keyworded search concepts that make Queriac possible! Anyhow, the following instructions are for 
+	Opera 9, but the process is probably about the same for older versions..</p>
 
-<h2 class="browser_header opera">Opera</h2>
-<p>Coming soon!</p>
+<ol class="normal">
+	<li>Open Opera's preferences and click on 'Search'.</li>
+	<li>Add a new search and fill it out like the screenshot below (using your username instead of 'zeke').</li>
+	<li>Note: You should probably delete the other searches in the list so they don't conflict with the keywords of your Queriac commands.</li>
+</ol>
 
-<h2 class="browser_header camino">Camino</h2>
+<%= image_tag "screenshots/opera_opensearch.png" %>
+	
+
+<h2 class="browser_header camino">Camino (All recent versions)</h2>
+
+<% if logged_in? %>
+
+<h3>Option A: Add Queriac to Camino's Search Bar</h3>
+
+<ol class="normal">
+	<li><a href="#" onclick="javascript:addp('<%= HOST + current_user.opensearch_path %>');">Click here to install Queriac in your search bar.</a></li>
+	<li>Note: Camino will revert back to Google when you restart it. To set Camino's search bar to default to Queriac, click the magnifying glass icon on the left of the search bar, then click <i>'Manage Search Engines..'</i></li>
+	<li>From here it's easy:</li>
+</ol>
+
+<%= image_tag "screenshots/camino_opensearch_make_default.png" %>
+
+<h3>Option B: Add Queriac to Camino's Address Bar (Location Bar)</h3>
+<% end %>
+
+
 <ol class="normal">
 	<li>Open Camino and type <code>about:config</code> in the address bar. You may get a warning about being careful. That's fine. Carry on. This will open up a big list of browser preferences.</li>
 	<li>In the filter field, type <code>keyword</code>. This should filter the list down to just a couple of items.</li>
@@ -105,12 +145,12 @@
 <% if logged_in? %>
 	<h2>Using Bookmarklets</h2>
 	<p>If you want to use bookmarklets through Queriac, you'll need to add the following bookmarklet to your local
-		bookmarks in your browser. Because of Javascript's client-side nature, this bookmarklet is needed to download 
+		bookmarks in your browser. Because of Javascript's client-side nature (see <%= link_to "Same Origin Policy", "http://www.mozilla.org/projects/security/components/same-origin.html" %>), this bookmarklet is needed to download 
 		the Javascript source from your Queriac commands and it evaluates it locally.
 	</p>
 	<p>
 		<b>To install:</b> Right-click on the link below and save it as a local bookmakrk. You'll need to give it a keyword 
-		(or shortcut in Camino).. something like <b>j</b> or <b>js</b>. If you don't see the keyword/shortcut column in
+		(or shortcut in Camino).. something like <code>j</code>. If you don't see the keyword/shortcut column in
 		your browser's bookmarks window, you'll need to enable it by clicking the little dropdown doohicky on the right
 		side of the column header.
 	</p>

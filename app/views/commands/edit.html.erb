@@ -14,7 +14,7 @@
 
 <% form_for(:command, :url => command_path(@command.id), :html => { :method => :put }) do |f| %>
 
-	<%= render :partial => "edit_form", :locals => {:f => f} %>
+	<%= render :partial => "command_edit_form", :locals => {:f => f} %>
 
   <div class="floatkiller">
     <%= submit_tag "Save Changes", :class => "submit" %>

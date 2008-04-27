@@ -22,7 +22,7 @@
 	<ul class="options toolbar">
 		<li class="check">If you're creating a quicksearch, replace the search portion of the URL with the following: <code>(q)</code></li>
 		<li class="check">Don't forget to start your command URL with <code>http://</code> or <code>https://</code>. If you're creating a bookmarklet, don't forget the <code>javascript:</code></li>
-		<li class="check">The easiest way to familiarize yourself with how commands work is to copy them from other users and customize them to your liking.</li>
+		<li class="check">The easiest way to familiarize yourself with how commands work is to copy them from <%= link_to "other users", "/users"  %> and customize them to your liking.</li>
 	</ul>
 </div>
 <% end %>
@@ -31,7 +31,7 @@
 
 <% form_for :command, :url => commands_path do |f| %>
 
-	<%= render :partial => "edit_form", :locals => {:f => f} %>
+	<%= render :partial => "command_edit_form", :locals => {:f => f} %>
 
   <div class="floatkiller">	
     <%= submit_tag "Create Command", :class => "submit" %>

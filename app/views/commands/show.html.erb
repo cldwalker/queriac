@@ -1,4 +1,6 @@
-<h1 class="inline"><%= @command.name %></h1>
+<h1 class="inline">
+	<%= @command.name %>
+</h1>
 
 <% if logged_in? %>
 	<ul class="options header">
@@ -13,7 +15,9 @@
 <% end %>
 
 <hr />
-<p class="small-url"><%= @command.url.ellipsize(:max => 150, :delimiter => " . . . . . ") %></p>
+<p class="small-url">
+	<%= @command.url.ellipsize(:max => 150, :delimiter => " . . . . . ") %>
+</p>
 
 <div id="primary">
 		
@@ -46,7 +50,10 @@
 
 <div id="secondary">
 	
-	<h2>About this Command</h2>
+	<h2>
+		<%= render_favicon_for_command @command %>
+		About this Command
+	</h2>
 	
 	<% unless @command.description.blank? %>
 		<p><b>Description:</b> <%= textilize_without_paragraph @command.description %></p>

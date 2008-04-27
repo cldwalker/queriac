@@ -2,30 +2,25 @@
 	
 	<% if params[:bad_command] && current_user_is_the_user? %>
 		<% keyword = params[:bad_command] %>
-		
 		<div class="msg">
 			<p>The command you entered (<%= keyword %>) does not exist. What do you want to do about it?</p>
-		
 			<ul class="options toolbar">
 				<li class="edit"><%= link_to("Pick a default command and direct orphan queries to it.", settings_path) %></li>
 				<li class="add"><%= link_to("Create a new command with keyword '#{keyword}'", new_command_path(:keyword => keyword)) %></li>
 			</ul>
-		
 		</div>
-	
 	<% elsif params[:private_command] %>	
 		<div class="flash-msg warning">The <b><%= params[:private_command] %></b> command is private. You must <%= link_to("log in", new_session_path) %> to use it.</div>
 	<% elsif params[:illegal_command] %>
 		<div class="flash-msg warning">Sorry, <b><%= @user.login %></b> has privatized the <b><%= params[:illegal_command] %></b> command.</div>		
 	<% end %>
 	
-	
 	<% if @commands %>
-		<%= render :partial => "commands/generic_summary_table", :locals => {:commands => @commands, :user => @user} %>	
+		<%= render :partial => "commands/command_summary_table", :locals => {:commands => @commands, :title => "Commands"} %>	
 	<% else %>
-		<%= render :partial => "commands/quicksearch_summary_table", :locals => {:quicksearches => @quicksearches, :user => @user} unless @quicksearches.empty? %>	
-		<%= render :partial => "commands/shortcut_summary_table", :locals => {:shortcuts => @shortcuts, :user => @user} unless @shortcuts.empty? %>
-		<%= render :partial => "commands/bookmarklet_summary_table", :locals => {:bookmarklets => @bookmarklets, :user => @user} unless @bookmarklets.empty? %>
+		<%= render :partial => "commands/command_summary_table", :locals => {:commands => @quicksearches, :title => "Top Quicksearches"} if @quicksearches %>
+		<%= render :partial => "commands/command_summary_table", :locals => {:commands => @shortcuts, :title => "Top Shortcuts"} if @shortcuts %>
+		<%= render :partial => "commands/command_summary_table", :locals => {:commands => @bookmarklets, :title => "Top Bookmarklets"} if @bookmarklets %>		
 	<% end %>
 
 	

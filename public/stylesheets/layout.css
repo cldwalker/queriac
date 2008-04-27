@@ -249,8 +249,13 @@ div.msg {
 	font-size: 1.1em;
 }
 
-div.msg li {
-  
+div.msg ul li {
+  padding-left: 22px;
+}
+
+div.msg ul li a {
+  padding: 0px;
+	font-weight: bold;
 }
 
 div.msg p {

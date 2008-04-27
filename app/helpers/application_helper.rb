@@ -110,5 +110,8 @@ module ApplicationHelper
     command.user == current_user ? "Your" : "#{@user.login}'s public"
   end
 
+  def render_favicon_for_command(command)
+    image_tag(command.favicon_url, :alt => "", :width => "16", :height => "16")
+  end
 
 end

@@ -95,6 +95,21 @@ class Command < ActiveRecord::Base
     self.url.sub(DEFAULT_PARAM, CGI.escape(query_string))
   end
   
+  def domain
+    # Found the regex at http://yubnub.org/kernel/man?args=extractdomainname
+    u = url
+    if bookmarklet?
+      return nil if url.split("http").size == 1
+      u = "http" + url.split("http").last
+    end
+    u=~(/^(?:\w+:\/\/)?([^\/?]+)(?:\/|\?|$)/) ? $1 : nil
+  end
+  
+  def favicon_url
+    return "/images/icons/blank_bordered.png" if domain.nil?
+    "http://#{domain}/favicon.ico"
+  end
+  
   def update_tags(tags)
     self.tag_list = tags.split(" ").join(", ")
     self.save
