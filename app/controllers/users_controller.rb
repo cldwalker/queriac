@@ -29,8 +29,7 @@ class UsersController < ApplicationController
     @tag = params[:tag]
     # @commands.select!{|c| c.tags.map(&:name).include? @tag } if @tag
     
-    @users = User.find(:all, :conditions => ["activation_code IS NULL"], :order => :login)
-    @users.reject! {|u| u.commands.count < 15 }
+    @users = User.find_top_users
   end
   
   def opensearch

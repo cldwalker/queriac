@@ -52,6 +52,12 @@ class User < ActiveRecord::Base
     end
   end
   
+  def self.find_top_users(options={})
+    users = User.find(:all, :conditions => ["activation_code IS NULL"], :order => :login)
+    users.reject! {|u| u.commands.count < 15 }
+    users
+  end
+  
   def after_create
     g = self.commands.create!(
       :name => "Google Quicksearch", 
