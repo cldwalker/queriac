@@ -127,8 +127,7 @@ class CommandsController < ApplicationController
       # render :text => "document.window.location='http://shit.com';"
       
     elsif @command.http_post?
-      post_via_redirect "http://google.com"
-      
+      redirect_to "http://zeke.sikelianos.com/projects/queriac/postaget.php?__action=" + @result
     else
       # Command is a simple URL to which we redirect
       redirect_to @result

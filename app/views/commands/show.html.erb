@@ -61,7 +61,7 @@
 	
 	<p><b>Keyword:</b> <%=h @command.keyword %></p>	
 	
-	<p><b>Kind:</b> <%=h @command.kind %></p>
+	<p><b>Kind:</b> <%=h @command.kind %> <%= "(uses POST)" if @command.http_post? %></p>
 	
 	<p><b>Visible to Public:</b> <%= @command.public? ? "Yes" : "No" %></p>
 	
