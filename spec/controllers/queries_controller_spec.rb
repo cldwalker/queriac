@@ -15,12 +15,12 @@ describe 'queries/index:' do
     assigns[:queries][0].should be_an_instance_of(Query)
   end
   
-  it 'all w/o tags' do
+  it 'displays queries' do
     get :index
     basic_expectations
   end
   
-  it 'all w/ tags' do
+  it 'displays queries by tag' do
     @command.tags << @tag
     get :index, :tag=>[@tag.name]
     basic_expectations
@@ -28,15 +28,15 @@ describe 'queries/index:' do
     @command.tags.clear
   end
   
-  it 'all w/ multiple tags'
+  it 'displays queries by multiple tags'
   
-  it 'user queries w/o tags' do
+  it 'displays user queries' do
     get :index, :login=>@command.user.login
     basic_expectations
     assigns[:user].should be_an_instance_of(User)
   end
   
-  it 'user queries w/ tags' do
+  it 'displays user queries by tag' do
     @command.tags << @tag
     get :index, :login=>@command.user.login, :tag=>[@tag.name]
     basic_expectations
@@ -45,17 +45,17 @@ describe 'queries/index:' do
     @command.tags.clear
   end
   
-  it 'user publicity'
-  it 'query publicity'
+  it 'handles user publicity'
+  it 'handles query publicity'
   
-  it 'user-command public queries' do
+  it "displays public command queries" do
     get :index, :command=>@command.keyword, :login=>@command.user.login
     basic_expectations
     assigns[:command].should be_an_instance_of(Command)
     assigns[:user].should be_an_instance_of(User)
   end
   
-  it 'user-command private queries as command user' do
+  it "displays private command queries to command's owner" do
     @command.update_attribute(:public_queries, false)
     login_user @query.command.user
     get :index, :command=>@command.keyword, :login=>@command.user.login
@@ -65,7 +65,7 @@ describe 'queries/index:' do
     @command.update_attribute(:public_queries, true)
   end
   
-  it 'user-command private queries as another user' do
+  it "redirects user for trying to view another's private command queries" do
     @command.update_attribute(:public_queries, false)
     login_user
     get :index, :command=>@command.keyword, :login=>@command.user.login
@@ -76,7 +76,7 @@ describe 'queries/index:' do
     @command.update_attribute(:public_queries, true)
   end
   
-  it 'redirect for no queries' do
+  it 'redirects when no queries found' do
     Query.should_receive(:find).and_return([])
     get :index
     response.should be_redirect

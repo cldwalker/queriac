@@ -48,7 +48,6 @@ Spec::Runner.configure do |config|
   end
   
   #should use mocks for create_* once controller specs focus only on controller logic
-  #users created from here aren't active
   def create_user(hash={})
     #User.create(random_valid_user_attributes.merge(hash))
     #hacky but done in order to avoid expensive @user.after_create

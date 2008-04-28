@@ -1,5 +1,7 @@
 # This controller handles the login/logout function of the site.  
 class SessionsController < ApplicationController
+  verify :method=>:delete, :only=>:destroy
+  verify :method=>:post, :only=>:create
   
   def new
   end
@@ -8,13 +10,13 @@ class SessionsController < ApplicationController
     self.current_user = User.authenticate(params[:login], params[:password])
     
     if logged_in?
-
+      
       unless current_user.activated?
         current_user.forget_me
         cookies.delete :auth_token
         reset_session
         flash[:warning] = "You haven't activated your account yet. Check your email at #{current_user.email}"
-        redirect_to :action => 'new'
+        redirect_to new_session_path
         return
       end
       
@@ -23,23 +25,19 @@ class SessionsController < ApplicationController
         cookies[:auth_token] = { :value => self.current_user.remember_token , :expires => self.current_user.remember_token_expires_at }
       end
 
-      redirect_to(self.current_user.home_path)
-      # redirect_back_or_default(user_path(self.current_user.login))
       flash[:notice] = "Logged in successfully"
-      
+      redirect_to(self.current_user.home_path)
     else
       flash[:warning] = "Problem logging in. Please try again."
-      render :action => 'new'
+      render :action=>'new'
     end
   end
 
   def destroy
-    # raise current_user.inspect
     self.current_user.forget_me if logged_in?
     cookies.delete :auth_token
     reset_session
     flash[:notice] = "You have been logged out."
-    redirect_to :action => 'new'
-    # redirect_back_or_default(:action => 'new')
+    redirect_to new_session_path
   end
 end

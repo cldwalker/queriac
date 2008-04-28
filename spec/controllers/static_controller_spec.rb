@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe 'static pages:' do
+describe 'static actions:' do
   controller_name :static
   integrate_views
   

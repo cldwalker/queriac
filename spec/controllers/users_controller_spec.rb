@@ -1,20 +1,20 @@
 require File.dirname(__FILE__) + '/../spec_helper'
-module UsersControllerHelper
-end
 
 def setup_users_controller_example_group
   controller_name :users
   integrate_views
-  extend UsersControllerHelper
 end
 
-describe 'users/new:' do
+describe 'user actions' do
   setup_users_controller_example_group
   
-  it 'basic' do
+  it 'new' do
     get :new
     response.should be_success
   end
+  
+  it 'index'
+  it 'opensearch'
 end
 
 describe 'users/show:' do
@@ -39,14 +39,14 @@ describe 'users/show:' do
     assigns[:users][0].should be_an_instance_of(User)
   end
   
-  it 'basic' do
+  it "displays a simple user's homepage" do
     User.should_receive(:find_top_users).and_return([@active_user])
     get :show, :login=>@command.user.login
     basic_expectations
     assigns[:commands][0].should be_an_instance_of(Command)
   end
   
-  it 'show command types as command user' do
+  it "displays advanced user's homepage to advanced user" do
     mock_user = @command.user
     mock_user.queries.should_receive(:count).and_return(101)
     login_user mock_user
@@ -59,7 +59,7 @@ describe 'users/show:' do
     assigns[:bookmarklets][0].should be_an_instance_of(Command)
   end
   
-  it 'show command types as another user' do
+  it "displays advanced user's homepage to another user" do
     mock_user = @command.user
     mock_user.queries.should_receive(:count).and_return(101)
     User.should_receive(:find_by_login).and_return(mock_user)
@@ -73,27 +73,21 @@ describe 'users/show:' do
     assigns[:bookmarklets][0].should be_an_instance_of(Command)
   end
   
-  it 'redirect when no user specified' do
+  it 'redirects when no user specified' do
     get :show
     response.should be_redirect
     flash[:warning].should_not be_blank
   end
   
-  it 'show bad command'
-  it 'show private command'
-  it 'show illegal command'
-end
-
-describe 'users/opensearch:' do
-  setup_users_controller_example_group
-  
-  it 'basic'
+  it 'displays bad command'
+  it 'displays private command'
+  it 'displays illegal command'
 end
 
 describe 'users/create:' do
   setup_users_controller_example_group
   
-  it 'basic' do
+  it 'creates a user' do
     lambda {
       lambda { post :create, :user=>random_valid_user_attributes }.should change(User, :count).by(1)
     }.should change(Command, :count).by_at_least(8)
@@ -101,7 +95,7 @@ describe 'users/create:' do
     flash[:notice].should_not be_blank
   end
   
-  it 'invalid params' do
+  it 'redisplays invalid submission' do
     invalid_attributes = random_valid_user_attributes
     invalid_attributes.delete(:login)
     lambda {post :create, :user=>invalid_attributes}.should_not change(User,:count)
@@ -114,20 +108,20 @@ end
 describe 'users/edit:' do
   setup_users_controller_example_group
   
-  it 'basic' do
+  it 'displays page' do
     login_user
     get :edit
     response.should be_success
     assigns[:user].should be_an_instance_of(User)
   end
   
-  it 'basic as anonymous user (tutorial)'
+  it 'displays page when settings page is requested'
 end
 
 describe 'users/update:' do
   setup_users_controller_example_group
   
-  it 'basic' do
+  it 'updates user including use default command boolean' do
     login_user :default_command_id=>1
     current_user.default_command_id.should_not be_nil
     put :update, :user=>{:login=>'cool'}, :use_default_command=>'no'
@@ -138,7 +132,7 @@ describe 'users/update:' do
     current_user.default_command_id.should be_nil
   end
   
-  it 'handles failed update' do
+  it 'redisplays invalid submission' do
     user = create_user
     user.stub!(:update_attributes).and_return(false)
     login_user user
@@ -155,14 +149,14 @@ describe 'users/activate:' do
   
   before(:each) { @user = create_user; @user.send(:make_activation_code); @user.save}
   
-  it 'activates user' do
+  it 'activates user and redirects' do
     get :activate, :activation_code=>@user.activation_code
     response.should redirect_to(settings_path)
     flash[:notice].should_not be_blank
     @user.reload.should be_activated
   end
   
-  it 'fails silently' do
+  it 'silently redirects invalid activation' do
     get :activate, :activation_code=>'XXXXXXX'
     response.should redirect_to(settings_path)
     flash[:notice].should be_blank
@@ -174,7 +168,7 @@ describe 'users/destroy:' do
   setup_users_controller_example_group
   before(:each) {@user = login_user; create_command(:user=>@user)}
   
-  it 'basic' do
+  it 'deletes user and their commands' do
     lambda {
     lambda {
       delete :destroy
