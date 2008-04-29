@@ -12,13 +12,12 @@ ActionController::Routing::Routes.draw do |map|
   map.help      'help',                           :controller => 'static', :action => 'help'
   map.home      '',                               :controller => "static", :action => "home"
 
-  map.users     'users',                          :controller => 'users', :action => 'index'
-
-  # map.user '/rss/:login', :controller => 'users', :action => 'show'  
   map.queries     'queries',                      :controller => 'queries', :action => 'index'
-
-  map.user      ':login',                         :controller => 'users', :action => 'show'
-  map.user      ':login/opensearch',              :controller => 'users', :action => 'opensearch'
+ 
+  map.with_options(:controller=>'users') do |c|
+    c.show_user           ':login',                         :action => 'show'
+    c.opensearch_user     ':login/opensearch',              :action => 'opensearch'
+  end
 
   map.with_options(:controller=>'queries', :action=>'index') do |c|
     c.tagged_queries        'queries/tag/*tag'
