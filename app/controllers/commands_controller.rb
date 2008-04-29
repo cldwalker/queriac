@@ -114,7 +114,17 @@ class CommandsController < ApplicationController
     ) unless dont_save_query
     
     # Needs to be constructed if commands takes arguments
-    @result = @command.parametric? ? @command.url_for(query_string) : @command.url
+    @result = if @command.parametric?
+      #manually set url encode
+      if (url_encode = params.delete(:_encode))
+        is_url_encoded = url_encode == '1'
+        @command.url_for(query_string, is_url_encoded)
+      else
+        @command.url_for(query_string)
+      end
+    else
+      @command.url
+    end
       
     if @command.bookmarklet?
       # Command is a Javascript bookmarklet, so rather than redirect to it,
