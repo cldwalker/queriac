@@ -91,16 +91,16 @@ class CommandsController < ApplicationController
     # or redirect to user's home path and show options, depending on their settings.
     if @command.nil?
       if @user.default_command?
-        redirect_to @user.default_command_path(params[:command].join("/"))
+        redirect_to user_default_command_path(@user, params[:command].join("/"))
       else
-        redirect_to @user.home_path + "?bad_command=#{keyword}"
+        redirect_to user_home_path(@user) + "?bad_command=#{keyword}"
       end
       return
     end
 
     # Don't allow outsiders to run private commands  
     if @command.private? && !owner?
-      redirect_path = @user.home_path
+      redirect_path = user_home_path(@user)
       redirect_path << (logged_in? ? "?illegal_command=#{keyword}" : "?private_command=#{keyword}")
       redirect_to(redirect_path) and return
     end
@@ -149,7 +149,7 @@ class CommandsController < ApplicationController
   def show
     if @command.private? && !owner?
       flash[:warning] = "Sorry, the command '#{params[:command]}' is private for #{@user.login}."
-      redirect_to @user.home_path
+      redirect_to user_home_path(@user)
       return
     end
 
@@ -178,14 +178,14 @@ class CommandsController < ApplicationController
         end
       rescue
         flash[:warning] = "Failed to parse yubnub keyword '#{params[:keyword]}'"
-        redirect_back_or_default current_user.home_path
+        redirect_back_or_default user_home_path(current_user)
         return
       end
       flash[:warning] = "Failed to parse yubnub keyword '#{params[:keyword]}'"
     else
       flash[:warning] = "The keyword '#{params[:keyword]}' is not a valid keyword. Please try again."      
     end
-    redirect_back_or_default current_user.home_path
+    redirect_back_or_default user_home_path(current_user)
   end
   
   def new  
@@ -266,7 +266,7 @@ class CommandsController < ApplicationController
             format.html { render :action => "new" }
           else
             flash[:notice] = "Imported #{valid_commands.size} of #{(valid_commands + invalid_commands).size} commands from your uploaded bookmarks file."
-            format.html { redirect_to current_user.home_path }
+            format.html { redirect_to user_home_path(current_user) }
           end
       end
             
@@ -279,8 +279,8 @@ class CommandsController < ApplicationController
       respond_to do |format|      
         if @command.save
           @command.update_tags(params[:tags])
-          flash[:notice] = "New command created: <b><a href='#{@command.show_path}'>#{@command.name}</a></b>"
-          format.html { redirect_to current_user.home_path }
+          flash[:notice] = "New command created: <b><a href='#{command_show_path(@command)}'>#{@command.name}</a></b>"
+          format.html { redirect_to user_home_path(current_user) }
           format.xml  { head :created, :location => command_url(@command) }
         else
           format.html { render :action => "new" }
@@ -301,8 +301,8 @@ class CommandsController < ApplicationController
     respond_to do |format|
       if @command.update_attributes(params[:command])
         @command.update_tags(params[:tags])
-        flash[:notice] = "Command updated: <b><a href='#{@command.show_path}'>#{@command.name}</a></b>"
-        format.html { redirect_back_or_default current_user.home_path }
+        flash[:notice] = "Command updated: <b><a href='#{command_show_path(@command)}'>#{@command.name}</a></b>"
+        format.html { redirect_back_or_default user_home_path(current_user) }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }
@@ -316,7 +316,7 @@ class CommandsController < ApplicationController
 
     respond_to do |format|
       flash[:notice] = "Command deleted: <b>#{@command.name}</b>"      
-      format.html { redirect_to current_user.home_path }
+      format.html { redirect_to user_home_path(current_user) }
       format.xml  { head :ok }
     end
   end
@@ -332,13 +332,13 @@ class CommandsController < ApplicationController
   def render_tag_action(tag_string, keywords, successful_commands)
     if tag_string.blank?
       flash[:warning] = "No tags specified. Please try again."
-      redirect_to current_user.commands_path
+      redirect_to user_commands_path(current_user)
     elsif successful_commands.empty?
       flash[:warning] = "Failed to find commands: #{keywords.to_sentence}"
-      redirect_to current_user.commands_path
+      redirect_to user_commands_path(current_user)
     else
       flash[:notice] = "Updated tags for commands: #{successful_commands.map(&:keyword).to_sentence}."
-      redirect_to successful_commands[0].show_path
+      redirect_to command_show_path(successful_commands[0])
     end
   end
   
@@ -354,7 +354,7 @@ class CommandsController < ApplicationController
   
   def redirect_failed_permission
     flash[:warning] = "You are not allowed to modify this command!" 
-    redirect_to current_user.home_path
+    redirect_to user_home_path(current_user)
   end
   
   def permission_required_for_user
@@ -368,7 +368,7 @@ class CommandsController < ApplicationController
   def command_is_nil?
     if @command.nil?
       flash[:warning] = "User #{@user.login} has no command with keyword '#{params[:command]}'"
-      redirect_to @user.home_path
+      redirect_to user_home_path(@user)
       return true
     end
     false

@@ -11,11 +11,11 @@
 	<% for query in @queries %>
 		<tr <%= cycle('class="offset"', '') -%>>
 			<td>
-				<%= link_to query.command.user.login, query.command.user.home_path %>
+				<%= link_to query.command.user.login, user_home_path(query.command.user) %>
 			</td>
 		  <td>
 				<%= render_favicon_for_command query.command %>
-				<%= link_to query.command.name, query.command.show_path %>
+				<%= link_to query.command.name, command_show_path(query.command) %>
 			</td>
 		  <td>
 				<% if query.query_string.empty? %>

@@ -2,7 +2,7 @@
 # Likewise, all the methods added will be available for all controllers.
 
 class ApplicationController < ActionController::Base
-  include ExceptionNotifiable  
+  include ExceptionNotifiable, PathHelper
   # Pick a unique cookie name to distinguish our session data from others'
   session :session_key => '_queriac_session_id'
   
@@ -56,9 +56,9 @@ class ApplicationController < ActionController::Base
       else
         flash[:warning] = 'No tag was specified. Please try again'
         if params[:controller] == 'queries'
-          redirect_path = @user ? @user.queries_path : queries_path
+          redirect_path = @user ? user_queries_path(@user) : queries_path
         else
-          redirect_path = @user ? @user.commands_path : commands_path
+          redirect_path = @user ? user_commands_path(@user) : commands_path
         end
         redirect_to redirect_path
         return

@@ -71,7 +71,7 @@ class UsersController < ApplicationController
 
       if @user.update_attributes(params[:user])
         flash[:notice] = "Your settings have been updated."
-        format.html { redirect_to current_user.home_path }
+        format.html { redirect_to user_home_path(current_user) }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }

@@ -33,8 +33,8 @@
 			<% if current_user_is_the_user? %>
 				<li class="add"><%= link_to "Create a new command", new_command_path %></li>
 			<% end %>
-			<li class="command"><%= link_to "View all #{whose} commands", @user.commands_path %></li>
-			<li class="search"><%= link_to "View all #{whose} queries", @user.queries_path %></li>
+			<li class="command"><%= link_to "View all #{whose} commands", user_commands_path(@user) %></li>
+			<li class="search"><%= link_to "View all #{whose} queries", user_queries_path(@user) %></li>
 		</ul>
 	
 	<h1>Tags</h1>

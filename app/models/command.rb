@@ -71,20 +71,6 @@ class Command < ActiveRecord::Base
   def public_queries?; self.public_queries; end
   def http_post?; self.http_post; end
   
-  # Paths
-  #------------------------------------------------------------------------------------------------------------------
-  def show_path
-    "/#{self.user.login}/#{self.keyword}/show"
-  end
-  
-  def edit_path
-    "/#{self.user.login}/#{self.keyword}/edit"
-  end
-  
-  def delete_path
-    "/#{self.user.login}/#{self.keyword}/delete"
-  end
-     
   # Miscellany
   #------------------------------------------------------------------------------------------------------------------
   # def save_query(query_string)

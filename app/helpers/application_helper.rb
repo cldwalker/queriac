@@ -1,4 +1,5 @@
 module ApplicationHelper
+  include PathHelper
 
   def render_page_title
     if @user || @command || @tag || params[:controller] == "users"
@@ -19,12 +20,12 @@ module ApplicationHelper
   def render_nav
     crumbs = [link_to("queriac", home_path)]
     crumbs << link_to("users", users_path) if params[:controller] == "users" && params[:action] == "index"
-    crumbs << link_to(@user.login, @user.home_path) if @user
-    crumbs << link_to("commands", @user.commands_path) if @user && !@commands.nil?
+    crumbs << link_to(@user.login, user_home_path(@user)) if @user
+    crumbs << link_to("commands", user_commands_path(@user)) if @user && !@commands.nil?
     crumbs << "tag" unless @tag.blank?
     crumbs << @tag.gsub(" ", "+") unless @tag.blank?
-    crumbs << link_to(@command.keyword, @command.show_path) unless @command.blank? || @command.new_record?
-    crumbs << link_to("queries", @user.queries_path) if params[:controller] == "queries" && @user
+    crumbs << link_to(@command.keyword, command_show_path(@command)) unless @command.blank? || @command.new_record?
+    crumbs << link_to("queries", user_queries_path(@user)) if params[:controller] == "queries" && @user
     crumbs << link_to("queries") if params[:controller] == "queries" && @user.nil?
     crumbs << params[:action] if params[:controller] == "static" && params[:action] != "home"
     crumbs << "<form><input type='text'></input></form>" if nil # !command.blank? && commmand.parametric? && !command.bookmarklet? 
@@ -33,7 +34,7 @@ module ApplicationHelper
   
   def render_mininav
     items = []
-    items << "logged in as " + link_to(current_user.login, current_user.home_path, :class => "underlined") if logged_in?
+    items << "logged in as " + link_to(current_user.login, user_home_path(current_user), :class => "underlined") if logged_in?
     items << link_to("settings", settings_path)
     items << link_to_unless_current("help", help_path)
     items << link_to("logout", session_path(session), :confirm => "Are you sure you want to log out?", :method => :delete) if logged_in?
@@ -62,7 +63,7 @@ module ApplicationHelper
       num = t[1]
       opacity = (50 + [num, 10].min.to_f/2*10).to_f/100
       font_size = (80 + [num, 20].min.to_f*5).to_f
-      link_to("#{name}", "#{@user.commands_tag_path(name)}", :title => "#{name} (#{num})", :style => "opacity:#{opacity};font-size:#{font_size}%;") 
+      link_to("#{name}", user_tagged_commands_path(@user, name), :title => "#{name} (#{num})", :style => "opacity:#{opacity};font-size:#{font_size}%;") 
     }.join(" ")
     content_tag(:p, output, :class => "tags")
   end
@@ -113,5 +114,5 @@ module ApplicationHelper
   def render_favicon_for_command(command)
     image_tag(command.favicon_url, :alt => "", :width => "16", :height => "16")
   end
-
+  
 end

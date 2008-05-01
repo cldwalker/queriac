@@ -5,17 +5,15 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :users, :member => { :opensearch => :get }
     
   map.activate  '/activate/:activation_code',     :controller => 'users', :action => 'activate'
-  map.account   ':login/account',                 :controller => 'users', :action => 'account'
-
+  #map.account   ':login/account',                 :controller => 'users', :action => 'account'
   map.settings   'settings',                      :controller => 'users', :action => 'edit'
   map.connect   'tutorial',                       :controller => 'users', :action => 'edit'
   map.help      'help',                           :controller => 'static', :action => 'help'
   map.home      '',                               :controller => "static", :action => "home"
-
   map.queries     'queries',                      :controller => 'queries', :action => 'index'
  
   map.with_options(:controller=>'users') do |c|
-    c.show_user           ':login',                         :action => 'show'
+    c.user_home           ':login',                         :action => 'show'
     c.opensearch_user     ':login/opensearch',              :action => 'opensearch'
   end
 

@@ -5,10 +5,10 @@
 
 <ul class="bolder options header">
 	<% if logged_in? && @user != current_user %>
-		<li class="search"><%= link_to 'Yours', (@tags.blank? ? current_user.queries_path : current_user.queries_tag_path(@tags.join("+"))) %></li>
+		<li class="search"><%= link_to 'Yours', (@tags.blank? ? user_queries_path(current_user) : user_tagged_queries_path(current_user, @tags)) %></li>
 	<% end %>
 	<% if @user %>
-		<li class="search"><%= link_to 'All', (@tags.blank? ? queries_path : tagged_queries_path(@tags.join("+"))) %></li>
+		<li class="search"><%= link_to 'All', (@tags.blank? ? queries_path : tagged_queries_path(@tags)) %></li>
 	<% end %>
 </ul>
 
@@ -25,7 +25,7 @@
 <% for query in @queries %>
 	<tr <%= cycle('class="offset"', '') -%>>	
 		<td>
-			<%= link_to query.command.user.login, query.command.user.home_path %>
+			<%= link_to query.command.user.login, user_home_path(query.command.user) %>
 		</td>
 	  <td>
 			<% if query.query_string.empty? %>
@@ -36,7 +36,7 @@
 		</td>
 	  <td>
 			<%= render_favicon_for_command query.command %>
-			<%= link_to query.command.name, query.command.show_path %>
+			<%= link_to query.command.name, command_show_path(query.command) %>
 		</td>
 	  <td>
 			<%= time_ago_in_words_or_date query.created_at %>

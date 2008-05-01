@@ -7,7 +7,7 @@
 		<link rel="alternate" type="application/rss+xml" title="Queriac Blog" href="http://queriac.tumblr.com/rss">
 
 		<% if logged_in? %>
-			<link rel="search" href="<%= HOST + current_user.opensearch_path %>" type="application/opensearchdescription+xml" title="queri.ac/<%= current_user.login %>" />
+			<link rel="search" href="<%= opensearch_user_url(current_user) %>" type="application/opensearchdescription+xml" title="queri.ac/<%= current_user.login %>" />
 		<% end %>
 		
 		<%= stylesheet_link_tag 'base' %>

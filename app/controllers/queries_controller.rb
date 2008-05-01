@@ -74,7 +74,7 @@ class QueriesController < ApplicationController
     respond_to do |format|
       if @query.update_attributes(params[:query])
         flash[:notice] = "Query updated: <b>#{@query.query_string}</b>"
-        format.html { redirect_to current_user.home_path }
+        format.html { redirect_to user_home_path(current_user) }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }
@@ -89,7 +89,7 @@ class QueriesController < ApplicationController
 
     respond_to do |format|
       flash[:notice] = "Query deleted: <b>#{@query.query_string}</b>"
-      format.html { redirect_to current_user.home_path }
+      format.html { redirect_to user_home_path(current_user) }
       format.xml  { head :ok }
     end
   end
@@ -99,7 +99,7 @@ class QueriesController < ApplicationController
     unless owner?
       flash[:warning] = "You are not allowed to administer this query. "
       if logged_in?
-        redirect_to @user.home_path
+        redirect_to user_home_path(@user)
       else
         flash[:warning] += "If it's your query, you'll need to log in to make any changes to it."
         redirect_to ""
@@ -113,7 +113,7 @@ class QueriesController < ApplicationController
     unless owner? || @command.public_queries?
       flash[:warning] = "Sorry, that command's queries are private. "
       if logged_in?
-        redirect_to @user.home_path
+        redirect_to user_home_path(@user)
       else
         flash[:warning] += "If it's your command, you'll need to log in to view its queries."
         redirect_to home_path

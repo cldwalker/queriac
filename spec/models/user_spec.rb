@@ -47,31 +47,7 @@ describe User do
     @user.commands.map(&:keyword).join(" ").should eql("g gms w word q show edit new")
   end
   
-  it "should have a home path" do
-    @user.attributes = valid_user_attributes
-    @user.save!
-    @user.home_path.should eql("/bozo/")
-  end
-  
-  it "should have a tag path" do
-    @user.attributes = valid_user_attributes
-    @user.save!
-    @user.commands_tag_path("babies").should eql("/bozo/commands/tag/babies")
-  end
-  
-  it "should have a commands path" do
-    @user.attributes = valid_user_attributes
-    @user.save!
-    @user.commands_path.should eql("/bozo/commands/")
-  end
-    
-  it "should have a queries path" do
-    @user.attributes = valid_user_attributes
-    @user.save!
-    @user.queries_path.should eql("/bozo/queries/")
-  end
-  
-  it "should set default command and have default command path" do
+  it "should set default command" do
     @user.attributes = valid_user_attributes
     @user.save!
     @command = @user.commands.first
@@ -79,7 +55,6 @@ describe User do
     @user.default_command_id = @command.id
     @user.save!
     @user.default_command.keyword.should eql("g")
-    @user.default_command_path("babies").should eql("/bozo/default_to g babies")
   end
     
 end

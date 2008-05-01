@@ -343,13 +343,13 @@ describe 'commands/copy_yubnub_command:' do
   
   it "warns if an invalid keyword is given to yubnub" do
     get :copy_yubnub_command, :keyword=>':.junk'
-    response.should redirect_to(current_user.home_path)
+    response.should redirect_to(user_home_path(current_user))
     flash[:warning].should match(/not.*valid/)
   end
   
   it "warns if no keyword is given to yubnub" do
     get :copy_yubnub_command
-    response.should redirect_to(current_user.home_path)
+    response.should redirect_to(user_home_path(current_user))
     flash[:warning].should match(/not.*valid/)
   end
 end

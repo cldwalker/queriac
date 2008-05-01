@@ -33,7 +33,7 @@ describe 'sessions/create:' do
   it 'redirects normal login and sets auth_token cookie' do
     cookies['auth_token'].should be_blank
     post :create, :login=>@user.login, :password=>'blahblah', :remember_me=>'1'
-    response.should redirect_to(@user.home_path)
+    response.should redirect_to(user_home_path(@user))
     #also tests @u.remember_me since that call is needed for cookie to be set
     cookies['auth_token'].should_not be_blank
   end
