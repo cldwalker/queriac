@@ -102,7 +102,7 @@ class QueriesController < ApplicationController
         redirect_to user_home_path(@user)
       else
         flash[:warning] += "If it's your query, you'll need to log in to make any changes to it."
-        redirect_to ""
+        redirect_to home_path
       end
       return
     end

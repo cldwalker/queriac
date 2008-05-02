@@ -4,7 +4,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :sessions
   map.resources :users, :member => { :opensearch => :get }
     
-  map.activate  '/activate/:activation_code',     :controller => 'users', :action => 'activate'
+  map.activate_user  '/activate/:activation_code',     :controller => 'users', :action => 'activate'
   #map.account   ':login/account',                 :controller => 'users', :action => 'account'
   map.settings   'settings',                      :controller => 'users', :action => 'edit'
   map.connect   'tutorial',                       :controller => 'users', :action => 'edit'

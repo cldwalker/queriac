@@ -22,6 +22,8 @@
 
 require 'digest/sha1'
 class User < ActiveRecord::Base
+  include ActionController::UrlWriter
+  
   has_many :commands, :dependent => :destroy
   has_many :queries
   has_many :tags, :through => :commands
@@ -57,8 +59,13 @@ class User < ActiveRecord::Base
     users.reject! {|u| u.commands.count < 15 }
     users
   end
+
+  def set_default_url_options
+    default_url_options[:host] = ::HOST
+  end
   
   def after_create
+    set_default_url_options
     g = self.commands.create!(
       :name => "Google Quicksearch", 
       :keyword => "g",
@@ -94,7 +101,7 @@ class User < ActiveRecord::Base
     q = self.commands.create!(
       :name => "My Queriac Page",
       :keyword => "q",
-      :url => "http://queri.ac/#{self.login}/",
+      :url=>user_home_url(self),
       :description => "A shortcut to my queriac account page."
     )
     q.update_tags("queriac bootstrap")
@@ -102,7 +109,7 @@ class User < ActiveRecord::Base
     show = self.commands.create!(
       :name => "Show a Queriac command",
       :keyword => "show",
-      :url => "http://queri.ac/#{self.login}/(q)/show",
+      :url=>user_command_url(self, '(q)'),
       :description => "Show info on a queriac command.\n\nExample: show g"
     )
     show.update_tags("queriac bootstrap")
@@ -110,7 +117,7 @@ class User < ActiveRecord::Base
     edit = self.commands.create!(
       :name => "Edit a Queriac command",
       :keyword => "edit",
-      :url => "http://queri.ac/#{self.login}/(q)/edit",
+      :url=>user_command_edit_url(self, '(q)'),
       :description => "Edit a queriac command.\n\nExample: edit g"
     )
     edit.update_tags("queriac bootstrap")
@@ -118,7 +125,7 @@ class User < ActiveRecord::Base
     n = self.commands.create!(
       :name => "Create a new Queriac command",
       :keyword => "new",
-      :url => "http://queri.ac/commands/new",
+      :url=>new_command_url,
       :description => "Shortcut to the queriac page for creating a new account."
     )
     n.update_tags("queriac bootstrap")

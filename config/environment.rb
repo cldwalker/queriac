@@ -73,7 +73,7 @@ Time::DATE_FORMATS[:ymdhms] = Time::DATE_FORMATS[:batch] = "%Y%m%d%H%M%S"
 
 DEFAULT_PARAM = "(q)"
 
-ExceptionNotifier.exception_recipients = %w(zeke@queri.ac)
+ExceptionNotifier.exception_recipients = %w(zeke@queri.ac gabriel.horner@gmail.com)
 ExceptionNotifier.sender_address = %("Application Error" <admin@queri.ac>)
 ExceptionNotifier.email_prefix = "[queriac] "
 
@@ -85,4 +85,4 @@ require 'hpricot'
 
 STOPWORDS = %w(default_to delete tags help home tutorial settings queries commands opensearch users)
 
-HOST = 'http://localhost:3000' unless Object.const_defined?('HOST')
+HOST = 'localhost:3000' unless Object.const_defined?('HOST')

@@ -10,6 +10,25 @@ require File.dirname(__FILE__) + '/../spec_helper'
   # validates_uniqueness_of   :login, :email, :case_sensitive => false
   
 describe User do
+  # You can declare fixtures for each behaviour like this:
+  #   describe "...." do
+  #     fixtures :table_a, :table_b
+  #
+  # Alternatively, if you prefer to declare them only once, you can
+  # do so here, like so ...
+  #
+  #   config.global_fixtures = :table_a, :table_b
+  #
+  # If you declare global fixtures, be aware that they will be declared
+  # for all of your examples, even those that don't use them.
+  def valid_user_attributes
+    {
+      :login => "bozo",
+      :email => "bozo@email.com",
+      :password  => "partyfavors",
+      :password_confirmation  => "partyfavors"
+    }
+  end
   
   before(:each) do
     @user = User.new

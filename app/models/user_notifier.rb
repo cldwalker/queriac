@@ -1,13 +1,16 @@
 class UserNotifier < ActionMailer::Base
+  include ActionController::UrlWriter
+  default_url_options[:host] = ::HOST
+  
   def signup_notification(user)
     setup_email(user)
-    @body[:url]  = "http://queri.ac/activate/#{user.activation_code}"
+    @body[:url] = activate_user_url(user.activation_code)
   end
   
   def activation(user)
     setup_email(user)
     @subject    += 'Your account has been activated!'
-    @body[:url]  = "http://queri.ac/"
+    @body[:url] = home_url
   end
   
   protected

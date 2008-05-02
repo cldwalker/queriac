@@ -3,7 +3,7 @@
 <div id="upload">
 	<h1>Upload bookmark file from Firefox/Camino/Mozilla</h1>
 
-	<%= form_tag({:action=>'create'}, :multipart => true) %>
+	<%= form_tag(commands_path, :method=>:post, :multipart => true) %>
 		<input type="file" class="text" name="bookmarks_file" />
 		<input type="submit" class="submit" name="Upload" value="Upload Bookmarks" />
 	</form>
@@ -22,7 +22,7 @@
 	<ul class="options toolbar">
 		<li class="check">If you're creating a quicksearch, replace the search portion of the URL with the following: <code>(q)</code></li>
 		<li class="check">Don't forget to start your command URL with <code>http://</code> or <code>https://</code>. If you're creating a bookmarklet, don't forget the <code>javascript:</code></li>
-		<li class="check">The easiest way to familiarize yourself with how commands work is to copy them from <%= link_to "other users", "/users"  %> and customize them to your liking.</li>
+		<li class="check">The easiest way to familiarize yourself with how commands work is to copy them from <%= link_to "other users", users_path  %> and customize them to your liking.</li>
 	</ul>
 </div>
 <% end %>
