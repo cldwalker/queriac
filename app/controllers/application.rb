@@ -44,6 +44,7 @@ class ApplicationController < ActionController::Base
     true
   end
   
+  #owner? is the same as command_owner? for command actions that load @command
   def owner?
     logged_in? && current_user == @user
   end

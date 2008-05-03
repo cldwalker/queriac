@@ -11,7 +11,7 @@ class CommandsController < ApplicationController
   
   #TODO: verify :method => :delete, :only => :destroy
 
-  def index
+  def index 
 
     # Possiblities..
     # /commands                   => public commands
@@ -36,7 +36,7 @@ class CommandsController < ApplicationController
       end
     end
     
-    if @commands.empty?
+    if @commands.empty? && @tags.nil?
       flash[:warning] = "Sorry, no commands matched your request."
       redirect_to home_path
       return
@@ -74,6 +74,9 @@ class CommandsController < ApplicationController
     if keyword == "default_to"
       keyword = param_parts.shift.downcase 
       defaulted = true
+    elsif keyword == 'search_form'
+      param_parts = params[:search_command].split(/\s+/)
+      keyword = param_parts.shift.downcase
     end
     
     # Handle stealth queries (allowing for presence or absence of space following the !)
@@ -153,9 +156,8 @@ class CommandsController < ApplicationController
       return
     end
 
-    #FIXME: conditionals should match ones in the template
     publicity = owner? ? "any" : "public"
-    @queries = @command.queries.send(publicity).paginate(:order => "queries.created_at DESC", :page => params[:page]) if owner? || @command.public?
+    @queries = @command.queries.send(publicity).paginate(:order => "queries.created_at DESC", :page => params[:page]) if owner? || @command.public_queries?
 
     respond_to do |format|
       format.html # show.rhtml

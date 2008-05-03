@@ -1,15 +1,15 @@
 <h1 class="inline">
-	<% if @controller.action_name == 'search' %>
+	<% if current_page_matches?(search_user_commands_path(current_user)) %>
 		Search Results for '<%= params[:q] %>'
 	<% else %>
-	<%= @user ? whose_commands(@commands.first) : "All" %> commands
-	<%= "tagged with '#{@tags.join("+").gsub("+", "' and '")}'" unless @tags.blank? %>
+		<%= @commands.empty? ? 'No' : (@user ? whose_commands(@commands.first) : "All") %> commands
+		<%= "tagged with '#{@tags.join("+").gsub("+", "' and '")}'" unless @tags.blank? %>
 	<% end %>
 </h1>
 
 <ul class="bolder options header">
 	<% if logged_in? && @user != current_user %>
-		<li class="search"><%= link_to 'Yours', (@tags.blank? ? user_commands_path(current_user) : user_tagged_commands_path(@user, @tags)) %></li>
+		<li class="search"><%= link_to 'Yours', (@tags.blank? ? user_commands_path(current_user) : user_tagged_commands_path(current_user, @tags)) %></li>
 	<% end %>
 	<% if @user %>
 		<li class="search"><%= link_to 'All', (@tags.blank? ? commands_path : tagged_commands_path(@tags)) %></li>
@@ -62,4 +62,4 @@
 <% end %>
 </table>
 
-<%= will_paginate @commands unless @tag %>
+<%= will_paginate @commands %>

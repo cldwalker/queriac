@@ -82,7 +82,8 @@ describe 'commands/index:' do
     flash[:warning].should_not be_blank
   end
   
-  it 'redirects when no commands found' do
+  it 'displays no commands when no commands by tag found'
+  it 'redirects when no other commands found' do
     Command.should_receive(:public).and_return([])
     get :index
     response.should be_redirect
@@ -216,7 +217,8 @@ describe 'commands/execute:' do
     basic_expectations
   end
   
-  it 'executes default_to query'
+  it 'executes default_to command'
+  it 'executes search_bar command'
   
   #this happens when querying other ppl's commands from browser
   it 'executes w/ spaces between command + argument' do
@@ -303,12 +305,11 @@ describe 'commands/show (default as anonymous user):' do
   
   should_redirect_nonexistent_user('show')
   
-  it "handle private queries?" do
+  it "gets no queries for another's private queries" do
     command = create_command(:user=>@user, :public_queries=>false)
     create_query(:command=>command)
     get :show, :login=>@user.login, :command=>command.keyword
     basic_expectations
-    pending("handle querying for private queries correctly")
     assigns[:queries].should be_nil
   end
   

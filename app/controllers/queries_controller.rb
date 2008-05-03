@@ -30,6 +30,7 @@ class QueriesController < ApplicationController
           commands = @user.commands.send(query_publicity).find_tagged_with(@tags.join(", "), :match_all => true, :select => [:id])
           command_ids = commands.map(&:id).join(", ")
           @queries = Query.non_empty.paginate({:conditions => ["command_id IN (#{command_ids})"]}.merge(pagination_params)) unless command_ids.blank?
+          @queries ||= [].paginate
         else
           # => /zeke/queries
           @queries = @user.queries.non_empty.send(publicity).paginate(pagination_params)
@@ -45,14 +46,15 @@ class QueriesController < ApplicationController
         command_ids = commands.map(&:id).join(", ")
         
         # Second query gets all queries with command_ids from above..
-        @queries = Query.non_empty.paginate({:conditions => ["command_id IN (#{command_ids})"]}.merge(pagination_params))
+        @queries = Query.non_empty.paginate({:conditions => ["command_id IN (#{command_ids})"]}.merge(pagination_params)) unless command_ids.blank?
+        @queries ||= [].paginate
       else
         # => /queries
         @queries = Query.non_empty.send("public").paginate(pagination_params)
       end
     end
     
-    if @queries.blank?
+    if @queries.blank? && @tags.nil?
       flash[:warning] = "Sorry, no queries matched your request."
       redirect_to home_path
       return

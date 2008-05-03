@@ -24,11 +24,6 @@ class UsersController < ApplicationController
     end
     
     @tags = @user.tags
-    
-    # TODO: Fix this. It's lame
-    @tag = params[:tag]
-    # @commands.select!{|c| c.tags.map(&:name).include? @tag } if @tag
-    
     @users = User.find_top_users
   end
   
@@ -39,20 +34,9 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.new(params[:user])
-    
-    # unless params[:invite_code] == "dog"
-    #   render :action => 'new'
-    #   flash[:warning] = "Invalid invite code! Try again."
-    #   return
-    # end
-    
-      
+    @user = User.new(params[:user])      
     @user.save!
-    # self.current_user = @user
-    # redirect_back_or_default('/')
     flash[:notice] = "Thanks for signing up! Before you can log in, you'll have to verify your account by checking your email."
-    # flash[:notice] = "Thanks for signing up! A few commands were automatically created for you to get you started.."
     redirect_to home_path
   rescue ActiveRecord::RecordInvalid
     render :action => 'new'

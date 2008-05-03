@@ -1,14 +1,17 @@
 module ApplicationHelper
   include PathHelper
 
+  #TODO: clean up + perhaps combine render_page_title + render_nav
   def render_page_title
-    if @user || @command || @tag || params[:controller] == "users"
+    if @user || @command || @tags || params[:controller] == "users"
       crumbs = ["queriac"]
-      crumbs << "users" if params[:controller] == "users" && params[:action] == "index"
+      crumbs << "users" if current_page_matches?(users_path)
       crumbs << @user.login if @user
       crumbs << "commands" unless @commands.nil?
-      crumbs << "tag" unless @tag.blank?
-      crumbs << @tag unless @tag.blank?
+      if ! @tags.blank? && ! current_page_matches?(user_home_path(@user))
+        crumbs << "tag"
+        crumbs << @tags.join("+")
+      end
       crumbs << @command.keyword unless @command.blank? || @command.new_record?
       crumbs << "queries" if params[:controller] == "queries"
       return crumbs.join("/")
@@ -19,16 +22,19 @@ module ApplicationHelper
   
   def render_nav
     crumbs = [link_to("queriac", home_path)]
-    crumbs << link_to("users", users_path) if params[:controller] == "users" && params[:action] == "index"
+    crumbs << link_to("users", users_path) if current_page_matches?(users_path)
     crumbs << link_to(@user.login, user_home_path(@user)) if @user
-    crumbs << link_to("commands", user_commands_path(@user)) if @user && !@commands.nil?
-    crumbs << "tag" unless @tag.blank?
-    crumbs << @tag.gsub(" ", "+") unless @tag.blank?
-    crumbs << link_to(@command.keyword, command_show_path(@command)) unless @command.blank? || @command.new_record?
+    crumbs << link_to("commands", user_commands_path(@user)) if @user && !@commands.nil? && ! current_page_matches?(user_home_path(@user))
     crumbs << link_to("queries", user_queries_path(@user)) if params[:controller] == "queries" && @user
-    crumbs << link_to("queries") if params[:controller] == "queries" && @user.nil?
+    crumbs << link_to("queries", queries_path) if current_page_matches?(queries_path)
+    if ! @tags.blank? && ! current_page_matches?(user_home_path(@user))
+      crumbs << "tag"
+      crumbs << @tags.join("+")
+    end
+    crumbs << link_to(@command.keyword, command_show_path(@command)) unless @command.blank? || @command.new_record?
+    #used only by help so far
     crumbs << params[:action] if params[:controller] == "static" && params[:action] != "home"
-    crumbs << "<form><input type='text'></input></form>" if nil # !command.blank? && commmand.parametric? && !command.bookmarklet? 
+    #crumbs << "<form><input type='text'></input></form>" if nil # !command.blank? && commmand.parametric? && !command.bookmarklet? 
     return crumbs.join(" &raquo; ")
   end
   
@@ -113,6 +119,19 @@ module ApplicationHelper
 
   def render_favicon_for_command(command)
     image_tag(command.favicon_url, :alt => "", :width => "16", :height => "16")
+  end
+  
+  #more forgiving than current_page? since it doesn't expect params to match
+  def current_page_matches?(options)
+    url_string = CGI.escapeHTML(url_for(options))
+    request = @controller.request
+    if url_string =~ /^\w+:\/\//
+      url_string == "#{request.protocol}#{request.host_with_port}#{request.request_uri}"
+    else
+      #request.request_uri.include?(url_string)
+      @current_page_uri ||= request.request_uri.sub(/\?.*$/,'')
+      @current_page_uri == url_string
+    end
   end
   
 end

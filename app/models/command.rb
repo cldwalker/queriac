@@ -65,11 +65,11 @@ class Command < ActiveRecord::Base
   # Booleans
   #------------------------------------------------------------------------------------------------------------------
   def parametric?; self.kind == "parametric"; end
-  def bookmarklet?; self.bookmarklet; end
-  def public?; read_attribute(:public); end
+  # def bookmarklet?; self.bookmarklet; end
+  # def public?; read_attribute(:public); end
   def private?; !public?; end
-  def public_queries?; self.public_queries; end
-  def http_post?; self.http_post; end
+  def public_queries?; self.public && self.public_queries; end
+  # def http_post?; self.http_post; end
   
   # Miscellany
   #------------------------------------------------------------------------------------------------------------------

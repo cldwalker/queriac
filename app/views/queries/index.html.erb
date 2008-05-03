@@ -1,5 +1,5 @@
 <h1 class="inline">
-	<%= @user ? whose_commands(@queries.first.command) : "All" %> queries
+	<%= @queries.blank? ? 'No' : @user ? whose_commands(@queries.first.command) : "All" %> queries
 	<%= "tagged with '#{@tags.join("+").gsub("+", "' and '")}'" unless @tags.blank? %>
 </h1>
 

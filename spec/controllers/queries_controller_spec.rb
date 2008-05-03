@@ -76,7 +76,9 @@ describe 'queries/index:' do
     @command.update_attribute(:public_queries, true)
   end
   
-  it 'redirects when no queries found' do
+  it 'displays no queries when no queries by tag found'
+
+  it 'redirects when no other queries found' do
     Query.should_receive(:find).and_return([])
     get :index
     response.should be_redirect
