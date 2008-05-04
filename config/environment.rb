@@ -83,6 +83,6 @@ require 'has_finder'
 require 'open-uri'
 require 'hpricot'
 
-STOPWORDS = %w(default_to delete tags help home tutorial settings queries commands opensearch users)
+STOPWORDS = %w(default_to delete tags help home tutorial settings queries commands opensearch users search_form)
 
 HOST = 'localhost:3000' unless Object.const_defined?('HOST')

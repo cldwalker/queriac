@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   include ExceptionNotifiable, PathHelper
   # Pick a unique cookie name to distinguish our session data from others'
   session :session_key => '_queriac_session_id'
+  filter_parameter_logging 'password'
   
   include AuthenticatedSystem
   before_filter :login_from_cookie

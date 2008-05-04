@@ -74,8 +74,11 @@ class CommandsController < ApplicationController
     if keyword == "default_to"
       keyword = param_parts.shift.downcase 
       defaulted = true
-    elsif keyword == 'search_form'
+    end
+    if keyword == 'search_form'
       param_parts = params[:search_command].split(/\s+/)
+      #set just in case it goes to user's default_command
+      params[:command] = param_parts
       keyword = param_parts.shift.downcase
     end
     
@@ -171,10 +174,15 @@ class CommandsController < ApplicationController
       begin
         if (doc = Hpricot(open("http://yubnub.org/kernel/man?args=#{keyword}")))
           if (url = (doc/"span.muted")[0].inner_html)
+            if url[/\{.*\}/]
+              flash[:notice] = "Yubnub syntax was detected in the command url. Since we don't parse the same way yubnub does,
+                the url will point to yubnub's parser."
+              url = %[http://yubnub.org/parser/parse?command=#{keyword} (q)]
+            end
             new_params = {:action=>'new', :keyword=>keyword, :url=>url}
             description = (doc/"pre").first.inner_html rescue nil
             new_params.merge!(:description=>description) if description
-            redirect_to new_params #{:action=>'new'}.merge(new_params)
+            redirect_to new_params
             return
           end
         end

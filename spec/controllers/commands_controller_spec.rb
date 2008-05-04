@@ -217,8 +217,9 @@ describe 'commands/execute:' do
     basic_expectations
   end
   
-  it 'executes default_to command'
-  it 'executes search_bar command'
+  it 'executes default_to command passing along original command + arguments'
+  it 'executes search_form command'
+  it 'executes default_to via search_form'
   
   #this happens when querying other ppl's commands from browser
   it 'executes w/ spaces between command + argument' do
@@ -341,6 +342,7 @@ describe 'commands/copy_yubnub_command:' do
   #need to mock out open + Hpricot calls
   it "copies yubnub command"
   it "warns if parsing yubnub man page yields fails"
+  it 'handles copying yubnub-specific commands'
   
   it "warns if an invalid keyword is given to yubnub" do
     get :copy_yubnub_command, :keyword=>':.junk'
