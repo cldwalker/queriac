@@ -130,7 +130,8 @@ module ApplicationHelper
     else
       #request.request_uri.include?(url_string)
       @current_page_uri ||= request.request_uri.sub(/\?.*$/,'')
-      @current_page_uri == url_string
+      #FIXME: second half of OR statement w/ '/' only there until q command is fixed to not have '/' at the end
+      @current_page_uri == url_string || @current_page_uri == url_string + "/"
     end
   end
   
