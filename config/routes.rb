@@ -1,11 +1,10 @@
 ActionController::Routing::Routes.draw do |map|
   map.resources :commands, :member => { :execute => :get } , :collection=>{:tag_set=>:get, :tag_add_remove=>:get,
-    :copy_yubnub_command=>:get}
+    :copy_yubnub_command=>:get, :search_all=>:get}
   map.resources :sessions
   map.resources :users, :member => { :opensearch => :get }
     
   map.activate_user  '/activate/:activation_code',     :controller => 'users', :action => 'activate'
-  #map.account   ':login/account',                 :controller => 'users', :action => 'account'
   map.settings   'settings',                      :controller => 'users', :action => 'edit'
   map.connect   'tutorial',                       :controller => 'users', :action => 'edit'
   map.help      'help',                           :controller => 'static', :action => 'help'

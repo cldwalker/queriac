@@ -1,9 +1,10 @@
 class CommandsController < ApplicationController
 
   before_filter :login_required, :except => [:index, :execute, :show]
-  before_filter :load_valid_user, :except=>[:index, :new, :create, :update, :copy_yubnub_command, :tag_set, :tag_add_remove]
+  before_filter :load_valid_user, :except=>[:index, :new, :create, :update, :copy_yubnub_command, :tag_set, :tag_add_remove, :search_all]
   before_filter :load_valid_user_if_specified, :only=>:index
   before_filter :load_tags_if_specified, :only=>:index
+  before_filter :admin_required, :only=>:search_all
   #remaining filters dependent on load_valid_user*
   before_filter :permission_required_for_user, :only=>[:edit, :destroy, :search]
   #double check this filter if changing method names ie show->display
@@ -46,6 +47,17 @@ class CommandsController < ApplicationController
       format.html # show.rhtml
       format.xml  { render :xml => @commands.to_xml }
     end
+  end
+  
+  def search_all
+    if params[:q].blank?
+      flash[:warning] = "Your search is empty. Try again."
+      @commands = [].paginate
+    else
+      all_commands = Command.find(:all, :conditions=>["keyword REGEXP ? OR url REGEXP ?", params[:q], params[:q]])
+      @commands = all_commands.paginate(index_pagination_params)
+    end
+    render :action => 'index'
   end
   
   def search
@@ -257,7 +269,6 @@ class CommandsController < ApplicationController
     render_tag_action(tag_string, keywords, edited_commands)
   end
 
-  
   def create
 
     # If user uploaded a bookmark file

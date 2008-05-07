@@ -45,6 +45,9 @@ class ApplicationController < ActionController::Base
     true
   end
   
+  def admin_required
+    logged_in? && current_user.is_admin?
+  end
   #owner? is the same as command_owner? for command actions that load @command
   def owner?
     logged_in? && current_user == @user

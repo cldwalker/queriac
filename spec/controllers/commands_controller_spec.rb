@@ -115,6 +115,8 @@ describe 'commands/search:' do
   
   #user executing another user's private action
   should_redirect_prohibited_action('search')
+  
+  it 'search_all'
 end
 
 describe 'commands/tag_add_remove:' do
