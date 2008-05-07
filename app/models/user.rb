@@ -42,9 +42,11 @@ class User < ActiveRecord::Base
   validates_presence_of     :password_confirmation,      :if => :password_required?
   validates_length_of       :password, :within => 4..40, :if => :password_required?
   validates_confirmation_of :password,                   :if => :password_required?
-  validates_format_of       :login,   :with => /[a-zA-Z0-9_]{1,16}/
-  validates_length_of       :email,    :within => 3..100
   validates_uniqueness_of   :login, :email, :case_sensitive => false
+  validates_length_of       :login,    :within => 1..40
+  validates_format_of       :login,  :with => /[a-zA-Z0-9_]{1,16}/
+  validates_length_of       :email,  :within => 3..100
+  validates_format_of       :email,  :with => /^([^@\s]+)@(?:[-a-z0-9]+\.)+[a-z]{2,}$/i
   before_save :encrypt_password
   before_create :make_activation_code 
   
