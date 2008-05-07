@@ -80,9 +80,9 @@ class Command < ActiveRecord::Base
   def url_for(query_string, manual_url_encode=nil)
     is_url_encoded = !manual_url_encode.nil? ? manual_url_encode : url_encode?
     if is_url_encoded
-      self.url.sub(DEFAULT_PARAM, CGI.escape(query_string))
+      self.url.gsub(DEFAULT_PARAM, CGI.escape(query_string))
     else
-      self.url.sub(DEFAULT_PARAM,query_string)
+      self.url.gsub(DEFAULT_PARAM,query_string)
     end
   end
   

@@ -56,7 +56,7 @@ class CommandsController < ApplicationController
     else
       #:select + :group ensure unique urls for commands
       all_commands = Command.find(:all, :conditions=>["keyword REGEXP ? OR url REGEXP ?", params[:q], params[:q]],
-        :select=>'*, count(url)', :group=>"url HAVING count(url)>=1" )
+        :select=>'*, count(url)', :group=>"url HAVING count(url)>=1", :order=>'queries_count_all DESC' )
       @commands = all_commands.paginate(index_pagination_params)
     end
     render :action => 'index'
@@ -67,7 +67,8 @@ class CommandsController < ApplicationController
       flash[:warning] = "Your search is empty. Try again."
       @commands = [].paginate
     else
-      all_commands = @user.commands.find(:all, :conditions=>["keyword REGEXP ? OR url REGEXP ?", params[:q], params[:q]])
+      all_commands = @user.commands.find(:all, :conditions=>["keyword REGEXP ? OR url REGEXP ?", params[:q], params[:q]], 
+        :order=>'queries_count_all DESC')
       @commands = all_commands.paginate(index_pagination_params)
     end
     render :action => 'index'
@@ -366,7 +367,9 @@ class CommandsController < ApplicationController
   end
   
   def index_pagination_params
-    {:order => "commands.queries_count_all DESC", :page => params[:page], :include => [:tags]}
+    #don't see any effect from :order, does :include work?
+    #{:order => "commands.queries_count_all DESC", :page => params[:page], :include => [:tags]}
+    {:page => params[:page], :include => [:tags]}
   end
   
   def load_command_by_user_and_keyword
