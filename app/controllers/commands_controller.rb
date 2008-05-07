@@ -54,7 +54,9 @@ class CommandsController < ApplicationController
       flash[:warning] = "Your search is empty. Try again."
       @commands = [].paginate
     else
-      all_commands = Command.find(:all, :conditions=>["keyword REGEXP ? OR url REGEXP ?", params[:q], params[:q]])
+      #:select + :group ensure unique urls for commands
+      all_commands = Command.find(:all, :conditions=>["keyword REGEXP ? OR url REGEXP ?", params[:q], params[:q]],
+        :select=>'*, count(url)', :group=>"url HAVING count(url)>=1" )
       @commands = all_commands.paginate(index_pagination_params)
     end
     render :action => 'index'

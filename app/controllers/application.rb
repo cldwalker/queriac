@@ -46,8 +46,15 @@ class ApplicationController < ActionController::Base
   end
   
   def admin_required
-    logged_in? && current_user.is_admin?
+    if logged_in? && current_user.is_admin?
+      return true
+    else
+      flash[:warning] = "Access denied!"
+      redirect_to user_home_path(current_user)
+      return false
+    end
   end
+  
   #owner? is the same as command_owner? for command actions that load @command
   def owner?
     logged_in? && current_user == @user
