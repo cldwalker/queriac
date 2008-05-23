@@ -26,6 +26,8 @@ ActionController::Routing::Routes.draw do |map|
   map.with_options(:controller=>'commands') do |c|
     c.tagged_commands           'commands/tag/*tag',              :action => 'index'
     c.user_commands             ':login/commands',                :action => 'index'
+    c.user_commands_xml         ':login/commands/feed.xml',       :action => 'index', :format => 'xml'
+    c.user_commands_atom        ':login/commands/feed.atom',      :action => 'index', :format => 'atom'
     c.user_tagged_commands      ':login/commands/tag/*tag',       :action => 'index'
     c.search_user_commands      ':login/commands/search',         :action => 'search'
 

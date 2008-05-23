@@ -43,11 +43,14 @@ class CommandsController < ApplicationController
       return
     end
     
+    # raise @commands.first.tags.inspect
+    
     respond_to do |format|
-      format.html # show.rhtml
-      format.xml  { render :xml => @commands.to_xml }
+      format.html
+      format.atom
+      format.xml #  { render :xml => @commands.to_xml }
     end
-  end
+  end  
   
   def search_all
     if params[:q].blank?
