@@ -40,23 +40,23 @@ class UserCommand < ActiveRecord::Base
   end
   
   #CHANGE
-  def initialize(*args)
-    #p args[0]
-    if args[0].is_a?(Hash)
-      args[0].stringify_keys! #in case it's not an insensitive hash
-      command_hash = args[0].slice(*COMMAND_FIELDS)
-      args[0].except!(*COMMAND_ONLY_FIELDS)
-    end
-    super(*args)
-    # p command_hash
-    # p args[0]
-    if self.command_id.nil? && self.command.nil?
-      create_command_from_hash(command_hash) 
-    else
-      self.url = self.command.url
-    end
-    return self
-  end
+  # def initialize(*args)
+  #   #p args[0]
+  #   if args[0].is_a?(Hash)
+  #     args[0].stringify_keys! #in case it's not an insensitive hash
+  #     command_hash = args[0].slice(*COMMAND_FIELDS)
+  #     args[0].except!(*COMMAND_ONLY_FIELDS)
+  #   end
+  #   super(*args)
+  #   # p command_hash
+  #   # p args[0]
+  #   if self.command_id.nil? && self.command.nil?
+  #     create_command_from_hash(command_hash) 
+  #   else
+  #     self.url = self.command.url
+  #   end
+  #   return self
+  # end
     
   def create_command_from_hash(command_hash)
     if command_hash
