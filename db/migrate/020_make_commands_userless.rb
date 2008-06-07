@@ -14,8 +14,9 @@ class MakeCommandsUserless < ActiveRecord::Migration
   
   
   def self.make_admin_user
-    @admin_user = User.new(:login=>'queriac', :email=>'queriac@queri.ac', :password=>'youknow', :password_confirmation=>'youknow')
-    @admin_user.send(:create_without_callbacks)
+    @admin_user = User.create(:login=>'queriac', :email=>'queriac@queri.ac', :password=>'youknow', :password_confirmation=>'youknow')
+    # @admin_user = User.new(:login=>'queriac', :email=>'queriac@queri.ac', :password=>'youknow', :password_confirmation=>'youknow')
+    # @admin_user.send(:create_without_callbacks)
     @admin_user.activate
     @admin_user.update_attribute :is_admin, true
   end
@@ -92,7 +93,7 @@ class MakeCommandsUserless < ActiveRecord::Migration
       if tcommand.valid?
         old_commands.each do |c|
           ucommand_hash = c.attributes.slice(*ucommand_fields).merge('command_id'=>tcommand.id, 'url'=>tcommand.url, 'old_command_id'=>c.id, 'queries_count'=>c.queries_count_all)
-          ucommand_hash.update('name'=>tcommand.name, 'description'=>tcommand.description) if options[:tcommand]
+          ucommand_hash.update('name'=>tcommand.name, 'description'=>tcommand.description, 'public_queries'=>c.public_queries) if options[:tcommand]
           ucommand = UserCommand.create(ucommand_hash)
           if !ucommand.valid?
             logger "INVALID_USER_COMMAND not created for url:#{first_command.url}\nargs:#{ucommand_hash.inspect}\nucommand:#{ucommand.inspect}\nerrors:#{ucommand.errors.inspect}"
@@ -175,6 +176,13 @@ class MakeCommandsUserless < ActiveRecord::Migration
         :description => "Create a new user command.",
         :tags=>"queriac bootstrap"
       },
+      # {
+      #   :name => "Delete a Queriac user command",
+      #   :keyword => "delete",
+      #   :url=>make_url('user_commands/(q)/destroy'),
+      #   :description => "Delete a user command.\n\nExample: delete g",
+      #   :tags=>"queriac bootstrap"
+      # },    
       # {
       #   :name=>'Search my commands by url or keyword with regex',
       #   :keyword=>'search',

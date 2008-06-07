@@ -22,8 +22,7 @@ class TempCommand < ActiveRecord::Base
   validates_presence_of :name, :url
   # validates_format_of :keyword, :with => /^\w+$/i, :message => "can only contain letters and numbers."
   
-  #validates_uniqueness_of :url, :scope=>[:http_post, :url_encode, :public] unless Proc.new {|c| c.private?}
-  validates_uniqueness_of :url, :scope=>[:public] unless Proc.new {|c| c.private? } #CHANGED for tests
+  validates_uniqueness_of :url, :scope=>[:public], :unless=>Proc.new {|c| c.private? } #CHANGED for tests
   #validates_uniqueness_of :url, :scope=>[:public] if Proc.new {|c| c.public? } #worked for public_commands
   validates_uniqueness_of :keyword, :allow_nil=>true
   # validates_uniqueness_of :keyword, :scope => :user_id
