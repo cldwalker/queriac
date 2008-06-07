@@ -26,6 +26,13 @@ module CreateSpecHelper
     user
   end
   
+  def create_user_command(hash={})
+    hash[:command] ||= create_command(hash)
+    hash = hash[:command].attributes.slice('url', 'name', 'keyword').merge(hash)
+    user = hash[:user] || create_user
+    user.user_commands.create(hash)    
+  end
+  
   def create_command(hash={})
     user = hash[:user] || create_user
     hash = random_valid_command_attributes.merge(hash)
@@ -40,9 +47,9 @@ module CreateSpecHelper
   end
   
   def create_query(hash={})
-    command = hash[:command] || create_command
-    user_id = hash[:user_id] || command.user_id
-    command.queries.create({:user_id=>user_id, :query_string=>'blah'}.merge(hash))
+    ucommand = hash[:user_command] || create_user_command
+    user_id = hash[:user_id] || ucommand.user_id
+    ucommand.queries.create({:user_id=>user_id, :query_string=>'blah'}.merge(hash))
   end
   
   def create_tag(hash={})

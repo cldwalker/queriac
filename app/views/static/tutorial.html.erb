@@ -1,0 +1,49 @@
+<div id="primary">	
+<h1>Tutorial</h1>
+<h2>Some commands to get you started.</h2>
+<p>
+	When you created your Queriac account a few commands were generated for you automatically.
+	Among the more obvious starter commands like a Google quicksearch, there are some commands that give you
+	quick access to various parts of your account. Once you've got your browser set up per the above instructions, 
+	type any of the following right into your address bar..
+</p>
+
+<p class="caption">&rarr; Type <code>q</code> in the address bar and you'll be taken to your Queriac account page.</p>
+
+<p class="caption">&rarr; Type <code>new</code> in the address bar and you'll be taken to Queriac's "Create a New Command" page.</p>
+
+<p class="caption">&rarr; Type <code>show g</code> to view a command's summary page (g for Google Quicksearch in this case), showing you its tags, a list of recent queries you've made with the command, etc.</p>
+
+<p class="caption">&rarr; Type <code>edit g</code> to edit a command. (again, g as in Google Quicksearch in this example)</p>
+
+<% if logged_in? %>
+	<h2>Using Bookmarklets</h2>
+	<p>If you want to use bookmarklets through Queriac, you'll need to add the following bookmarklet to your local
+		bookmarks in your browser. Because of Javascript's client-side nature (see <%= link_to "Same Origin Policy", "http://www.mozilla.org/projects/security/components/same-origin.html" %>), this bookmarklet is needed to download 
+		the Javascript source from your Queriac commands and it evaluates it locally.
+	</p>
+	<p>
+		<b>To install:</b> Right-click on the link below and save it as a local bookmakrk. You'll need to give it a keyword 
+		(or shortcut in Camino).. something like <code>j</code>. If you don't see the keyword/shortcut column in
+		your browser's bookmarks window, you'll need to enable it by clicking the little dropdown doohicky on the right
+		side of the column header.
+	</p>
+	<p class="bordered">
+		Right-click to install: <a href="javascript:_s=document.createElement('script');_s.type='text/javascript';_s.src='http://queri.ac/<%= current_user.login %>/%s?js=1';document.getElementsByTagName('head')[0].appendChild(_s);void(0);">Queriac Bookmarklet Enabler</a>
+	</p>
+<% end %>
+
+<h2>Done?</h2>
+<% if logged_in? %>
+	<p>It looks like you're already logged in, so go ahead and proceed to <%= link_to "your home page", user_home_path(current_user) %>.</p>
+<% else %>
+	<p>
+		You don't seem to be logged in. <%= link_to "Click here to log in and start creating commands", new_session_path %>.
+	</p>
+<% end %>
+
+
+</div>
+<div id="secondary">
+	<%= render :partial => "/sessions/form" unless logged_in? %>
+</div>

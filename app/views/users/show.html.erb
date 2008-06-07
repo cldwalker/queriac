@@ -3,11 +3,11 @@
 	<% if params[:bad_command] %>
 		<% keyword = params[:bad_command] %>
 		<div class="msg">
-		<% if current_user_is_the_user? %>
+		<% if current_user? %>
 			<p>The command you entered (<%= keyword %>) does not exist. What do you want to do about it?</p>
 			<ul class="options toolbar">
 				<li class="edit"><%= link_to("Pick a default command and direct orphan queries to it.", settings_path) %></li>
-				<li class="add"><%= link_to("Create a new command with keyword '#{keyword}'", new_command_path(:keyword => keyword)) %></li>
+				<li class="add"><%= link_to("Create a new command with keyword '#{keyword}'", new_user_command_path(:keyword => keyword)) %></li>
 			</ul>
 			<% else %>
 				<p>The command you entered (<%= keyword %>) does not exist.</p>
@@ -19,8 +19,8 @@
 		<div class="flash-msg warning">Sorry, <b><%= @user.login %></b> has privatized the <b><%= params[:illegal_command] %></b> command.</div>		
 	<% end %>
 	
-	<% if @commands %>
-		<%= render :partial => "commands/command_summary_table", :locals => {:commands => @commands, :title => "Commands"} %>	
+	<% if @user_commands %>
+		<%= render :partial => "commands/command_summary_table", :locals => {:commands => @user_commands, :title => "User Commands"} %>	
 	<% else %>
 		<%= render :partial => "commands/command_summary_table", :locals => {:commands => @quicksearches, :title => "Top Quicksearches"} if @quicksearches %>
 		<%= render :partial => "commands/command_summary_table", :locals => {:commands => @shortcuts, :title => "Top Shortcuts"} if @shortcuts %>
@@ -38,10 +38,10 @@
 	<% end %>
 	<h1>Options</h1>
 		<ul class="options toolbar">
-			<% if current_user_is_the_user? %>
-				<li class="add"><%= link_to "Create a new command", new_command_path %></li>
+			<% if current_user? %>
+				<li class="add"><%= link_to "Create a new command", new_user_command_path %></li>
 			<% end %>
-			<li class="command"><%= link_to "View all #{whose} commands", user_commands_path(@user) %></li>
+			<li class="command"><%= link_to "View all #{whose} commands", specific_user_commands_path(@user) %></li>
 			<li class="search"><%= link_to "View all #{whose} queries", user_queries_path(@user) %></li>
 		</ul>
 	

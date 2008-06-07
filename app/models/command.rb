@@ -1,63 +1,59 @@
-# == Schema Information
-# Schema version: 14
-#
-# Table name: commands
-#
-#  id                  :integer(11)     not null, primary key
-#  name                :string(255)     
-#  keyword             :string(255)     
-#  url                 :text            
-#  description         :text            
-#  kind                :string(255)     
-#  origin              :string(255)     default("hand")
-#  created_at          :datetime        
-#  modified_at         :datetime        
-#  bookmarklet         :boolean(1)      
-#  user_id             :integer(11)     
-#  public              :boolean(1)      default(TRUE)
-#  public_queries      :boolean(1)      default(TRUE)
-#  queries_count_all   :integer(11)     default(0)
-#  queries_count_owner :integer(11)     default(0)
-#
-
 class Command < ActiveRecord::Base
+  include CommandHelper
   belongs_to :user
-  has_many :queries, :dependent => :destroy
+  has_many :queries, :through=>:user_commands, :order=>'queries.created_at DESC'
+  has_many :user_commands, :dependent=>:destroy
+  has_many :users, :through=>:user_commands
+  has_many :user_tags, :through=>:user_commands
   
-  acts_as_taggable
-  
-  has_finder :used, :conditions => ["commands.queries_count_all > 0"]
-  has_finder :unused, :conditions => ["commands.queries_count_all = 0"]
-  has_finder :popular, :conditions => ["commands.queries_count_all > 50"]
   has_finder :public, :conditions => {:public => true}
-  has_finder :publicly_queriable, :conditions => {:public_queries => true}
-  has_finder :quicksearches, :conditions => {:kind => "parametric", :bookmarklet => false}
-  has_finder :bookmarklets, :conditions => {:bookmarklet => true}
-  has_finder :shortcuts, :conditions => {:kind => "shortcut", :bookmarklet => false}
   has_finder :any
   
-  validates_presence_of :name, :keyword, :url
-  validates_format_of :keyword, :with => /^\w+$/i, :message => "can only contain letters and numbers."
-
-  validates_uniqueness_of :keyword, :scope => :user_id
-  validates_uniqueness_of :url, :scope => :user_id
+  validates_presence_of :name, :url
+  validates_uniqueness_of :name
+  validates_uniqueness_of :url, :scope=>[:public], :unless=>Proc.new {|c| c.private? }
+  validates_uniqueness_of :keyword, :allow_nil=>true
+  validates_format_of :keyword, :with => /^\w+$/i, :message => "can only contain letters and numbers.", :unless=>Proc.new {|c| c.keyword.nil?}  
   
   # Validation / Initialization
   #------------------------------------------------------------------------------------------------------------------
-
+  
   def validate
-    if STOPWORDS.include?(self.keyword.downcase)
-      errors.add_to_base "Sorry, the keyword you've chosen (#{self.keyword}) is reserved by the system. Please use something else." 
+    if self.keyword
+      if COMMAND_STOPWORDS.include?(self.keyword.downcase)
+        errors.add_to_base "Sorry, the keyword you've chosen (#{self.keyword}) is reserved by the system. Please use something else." 
+      #to prevent uniqueness clash since keyword + id are used interchangeably as a unique public id
+      elsif self.keyword =~ /^\d+$/
+        errors.add(:keyword, "can't only contain numbers.")
+      end
+      false
+    end
+    true
+  end
+  
+  #trying to ensure commands are created from user command creation even
+  #when commands are initially invalid
+  def after_validation_on_create
+    if self.errors['keyword'] && self.errors['keyword'].include?('has already')
+      self.keyword = nil
+      self.errors.instance_eval "@errors.delete('keyword')"
+      self.save if self.valid?
+    end
+    if self.errors['name'] && self.errors['name'].include?('has already')
+      self.name = "#{self.name} version #{rand(10000)}"
+      self.errors.instance_eval "@errors.delete('name')"
+      self.save if self.valid?
     end
   end
   
   def after_validation
-    self.keyword.downcase!
+    self.keyword.downcase! if self.keyword
     self.url.sub!('%s', DEFAULT_PARAM )
     self.kind = self.url.include?(DEFAULT_PARAM) ? "parametric" : "shortcut"
     self.bookmarklet = self.url.downcase.starts_with?('javascript') ? true : false
   end
   
+  def to_param; self.keyword || self.id; end
   # def url=(url)
   #   super(url.blank? || url.downcase.starts_with?('http') || url.downcase.starts_with?('file') || url.downcase.starts_with?('javascript') ? url : "http://#{url}")
   # end
@@ -65,11 +61,8 @@ class Command < ActiveRecord::Base
   # Booleans
   #------------------------------------------------------------------------------------------------------------------
   def parametric?; self.kind == "parametric"; end
-  # def bookmarklet?; self.bookmarklet; end
-  # def public?; read_attribute(:public); end
   def private?; !public?; end
   def public_queries?; self.public && self.public_queries; end
-  # def http_post?; self.http_post; end
   
   # Miscellany
   #------------------------------------------------------------------------------------------------------------------
@@ -77,46 +70,27 @@ class Command < ActiveRecord::Base
   #   self.queries.create(:query_string => query_string)
   # end
   
-  def url_for(query_string, manual_url_encode=nil)
-    is_url_encoded = !manual_url_encode.nil? ? manual_url_encode : url_encode?
-    if is_url_encoded
-      self.url.gsub(DEFAULT_PARAM, CGI.escape(query_string))
-    else
-      self.url.gsub(DEFAULT_PARAM,query_string)
-    end
+  def created_by?(possible_owner)
+    self.user == possible_owner
   end
   
-  def domain
-    # Found the regex at http://yubnub.org/kernel/man?args=extractdomainname
-    u = url
-    if bookmarklet?
-      return nil if url.split("http").size == 1
-      u = "http" + url.split("http").last
-    end
-    u=~(/^(?:\w+:\/\/)?([^\/?]+)(?:\/|\?|$)/) ? $1 : nil
+  def creator_command
+    self.user_commands.find(:first, :conditions=>{:user_id=>self.user_id})
   end
   
-  def favicon_url
-    return "/images/icons/blank_bordered.png" if domain.nil?
-    "http://#{domain}/favicon.ico"
-  end
-  
-  def update_tags(tags)
-    self.tag_list = tags.split(" ").join(", ")
-    self.save
-  end
-  
-  def tag_string
-    self.tag_list.join(" ")
-  end
+  # def update_tags(tags)
+  #   self.tag_list = tags.split(" ").join(", ")
+  #   self.save
+  # end
+  # 
+  # def tag_string
+  #   self.tag_list.join(" ")
+  # end
   
   def update_query_counts
-    self.update_attribute(:queries_count_all, queries.count)
-    self.update_attribute(:queries_count_owner, queries.count(:conditions => ["queries.user_id = ?", self.user.id]))
-  end
-  
-  def queries_count_outsiders
-    queries_count_all - queries_count_owner
+    self.update_attribute(:queries_count_all, self.queries_count_all + 1)
+    #too db-intensive for now
+    # self.update_attribute(:queries_count_all, self.queries.count)
   end
   
   def self.create_commands_for_user_from_bookmark_file(user, file)
@@ -128,7 +102,7 @@ class Command < ActiveRecord::Base
         name = a.inner_html
         keyword = a.attributes['shortcuturl']
         url = a.attributes['href']
-        command = user.commands.create(:name => name, :keyword => keyword,
+        command = user.user_commands.create(:name => name, :keyword => keyword,
           :url => url, :origin => "import")
         if command.valid?
           valid_commands << command
@@ -144,4 +118,7 @@ class Command < ActiveRecord::Base
     return [valid_commands, invalid_commands]
   end
   
+  def self.find_by_keyword_or_id(id, options={})
+    find(:first, {:conditions=>["commands.keyword = '#{id}' OR commands.id = '#{id}'"]}.merge(options))
+  end
 end

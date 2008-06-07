@@ -1,54 +1,42 @@
 class CommandsController < ApplicationController
 
   before_filter :login_required, :except => [:index, :execute, :show]
-  before_filter :load_valid_user, :except=>[:index, :new, :create, :update, :copy_yubnub_command, :tag_set, :tag_add_remove, :search_all]
-  before_filter :load_valid_user_if_specified, :only=>:index
-  before_filter :load_tags_if_specified, :only=>:index
-  before_filter :admin_required, :only=>:search_all
-  #remaining filters dependent on load_valid_user*
-  before_filter :permission_required_for_user, :only=>[:edit, :destroy, :search]
-  #double check this filter if changing method names ie show->display
-  before_filter :load_command_by_user_and_keyword, :only=>[:show, :edit, :destroy]
+  before_filter :load_valid_user, :only=>[:execute]
+  # before_filter :load_valid_user_if_specified, :only=>:index
+  # before_filter :load_tags_if_specified, :only=>:index
+  before_filter :admin_required, :only=>[:search_all, :edit, :update]
+  before_filter :set_command, :only=>[:show, :edit, :update]
   
-  #TODO: verify :method => :delete, :only => :destroy
-
+  # Possiblities..
+  # /commands                   => public commands
   def index 
-
-    # Possiblities..
-    # /commands                   => public commands
-    # /commands/tag/google        => public commands for a tag or tags
-    # /zeke/commands/             => all || public commands for a specific user
-    # /zeke/commands/tag/google   => all || public commands for a specific user for a tag or tags
-
-    publicity = owner? ? "any" : "public"
     pagination_params = index_pagination_params.dup
     
-    if @tags
-      if @user
-        @commands = @user.commands.send(publicity).find_tagged_with(@tags.join(", "), :match_all => true, :order => "commands.queries_count_all DESC").paginate(pagination_params)
-      else
-        @commands = Command.send("public").find_tagged_with(@tags.join(", "), :match_all => true, :order => "commands.queries_count_all DESC").paginate(pagination_params)
-      end
-    else
-      if @user
-        @commands = @user.commands.send(publicity).paginate(pagination_params)
-      else
-        @commands = Command.send("public").paginate(pagination_params)
-      end
-    end
+    #TODO: enable tag + user listings of commands    
+    # publicity = current_user? ? "any" : "public"
+    # if @tags
+    #   if @user
+    #     @commands = @user.commands.send(publicity).find_tagged_with(@tags.join(", "), :match_all => true, :order => "commands.queries_count_all DESC").paginate(pagination_params)
+    #   else
+    #     @commands = Command.send("public").find_tagged_with(@tags.join(", "), :match_all => true, :order => "user_commands.queries_count DESC").paginate(pagination_params)
+    #   end
+    # else
+    # end
+    # if @user
+    #   @commands = @user.commands.send(publicity).paginate(pagination_params)
+    # end
     
-    if @commands.empty? && @tags.nil?
+    @commands = Command.send("public").paginate(pagination_params.merge(:order=>'created_at DESC'))
+    
+    if @commands.empty?
       flash[:warning] = "Sorry, no commands matched your request."
       redirect_to home_path
       return
     end
-    
-    # raise @commands.first.tags.inspect
-    
+        
     respond_to do |format|
       format.html
-      format.atom
-      format.xml #  { render :xml => @commands.to_xml }
+      format.xml { render :xml => @commands.to_xml }
     end
   end  
   
@@ -65,18 +53,6 @@ class CommandsController < ApplicationController
     render :action => 'index'
   end
   
-  def search
-    if params[:q].blank?
-      flash[:warning] = "Your search is empty. Try again."
-      @commands = [].paginate
-    else
-      all_commands = @user.commands.find(:all, :conditions=>["keyword REGEXP ? OR url REGEXP ?", params[:q], params[:q]], 
-        :order=>'queries_count_all DESC')
-      @commands = all_commands.paginate(index_pagination_params)
-    end
-    render :action => 'index'
-  end
-    
   def execute
     # Extract command and query string from params
     # (The join is here to bring query strings back together, as queries containing
@@ -109,7 +85,7 @@ class CommandsController < ApplicationController
     # after command has been lopped off the beginning of string
     query_string = param_parts.join(' ') 
     
-    @command = @user.commands.find_by_keyword(keyword)
+    @command = @user.user_commands.find_by_keyword(keyword)
     
     # If command doesn't exist, route the query to the user's default command,
     # or redirect to user's home path and show options, depending on their settings.
@@ -123,7 +99,7 @@ class CommandsController < ApplicationController
     end
 
     # Don't allow outsiders to run private commands  
-    if @command.private? && !owner?
+    if @command.private? && ! @command.owned_by?(current_user)
       redirect_path = user_home_path(@user)
       redirect_path << (logged_in? ? "?illegal_command=#{keyword}" : "?private_command=#{keyword}")
       redirect_to(redirect_path) and return
@@ -171,165 +147,28 @@ class CommandsController < ApplicationController
 
   #desired behavior for private queries is just a sidebar?
   def show
-    if @command.private? && !owner?
-      flash[:warning] = "Sorry, the command '#{params[:command]}' is private for #{@user.login}."
-      redirect_to user_home_path(@user)
+    if @command.private? && ! command_owner_or_admin?
+      flash[:warning] = "Sorry, the command '#{@command.keyword}' is private."
+      redirect_back_or_default user_home_path(@command.user)
       return
     end
 
-    publicity = owner? ? "any" : "public"
-    @queries = @command.queries.send(publicity).paginate(:order => "queries.created_at DESC", :page => params[:page]) if owner? || @command.public_queries?
+    @queries = @command.queries.public.paginate(:order => "queries.created_at DESC", :page => params[:page])
 
     respond_to do |format|
-      format.html # show.rhtml
+      format.html
       format.xml  { render :xml => @command.to_xml }
     end
-  end
-
-  def copy_yubnub_command
-    #keyword regex is strict for now, should find out what is an acceptable yubnub command
-    if params[:keyword] && (keyword = params[:keyword].scan(/^\w+/).first)
-      begin
-        if (doc = Hpricot(open("http://yubnub.org/kernel/man?args=#{keyword}")))
-          if (url = (doc/"span.muted")[0].inner_html)
-            if url[/\{.*\}/]
-              flash[:notice] = "Yubnub syntax was detected in the command url. Since we don't parse the same way yubnub does,
-                the url will point to yubnub's parser."
-              url = %[http://yubnub.org/parser/parse?command=#{keyword} (q)]
-            end
-            new_params = {:action=>'new', :keyword=>keyword, :url=>url}
-            description = (doc/"pre").first.inner_html rescue nil
-            new_params.merge!(:description=>description) if description
-            redirect_to new_params
-            return
-          end
-        end
-      rescue
-        flash[:warning] = "Failed to parse yubnub keyword '#{params[:keyword]}'"
-        redirect_back_or_default user_home_path(current_user)
-        return
-      end
-      flash[:warning] = "Failed to parse yubnub keyword '#{params[:keyword]}'"
-    else
-      flash[:warning] = "The keyword '#{params[:keyword]}' is not a valid keyword. Please try again."      
-    end
-    redirect_back_or_default user_home_path(current_user)
-  end
-  
-  def new  
-    @command = Command.new
-    
-    if params[:ancestor]
-      @ancestor = Command.find(params[:ancestor])
-      unless @ancestor.public? || (current_user == @ancestor.user)
-        flash[:warning] = "You cannot duplicate a private command." 
-        redirect_back_or_default ''
-      end
-      @command.name = @ancestor.name
-      @command.keyword = @ancestor.keyword
-      @command.url = @ancestor.url
-      @command.description = @ancestor.description
-    end
-    
-    # Allow user to pre-populate form.
-    @command.name = params[:name] if params[:name]
-    @command.keyword = params[:keyword] if params[:keyword]
-    @command.url = params[:url] if params[:url]
-    @command.description = params[:description] if params[:description]
   end
 
   def edit
   end
   
-  def tag_add_remove
-    keywords, tag_string = parse_tag_input
-    
-    successful_commands = []
-    unless tag_string.blank?
-      #TODO: should move \w+ to a validation regex constant
-      remove_list, add_list = tag_string.scan(/-?\w+/).partition {|e| e[0,1] == '-' }
-      remove_list.map! {|e| e[1..-1]}
-      keywords.each do |n| 
-        if (cmd = current_user.commands.find_by_keyword(n))
-          cmd.tag_list.add(add_list)
-          cmd.tag_list.remove(remove_list)
-          cmd.save
-          successful_commands << cmd
-        end
-      end
-    end
-    render_tag_action(tag_string, keywords, successful_commands)
-  end
-  
-  def tag_set
-    edited_commands = []
-    keywords, tag_string = parse_tag_input
-    unless tag_string.blank?
-      keywords.each do |n| 
-        if (cmd = current_user.commands.find_by_keyword(n))
-          cmd.update_tags(tag_string)
-          edited_commands << cmd
-        end
-      end
-    end
-    render_tag_action(tag_string, keywords, edited_commands)
-  end
-
-  def create
-
-    # If user uploaded a bookmark file
-    if params['bookmarks_file']
-      
-      new_file = "#{RAILS_ROOT}/public/bookmark_files/#{Time.now.to_s(:ymdhms)}.html"
-      unless params['bookmarks_file'].blank?
-        File.open(new_file, "wb") { |f| f.write(params['bookmarks_file'].read) }
-        valid_commands, invalid_commands = Command.create_commands_for_user_from_bookmark_file(current_user, new_file)
-      end
-
-      respond_to do |format|
-          if params['bookmarks_file'].blank?
-            flash[:warning] = 'Not a valid bookmark file, try again.'
-            @command = Command.new
-            format.html { render :action => "new" }
-          else
-            flash[:notice] = "Imported #{valid_commands.size} of #{(valid_commands + invalid_commands).size} commands from your uploaded bookmarks file."
-            format.html { redirect_to user_home_path(current_user) }
-          end
-      end
-            
-    else
-      
-      # User filled out form to create single command
-      
-      @command = current_user.commands.new(params[:command])
-      
-      respond_to do |format|      
-        if @command.save
-          @command.update_tags(params[:tags])
-          flash[:notice] = "New command created: <b><a href='#{command_show_path(@command)}'>#{@command.name}</a></b>"
-          format.html { redirect_to user_home_path(current_user) }
-          format.xml  { head :created, :location => command_url(@command) }
-        else
-          format.html { render :action => "new" }
-          format.xml  { render :xml => @command.errors.to_xml }
-        end
-      end
-      
-    end      
-  end
-
   def update
-    @command = Command.find(params[:id])
-    if @command.user != current_user
-      redirect_failed_permission
-      return
-    end
-
     respond_to do |format|
       if @command.update_attributes(params[:command])
-        @command.update_tags(params[:tags])
-        flash[:notice] = "Command updated: <b><a href='#{command_show_path(@command)}'>#{@command.name}</a></b>"
-        format.html { redirect_back_or_default user_home_path(current_user) }
+        flash[:notice] = "Command updated."
+        format.html { redirect_to command_path(@command) }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }
@@ -338,69 +177,66 @@ class CommandsController < ApplicationController
     end
   end
 
-  def destroy
-    @command.destroy
-
-    respond_to do |format|
-      flash[:notice] = "Command deleted: <b>#{@command.name}</b>"      
-      format.html { redirect_to user_home_path(current_user) }
-      format.xml  { head :ok }
-    end
-  end
-  
   protected
-  
-  def parse_tag_input
-    keyword_string, tags = params[:v].split(/\s+/, 2)
-    keywords = keyword_string.split(',')
-    return keywords, tags
-  end
-  
-  def render_tag_action(tag_string, keywords, successful_commands)
-    if tag_string.blank?
-      flash[:warning] = "No tags specified. Please try again."
-      redirect_to user_commands_path(current_user)
-    elsif successful_commands.empty?
-      flash[:warning] = "Failed to find commands: #{keywords.to_sentence}"
-      redirect_to user_commands_path(current_user)
-    else
-      flash[:notice] = "Updated tags for commands: #{successful_commands.map(&:keyword).to_sentence}."
-      redirect_to command_show_path(successful_commands[0])
-    end
-  end
-  
+    
   def index_pagination_params
     #don't see any effect from :order, does :include work?
     #{:order => "commands.queries_count_all DESC", :page => params[:page], :include => [:tags]}
-    {:page => params[:page], :include => [:tags]}
+    {:page => params[:page]}
   end
   
-  def load_command_by_user_and_keyword
-    action_include_hash = {'edit'=>[:user], 'destroy'=>[:queries]}
-    @command = @user.commands.find_by_keyword(params[:command], :include=>action_include_hash[self.action_name] || [])
+  def set_command
+    #   action_include_hash = {'edit'=>[:user], 'destroy'=>[:queries]}
+    #   @command = @user.commands.find_by_keyword(params[:command], :include=>action_include_hash[self.action_name] || [])
+    @command = Command.find_by_keyword_or_id(params[:id])    
     command_is_nil? ? false : true
-  end
-  
-  def redirect_failed_permission
-    flash[:warning] = "You are not allowed to modify this command!" 
-    redirect_to user_home_path(current_user)
-  end
-  
-  def permission_required_for_user
-    if ! owner?
-      redirect_failed_permission
-      return false
-    end
-    true
   end
   
   def command_is_nil?
     if @command.nil?
-      flash[:warning] = "User #{@user.login} has no command with keyword '#{params[:command]}'"
-      redirect_to user_home_path(@user)
+      flash[:warning] = "Command '#{params[:id]}' not found."
+      redirect_back_or_default commands_path
       return true
     end
     false
   end
 
 end
+
+__END__
+
+##Creation + destruction of commands purposely disabled
+
+# def new  
+#   @command = Command.new    
+#   # Allow user to pre-populate form.
+#   @command.attributes = params.slice(:name, :keyword, :url, :description)
+# end
+
+# def create    
+#   @command = current_user.commands.new(params[:command])
+#   
+#   respond_to do |format|      
+#     if @command.save
+#       @command.update_tags(params[:tags])
+#       flash[:notice] = "New command created: <b><a href='#{command_path(@command)}'>#{@command.name}</a></b>"
+#       format.html { redirect_to user_home_path(current_user) }
+#       format.xml  { head :created, :location => command_url(@command) }
+#     else
+#       format.html { render :action => "new" }
+#       format.xml  { render :xml => @command.errors.to_xml }
+#     end
+#   end      
+# end
+
+# def destroy
+#   @command.destroy
+# 
+#   respond_to do |format|
+#     flash[:notice] = "Command deleted: <b>#{@command.name}</b>"      
+#     format.html { redirect_to user_home_path(current_user) }
+#     format.xml  { head :ok }
+#   end
+# end
+
+

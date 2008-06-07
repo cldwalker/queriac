@@ -5,31 +5,26 @@
 	<table>
 	  <tr>
 			<th>User</th>
-			<th>Command</th>
+			<th>User Command</th>
 	    <th>Query</th>
 	  </tr>
 	<% for query in @queries %>
 		<tr <%= cycle('class="offset"', '') -%>>
 			<td>
-				<%= link_to query.command.user.login, user_home_path(query.command.user) %>
+				<%= query_user(query) %>
 			</td>
 		  <td>
-				<%= render_favicon_for_command query.command %>
-				<%= link_to query.command.name, command_show_path(query.command) %>
+				<%= render_favicon_for_command query.user_command %>
+				<%= link_to query.user_command.name, public_user_command_path(query.user_command) %>
 			</td>
 		  <td>
-				<% if query.query_string.empty? %>
-					<%= link_to "(empty)", query.command.url_for(query.query_string), :class => "faded" %>
-				<% else %>
-					<b><%= link_to query.query_string, query.command.url_for(query.query_string) %></b>
-				<% end %>
-			</td>
+			<%= link_to_query query %>
+		  </td>
 		</tr>
 	<% end %>
 	</table>
 	
-	<%= will_paginate @queries %>
-	
+	<p><%= link_to "View all queries", queries_path, :class => "faded"  %></p>
 </div>
 
 <div id="secondary">

@@ -18,14 +18,13 @@
   <%= f.text_area :description, :cols => 100, :rows => 12  %>
 </div>
 
+<% if false %>
 <div>
 	<label for="tags">Tags (separated by spaces)</label><br />
 	
 	<% 
 		if params[:tags]
 			tag_list = params[:tags]
-		elsif @ancestor
-			tag_list = @ancestor.tag_string
 		else
 			tag_list = @command.tag_string
 		end
@@ -33,13 +32,10 @@
 	
   <%= text_field_tag :tags, tag_list, {:size => 90} %>
 </div>
+<% end %>
 
 <div class="floater">
-  <%= f.check_box :public, {:onclick => "handle_publicity_checkboxes(this);"} %> <%= f.label :public, "Share this command with the public" %>
-</div>
-
-<div class="floater">
-  <%= f.check_box :public_queries %> <%= f.label :public_queries, "Share my queries too", :id => "command_public_queries_label" %>
+  <%= f.check_box :public %> <%= f.label :public, "Share this command with the public" %>
 </div>
 
 <div class="floater">

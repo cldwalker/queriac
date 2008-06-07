@@ -1,0 +1,80 @@
+<h1 class="inline">
+	<% if current_page_matches?(search_user_commands_path) || current_page_matches?(search_all_commands_path) %>
+		Search Results for '<%= params[:q] %>'
+	<% else %>
+		<%= @user_commands.empty? ? 'No' : (@user ? whose_commands(@user_commands.first) : "All") %> user commands
+		<%= "tagged with '#{@tags.join("+").gsub("+", "' and '")}'" unless @tags.blank? %>
+	<% end %>
+</h1>
+
+<ul class="bolder options header">
+	<% if logged_in? && ! current_user? %>
+		<li class="search"><%= link_to 'Yours', (@tags.blank? ? specific_user_commands_path(current_user) : tagged_user_commands_path(current_user, @tags)) %></li>
+	<% end %>
+	<% if @user %>
+		<% if @tags.blank? %>
+			<%# Hiding all tagged user_commands interface %>
+			<!-- <li class="search"><%# link_to 'All', (@tags.blank? ? user_commands_path : all_tagged_user_commands_path(@tags)) %></li> -->
+			<li class="search"><%= link_to 'All', user_commands_path %></li>
+		<% end %>
+		<% if @tags %>
+		<li><%= link_to "Queries for these commands", user_tagged_queries_path(@user, @tags)%></li>
+		<% end %>
+	<% end %>
+</ul>
+
+
+<hr />
+
+<table class="top_spaced">
+  <tr>
+    <th>Name</th>
+	<th width="150">Base<br/>Command</th>
+    <th width="30" class="centered"><b>Queries</b></th>
+    <th width="70">Keyword</th>
+    <th><%= "User" %></th>
+	<th>Options</th>
+  </tr>
+ 
+<% for uc in @user_commands %>
+	<% command = uc.command %>
+	<tr <%= cycle('class="offset"', '') -%>>
+    <td>
+			<p class="command_title">
+				<%= render_favicon_for_command command %>
+				<%= link_to uc.name, public_user_command_path(uc), :title=>uc.url, :class => "iconed" %>
+			</p>
+			<p class="tag_list">Tags: <%= uc.tags.map{|t| link_to(t.name, tagged_user_commands_path(uc.user,t.name)) }.join(" ") %></p>
+	</td>
+	<td>
+		<p class="command_title">
+			<%= link_to command.name, command_path(command), :title=>command.url, :class => "iconed" %>
+		</p>
+	</td>
+    <td class="centered <%= "faded" if uc.queries_count == 0 %>"><%= uc.queries_count %></td>	
+    <td class="centered"><%= uc.keyword %></td>
+    <td>
+			<% if false #@user %>
+				<%# too expensive for now %>
+				<%# uc.queries_count > 0 ? time_ago_in_words_or_date(uc.queries.find(:first, :select=>'created_at').created_at) : link_to("(Unused)", command_path(command), :class => "faded") %>
+			<% else %>
+				<%= link_to uc.user.login, user_home_path(uc.user) %>
+			<% end %>
+		</td>	
+		<td>
+		<% if logged_in? %>
+			<ul class="options">
+				<% if uc.owned_by?(current_user) %>
+					<li class="no_icon"><%= link_to image_tag("icons/edit.png"), edit_user_command_path(uc) %></li>
+					<li class="no_icon"><%= link_to image_tag("icons/delete.png"), user_command_path(uc), :confirm => "Are you sure you want to delete this command?", :method => :delete  %></li>
+				<% else %>
+					<li class="add"><%= link_to 'Copy', copy_user_command_path(uc) %></li>
+				<% end %>				
+			</ul>
+		<% end %>
+		</td>
+  </tr>
+<% end %>
+</table>
+
+<%= will_paginate @user_commands %>

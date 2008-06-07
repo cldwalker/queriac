@@ -1,0 +1,80 @@
+<% if controller.action_name == 'copy' %>
+	<%= hidden_field_tag 'user_command[command_id]', @command_id, :id=>'user_command_command_id' %>
+	<div style="font-size: 12px">
+		Since you are copying an existing command, certain fields cannot be edited ie url.
+	</div>
+<% end %>
+<% @disabled_fields ||= [] %>
+
+<div class="floater">
+  <%= f.label :name %><br />
+  <%= f.text_field :name, :size => 50  %>
+</div>
+
+<div class="floater">
+  <%= f.label :keyword %><br />
+  <%= f.text_field :keyword, :size => 14 %>
+</div>
+
+<div class="floatkiller">
+	<% if ! @user_command.new_record? && @user_command.command_url_changed? %>
+	<span id="url_status" style="font-size: 11px">
+	  The base command's url has changed to :<br/> <%= h @user_command.command.url %>.<br/>
+	<%= link_to_remote 'Click to update url', :url=>update_url_user_command_path(@user_command) %>
+	</span>
+	<br/>
+	<% end %>
+  <%= f.label :url, "URL or Javascript Command. (Don't forget to include the protocol: http, https, javascript, etc..)" %><br />
+  <%= f.text_field :url, {:size => 90, :disabled=>@disabled_fields.include?(:url)} %>
+</div>
+
+<div>
+  <%= f.label :description, "Description (If command is complex, please provide an explanation of it and a sample query)" %><br />
+  <%= f.text_area :description, :cols => 100, :rows => 12  %>
+</div>
+
+<div>
+	<label for="tags">Tags (separated by spaces)</label><br />
+	
+	<% 
+		if params[:tags]
+			tag_list = params[:tags]
+		else
+			tag_list = @user_command.tag_string
+		end
+	%>
+	
+  <%= text_field_tag :tags, tag_list, {:size => 90} %>
+</div>
+
+	
+<h3>COMMAND OPTIONS</h3>
+<div style="margin-top: 10px; font-size: 11px">
+<% if @user_command.new_record? && @controller.action_name != 'copy' %>
+	* Once a command is public and is used by more than one person it must remain public.
+<% elsif ! @user_command.new_record? && @user_command.command_owned_by?(current_user) %>
+	* As the creator of this command's base command, the public, http post and url encode options are updated for both the base command and your command.<br/>
+	<% unless @user_command.command_editable? %>
+	* Since the command is public and being used by other people, you can't edit the public state of the command.<br/>
+	  You can always create a separate private version of the command by copying the command fields.
+	<% end %>
+<% end %>
+</div>
+
+<% unless @disabled_fields.include?(:public) %>
+	<div class="floater">
+	  <%= f.check_box :public %> <%= f.label :public, "Share this command with the public" %>
+	</div>
+<% end %>
+
+<div class="floater">
+  <%= f.check_box :public_queries %> <%= f.label :public_queries, "Share my queries", :id => "command_public_queries_label" %>
+</div>
+
+<div class="floater">
+  <%= f.check_box :http_post %> <%= f.label :http_post, "Use HTTP POST" %>
+</div>
+
+<div class="floater">
+  <%= f.check_box :url_encode %> <%= f.label :url_encode, "Use URL Encoding" %>
+</div>

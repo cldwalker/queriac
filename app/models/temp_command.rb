@@ -32,7 +32,7 @@ class TempCommand < ActiveRecord::Base
   #------------------------------------------------------------------------------------------------------------------
 
   def validate
-    if self.keyword && STOPWORDS.include?(self.keyword.downcase)
+    if self.keyword && COMMAND_STOPWORDS.include?(self.keyword.downcase)
       errors.add_to_base "Sorry, the keyword you've chosen (#{self.keyword}) is reserved by the system. Please use something else." 
     end
   end

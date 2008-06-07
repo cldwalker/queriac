@@ -2,7 +2,7 @@
 
 <h1>Help!</h1>
 
-<p>Note: If you just want setup instructions, go to your <%= link_to "settings page", settings_path %>.</p>
+<p>Note: Setup instructions are <%= link_to "here", setup_path %>.</p>
 
 <h2>What does Queriac do?</h2>
 <p>
@@ -29,7 +29,7 @@
 	<li>Go to yahoo.com in your browser.</li>
 	<li>Search for something; let's say 'dog'</li>
 	<li>You will be taken to a new page with a URL that looks something like <code>http://search.yahoo.com/search?p=dog</code>. Copy this URL to your clipboard.</li>
-	<li>Assuming you've <%= link_to "set up your browser for use with Queriac", settings_path %>, simply type the word <code>new</code> in your address bar and hit Enter. This will take you to a Queriac page for creating a new command.</li>
+	<li>Assuming you've <%= link_to "set up your browser for use with Queriac", setup_path %>, simply type the word <code>new</code> in your address bar and hit Enter. This will take you to a Queriac page for creating a new command.</li>
 	<li>Give the command a meaningful name like <code>Yahoo Search</code> and a simple keyword like <code>y</code>.</li>
 	<li>Paste the URL you copied earlier into the URL field and replace the search portion of the string <i>(dog)</i> with the letter q in parentheses: <code>(q)</code>.</li>
 	<li>You can optionally write a description of the command and give it some tags, e.g. 'yahoo', 'search', etc..</li>
@@ -68,7 +68,7 @@
 
 <h2>I'm ready. How do I set it up?</h2>
 <% if logged_in? %>
-	<p>It looks like you're already logged in, so go ahead and proceed to your <%= link_to "settings page", settings_path %>.</p>
+	<p>It looks like you're already logged in, so go ahead and proceed to the <%= link_to "setup instructions", setup_path %>.</p>
 <% else %>
 	<p>
 		You don't seem to be logged in. First you'll need to <%= link_to "log in", new_session_path %> or 

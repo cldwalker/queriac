@@ -1,0 +1,23 @@
+<%= collapser_for "upload", :autohide => true, :label => "Hide Uploader" %>
+<h1>Import Commands</h1>
+
+<div id="upload">
+	<h2>Upload bookmark file from Firefox/Camino/Mozilla</h2>
+
+	<%= form_tag(import_user_commands_path, :method=>:post, :multipart => true) %>
+		<input type="file" class="text" name="bookmarks_file" />
+		<input type="submit" class="submit" name="Upload" value="Upload Bookmarks" />
+	</form>
+</div>
+
+<% if ! @user_commands.blank? %>
+<%= hide "upload" %>
+<%= expander_for "upload", :autohide => false, :label => "More Commands? Upload them!" %>
+
+<h2>Import Results</h2><br/>
+NAME / KEYWORD / URL<br/>
+<% for command in @user_commands %>
+	<%= "#{link_to(command.name, public_user_command_path(command))} / #{command.keyword} / #{command.url}" %><br />
+<% end %>
+
+<% end %>

@@ -1,17 +1,29 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :commands, :member => { :execute => :get } , :collection=>{:tag_set=>:get, :tag_add_remove=>:get,
-    :copy_yubnub_command=>:get, :search_all=>:get}
+  map.connect  'commands/new', :controller=>'commands', :action=>'show', :id=>'new'
+  map.resources :commands, :member => { :execute => :get } , :collection=>{:search_all=>:get}
   map.resources :sessions
+  map.resources :user_commands, :member=>{:copy=>:get, :update_url=>:post}, 
+    :collection=>{:import=>:any, :tag_set=>:get, :tag_add_remove=>:get, :search=>:get}
+  map.with_options(:controller=>'user_commands') do |c|
+    c.tagged_user_commands   ':login/commands/tag/*tag',   :action=>'index'
+    c.all_tagged_user_commands   'user_commands/tag/*tag',   :action=>'index'
+    c.specific_user_commands   ':login/commands', :action=>'index'
+    c.user_commands_xml         ':login/commands/feed.xml',       :action => 'index', :format => 'xml'
+    c.user_commands_atom        ':login/commands/feed.atom',      :action => 'index', :format => 'atom'
+    c.public_user_command     ':login/commands/:id', :action=>'show'
+  end
   map.resources :users, :member => { :opensearch => :get }
     
   map.activate_user  '/activate/:activation_code',     :controller => 'users', :action => 'activate'
-  map.settings   'settings',                      :controller => 'users', :action => 'edit'
-  map.connect   'tutorial',                       :controller => 'users', :action => 'edit'
-  map.help      'help',                           :controller => 'static', :action => 'help'
-  map.home      '',                               :controller => "static", :action => "home"
+  map.settings    'settings',                     :controller => 'users', :action => 'edit'
+  map.setup       'setup',                        :controller => 'static', :action => 'setup'
+  map.tutorial    'tutorial',                     :controller => 'static', :action => 'tutorial'
+  map.help        'help',                         :controller => 'static', :action => 'help'
+  map.home        '',                             :controller => "static", :action => "home"
   map.queries     'queries',                      :controller => 'queries', :action => 'index'
  
   map.with_options(:controller=>'users') do |c|
+    c.current_user_home   'home',   :action=>'home'
     c.user_home           ':login',                         :action => 'show'
     c.opensearch_user     ':login/opensearch',              :action => 'opensearch'
   end
@@ -24,16 +36,6 @@ ActionController::Routing::Routes.draw do |map|
   end
   
   map.with_options(:controller=>'commands') do |c|
-    c.tagged_commands           'commands/tag/*tag',              :action => 'index'
-    c.user_commands             ':login/commands',                :action => 'index'
-    c.user_commands_xml         ':login/commands/feed.xml',       :action => 'index', :format => 'xml'
-    c.user_commands_atom        ':login/commands/feed.atom',      :action => 'index', :format => 'atom'
-    c.user_tagged_commands      ':login/commands/tag/*tag',       :action => 'index'
-    c.search_user_commands      ':login/commands/search',         :action => 'search'
-
-    c.user_command              ':login/:command/show',           :action => 'show'  
-    c.user_command_edit         ':login/:command/edit',           :action => 'edit'
-    c.user_command_delete       ':login/:command/delete',         :action => 'destroy', :method => :delete
     c.user_command_execute      ':login/*command',                :action => 'execute'  
   end
   

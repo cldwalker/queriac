@@ -28,6 +28,15 @@ Spec::Runner.configure do |config|
   
   def current_user; @controller.current_user; end
   
+  def should_have_flash_now_warning_tag(*args)
+    args.unshift "div.flash-msg.warning"
+    response.should have_tag(*args)
+  end
+  
+  def mock_find_top_users(*users)
+    users.each {|u| u.instance_eval %[def user_commands_count; 1; end]; u[:queries_count] = 1}
+    User.should_receive(:find_top_users).and_return(users)
+  end
 end
 
 ##

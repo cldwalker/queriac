@@ -1,0 +1,25 @@
+<h1><%= @original_command ? "Copy User Command: #{link_to(@original_command.name, public_user_command_path(@original_command))}" :
+	(@base_command ? "Copy Command: #{link_to(@base_command.name, command_path(@base_command))}" : "New User Command" )%></h1>
+
+<% if current_user.user_commands.count < 10 %>
+<div class="msg">
+ <p>Sorry to be patronizing, but it looks like you're a new user, so here are some tips to help you create your first command.</p>
+	
+	<ul class="options toolbar">
+		<li class="check">If you're creating a quicksearch, replace the search portion of the URL with the following: <code>(q)</code></li>
+		<li class="check">Don't forget to start your command URL with <code>http://</code> or <code>https://</code>. If you're creating a bookmarklet, don't forget the <code>javascript:</code></li>
+		<li class="check">The easiest way to familiarize yourself with how commands work is to copy them from <%= link_to "other users", users_path  %> and customize them to your liking.</li>
+	</ul>
+</div>
+<% end %>
+
+<%= error_messages_for :user_command %>
+
+<% form_for :user_command, :url => user_commands_path do |f| %>
+
+	<%= render :partial => "form", :locals => {:f => f} %>
+
+  <div class="floatkiller">	
+    <%= submit_tag "Create Command", :class => "submit" %>
+  </div>
+<% end %>

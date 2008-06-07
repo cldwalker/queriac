@@ -2,7 +2,7 @@
 # Likewise, all the methods added will be available for all controllers.
 
 class ApplicationController < ActionController::Base
-  include ExceptionNotifiable, PathHelper
+  include ExceptionNotifiable, PathHelper, SharedHelper
   # Pick a unique cookie name to distinguish our session data from others'
   session :session_key => '_queriac_session_id'
   filter_parameter_logging 'password'
@@ -12,6 +12,9 @@ class ApplicationController < ActionController::Base
 
   protected
   
+  ####Methods below are used in before filters
+  
+  #load_valid_user* used to load @user in controllers
   def load_valid_user
     load_user_from_param
     redirect_no_user
@@ -50,16 +53,12 @@ class ApplicationController < ActionController::Base
       return true
     else
       flash[:warning] = "Access denied!"
-      redirect_to user_home_path(current_user)
+      redirect_to (logged_in? ? user_home_path(current_user) : home_path)
       return false
     end
   end
   
-  #owner? is the same as command_owner? for command actions that load @command
-  def owner?
-    logged_in? && current_user == @user
-  end
-  
+  #used to load @tags in controllers
   def load_tags_if_specified
     if params[:tag]
       if params[:tag].first
@@ -70,7 +69,7 @@ class ApplicationController < ActionController::Base
         if params[:controller] == 'queries'
           redirect_path = @user ? user_queries_path(@user) : queries_path
         else
-          redirect_path = @user ? user_commands_path(@user) : commands_path
+          redirect_path = @user ? specific_user_commands_path(@user) : user_commands_path
         end
         redirect_to redirect_path
         return

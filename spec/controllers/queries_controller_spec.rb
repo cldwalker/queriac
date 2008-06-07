@@ -8,7 +8,7 @@ end
 describe 'queries/index:' do
   setup_queries_controller_example_group
   
-  before(:all) { @query = create_query; @command = @query.command; @tag = create_tag}
+  before(:all) { @query = create_query; @command = @query.user_command; @tag = create_tag}
   
   def basic_expectations
     response.should be_success
@@ -51,16 +51,16 @@ describe 'queries/index:' do
   it "displays public command queries" do
     get :index, :command=>@command.keyword, :login=>@command.user.login
     basic_expectations
-    assigns[:command].should be_an_instance_of(Command)
+    assigns[:user_command].should be_an_instance_of(UserCommand)
     assigns[:user].should be_an_instance_of(User)
   end
   
   it "displays private command queries to command's owner" do
     @command.update_attribute(:public_queries, false)
-    login_user @query.command.user
+    login_user @query.user_command.user
     get :index, :command=>@command.keyword, :login=>@command.user.login
     basic_expectations
-    assigns[:command].should be_an_instance_of(Command)
+    assigns[:user_command].should be_an_instance_of(UserCommand)
     assigns[:user].should be_an_instance_of(User)
     @command.update_attribute(:public_queries, true)
   end
@@ -71,7 +71,7 @@ describe 'queries/index:' do
     get :index, :command=>@command.keyword, :login=>@command.user.login
     response.should be_redirect
     flash[:warning].should_not be_blank
-    assigns[:command].should be_an_instance_of(Command)
+    assigns[:user_command].should be_an_instance_of(UserCommand)
     assigns[:user].should be_an_instance_of(User)
     @command.update_attribute(:public_queries, true)
   end

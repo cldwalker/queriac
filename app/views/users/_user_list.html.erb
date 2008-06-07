@@ -3,15 +3,15 @@
 <table>
 	<tr>
 		<th>Username</th>
-		<th class="centered">Commands</th>
+		<th class="centered">User Commands</th>
 		<th class="centered">Queries</th>
 	</tr>
-	
+	<%# @users should be populated by User.find_top_users to use the count methods user_commands_count and [:queries_count] %>
 	<% for user in @users %>
 		<tr <%= cycle('class="offset"', '') -%>>	
 			<td><b><%= link_to user.login, user_home_path(user) %></b></td>
-			<td class="centered"><%= user.commands.empty? ? "<span class=\"faded\">0</span>" : link_to(user.commands.count, user_commands_path(user)) %> </td>
-			<td class="centered"><%= user.queries.empty? ? "<span class=\"faded\">0</span>" : link_to(user.queries.count, user_queries_path(user)) %> </td>
+			<td class="centered"><%= link_to(user.user_commands_count, specific_user_commands_path(user)) %> </td>
+			<td class="centered"><%= user[:queries_count].zero? ? "<span class=\"faded\">0</span>" : link_to(user[:queries_count], user_queries_path(user)) %> </td>
 		</tr>
 	<% end %>
 </table>

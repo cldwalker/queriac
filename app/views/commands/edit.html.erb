@@ -1,18 +1,13 @@
 <h1 class="inline">Edit Command</h1>
 
 <ul class="options header">
-	<li class="search"><%= link_to 'Show this Command', command_show_path(@command) %></li>
-	<li class="add"><%= link_to 'Duplicate', new_command_path({:ancestor => @command.id}) %></li>
-	<li class="delete"><%= link_to 'Delete', command_delete_path(@command), :confirm => "Are you sure you want to delete this command?" %></li>
+	<li class="search"><%= link_to 'Show this Command', command_path(@command) %></li>
 </ul>
-
-
 <hr />
-
 
 <%= error_messages_for :command %>
 
-<% form_for(:command, :url => command_path(@command.id), :html => { :method => :put }) do |f| %>
+<% form_for(:command, :url => command_path(@command), :html => { :method => :put }) do |f| %>
 
 	<%= render :partial => "command_edit_form", :locals => {:f => f} %>
 

@@ -1,26 +1,33 @@
 
 class UsersController < ApplicationController
-  before_filter :login_required, :only => [:destroy, :update]
+  before_filter :login_required, :only => [:edit, :destroy, :update, :home]
   before_filter :load_valid_user, :only=>:show
   before_filter :load_user_from_param, :only => [:opensearch]
 
   def index
     pagination_params = {:order => "users.created_at DESC", :page => params[:page]}
-    @users = User.paginate({:conditions => ["activation_code IS NULL"]}.merge(pagination_params))
+    @users = User.paginate_users(pagination_params)
+    User.set_queries_count_for_users(@users)
   end
 
   def new
   end
   
+  def home
+    @user = current_user
+    show
+    render :action=>'show'
+  end
+  
   def show
-    publicity = owner? ? "any" : "public"
+    publicity = (current_user? || admin?) ? "any" : "public"
     
     if @user.queries.count > 100
-      @quicksearches = @user.commands.send(publicity).quicksearches.used.find(:all, {:order => "queries_count_all DESC", :include => [:user], :limit => 15})
-      @shortcuts = @user.commands.send(publicity).shortcuts.used.find(:all, {:order => "queries_count_all DESC", :include => [:user], :limit => 15})
-      @bookmarklets = @user.commands.send(publicity).bookmarklets.used.find(:all, {:order => "queries_count_all DESC", :include => [:user], :limit => 15})
+      @quicksearches = @user.user_commands.send(publicity).quicksearches.used.find(:all, {:order => "queries_count DESC", :include => [:user], :limit => 15})
+      @shortcuts = @user.user_commands.send(publicity).shortcuts.used.find(:all, {:order => "queries_count DESC", :include => [:user,], :limit => 15})
+      @bookmarklets = @user.user_commands.send(publicity).bookmarklets.used.find(:all, {:order => "queries_count DESC", :include => [:user], :limit => 15})
     else
-      @commands = @user.commands.send(publicity).paginate(:page => params[:page], :order => "queries_count_all DESC", :include => [:user])
+      @user_commands = @user.user_commands.send(publicity).paginate(:page => params[:page], :order => "queries_count DESC", :include => [:user, :command])
     end
     
     @tags = @user.tags
@@ -43,7 +50,7 @@ class UsersController < ApplicationController
   end
   
   def edit
-    @user = current_user if logged_in?
+    @user = current_user
   end
   
   def update

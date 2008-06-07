@@ -24,11 +24,13 @@ require 'digest/sha1'
 class User < ActiveRecord::Base
   include ActionController::UrlWriter
   
-  has_many :commands, :dependent => :destroy
-  has_many :queries
-  has_many :tags, :through => :commands
+  has_many :commands
+  #has_many :commands, :through=>:user_commands
+  has_many :user_commands, :dependent => :destroy
+  has_many :queries, :dependent=>:destroy
+  has_many :tags, :through => :user_commands
   
-  belongs_to :default_command, :class_name => "Command", :foreign_key => :default_command_id
+  belongs_to :default_command, :class_name => "UserCommand", :foreign_key => :default_command_id
   
   # Why do these break shit?
   # has_finder :activated, :conditions => ["activation_code IS NOT NULL"]
@@ -49,18 +51,44 @@ class User < ActiveRecord::Base
   validates_length_of       :email,  :within => 3..100
   validates_format_of       :email,  :with => /^([^@\s]+)@(?:[-a-z0-9]+\.)+[a-z]{2,}$/i
   before_save :encrypt_password
-  before_create :make_activation_code 
+  before_create :make_activation_code
+  VIEWABLE_SQL = %[users.activation_code IS NULL]
   
   def validate
-    if self.login && STOPWORDS.include?(self.login.downcase)
+    if self.login && USER_STOPWORDS.include?(self.login.downcase)
       errors.add_to_base "Sorry, the username you've chosen (#{self.login}) is reserved by the system. Please use something else."
     end
   end
   
   def self.find_top_users(options={})
-    users = User.find(:all, :conditions => ["activation_code IS NULL"], :order => :login)
-    users.reject! {|u| u.commands.count < 15 }
+    #includes user_commands count
+    users = User.find(:all, {:conditions=>VIEWABLE_SQL, :joins => "INNER JOIN user_commands ON user_commands.user_id = users.id", 
+      :select => "users.*, count(users.id) as user_commands_count",:group => "user_commands.user_id HAVING user_commands_count >= 15",
+      :order=>'login'}.merge(options))
+    set_queries_count_for_users(users)
     users
+  end
+  
+  def self.paginate_users(options={})
+    #includes user_commands count
+    User.paginate({:conditions=>VIEWABLE_SQL, :joins => "INNER JOIN user_commands ON user_commands.user_id = users.id", 
+      :select => "users.*, count(users.id) as user_commands_count",:group => "user_commands.user_id",
+      :order=>'login'}.merge(options))
+  end
+  
+  def self.set_queries_count_for_users(users)
+    user_queries = query_count_by_user_id
+    users.each do |u|
+      u[:queries_count] = user_queries[u.id] || 0
+    end
+  end
+  
+  def self.query_count_by_user_id
+    hash = {}
+    Query.find(:all, :group=>'user_id', :select=>'user_id, count(*) as count').each do |q|
+      hash[q.user_id] = q.count.to_i
+    end
+    hash
   end
 
   def set_default_url_options
@@ -69,70 +97,10 @@ class User < ActiveRecord::Base
   
   def after_create
     set_default_url_options
-    g = self.commands.create!(
-      :name => "Google Quicksearch", 
-      :keyword => "g",
-      :url => "http://www.google.com/search?q=(q)",
-      :description => "Performs a basic Google search."
-    )
-    g.update_tags("google") 
-    
-    gms = self.commands.create!(
-      :name => "Gmail Search", 
-      :keyword => "gms",
-      :url => "http://mail.google.com/mail/?search=query&view=tl&start=0&init=1&fs=1&q=(q)",
-      :description => "Search your Gmail. If you're not logged in you'll be directed to the Gmail login page.\n\nExamples\ngms dog\ngms is:starred mom\ngms label:todo"
-    )
-    gms.update_tags("google gmail mail")
-  
-    w = self.commands.create!(
-      :name => "Google \"I'm Feeling Lucky\" Wikipedia (en) search",
-      :keyword => "w",
-      :url => "http://www.google.com/search?btnI=I'm%20Feeling%20Lucky&q=site:en.wikipedia.org%20(q)",
-      :description => "Jumps to Google's first search result for the query you've entered + site:en.wikipedia.org\n\nExample: w colonel sanders"
-    )
-    w.update_tags("google wikipedia")
-    
-    word = self.commands.create!(
-      :name => "Dictionary Lookup at Reference.com",
-      :keyword => "word",
-      :url => "http://www.reference.com/browse/all/(q)",
-      :description => "Look up word definitions\n\nExample: word peripatetic"
-    )
-    word.update_tags("dictionary reference language english")
-    
-    q = self.commands.create!(
-      :name => "My Queriac Page",
-      :keyword => "q",
-      :url=>user_home_url(self),
-      :description => "A shortcut to my queriac account page."
-    )
-    q.update_tags("queriac bootstrap")
-    
-    show = self.commands.create!(
-      :name => "Show a Queriac command",
-      :keyword => "show",
-      :url=>user_command_url(self, '(q)'),
-      :description => "Show info on a queriac command.\n\nExample: show g"
-    )
-    show.update_tags("queriac bootstrap")
-    
-    edit = self.commands.create!(
-      :name => "Edit a Queriac command",
-      :keyword => "edit",
-      :url=>user_command_edit_url(self, '(q)'),
-      :description => "Edit a queriac command.\n\nExample: edit g"
-    )
-    edit.update_tags("queriac bootstrap")
-    
-    n = self.commands.create!(
-      :name => "Create a new Queriac command",
-      :keyword => "new",
-      :url=>new_command_url,
-      :description => "Shortcut to the queriac page for creating a new account."
-    )
-    n.update_tags("queriac bootstrap")
-  
+    default_commands_config.each do |e|
+      ucommand = self.user_commands.create!(e.slice(:name, :keyword, :url, :description))
+      ucommand.update_tags(e[:tags]) if e[:tags]
+    end
   end
   
   def default_command?
@@ -212,6 +180,66 @@ class User < ActiveRecord::Base
   end
 
   protected
+    def default_commands_config
+      [
+      {
+        :name => "Google Quicksearch", 
+        :keyword => "g",
+        :url => "http://www.google.com/search?q=(q)",
+        :description => "Performs a basic Google search.",
+        :tags=>'google'
+      },
+      {
+        :name => "Gmail Search", 
+        :keyword => "gms",
+        :url => "http://mail.google.com/mail/?search=query&view=tl&start=0&init=1&fs=1&q=(q)",
+        :description => "Search your Gmail. If you're not logged in you'll be directed to the Gmail login page.\n\nExamples\ngms dog\ngms is:starred mom\ngms label:todo",
+        :tags=>'google gmail mail'
+      },
+      {
+        :name => "Google \"I'm Feeling Lucky\" Wikipedia (en) search",
+        :keyword => "w",
+        :url => "http://www.google.com/search?btnI=I'm%20Feeling%20Lucky&q=site:en.wikipedia.org%20(q)",
+        :description => "Jumps to Google's first search result for the query you've entered + site:en.wikipedia.org\n\nExample: w colonel sanders",
+        :tags=>'google wikipedia'
+      },
+      {
+        :name => "Dictionary Lookup at Reference.com",
+        :keyword => "word",
+        :url => "http://www.reference.com/browse/all/(q)",
+        :description => "Look up word definitions\n\nExample: word peripatetic",
+        :tags=>"dictionary reference language english"
+      },
+      {
+        :name => "My Queriac Page",
+        :keyword => "q",
+        :url=>current_user_home_url,
+        :description => "A shortcut to my queriac account page.",
+        :tags=>"queriac bootstrap"
+      },
+      {
+        :name => "Show a Queriac user command",
+        :keyword => "show",
+        :url=>user_command_url('(q)'),
+        :description => "Show info on a user command.\n\nExample: show g",
+        :tags=>"queriac bootstrap"
+      },
+      {
+        :name => "Edit a Queriac user command",
+        :keyword => "edit",
+        :url=>edit_user_command_url('(q)'),
+        :description => "Edit a user command.\n\nExample: edit g",
+        :tags=>"queriac bootstrap"
+      },
+      {
+        :name => "Create a new Queriac user command",
+        :keyword => "new",
+        :url=>new_user_command_url,
+        :description => "Create a new user command.",
+        :tags=>"queriac bootstrap"
+      },
+      ]
+    end
     # before filter 
     def encrypt_password
       return if password.blank?

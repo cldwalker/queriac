@@ -13,26 +13,25 @@ class QueriesController < ApplicationController
     # /zeke/queries             => all || public queries for a specific user
     # /zeke/queries/tag/google  => all || public queries for a specific user for a tag or tags
     
-    pagination_params = {:order => "queries.created_at DESC", :page => params[:page], :include => [:command => [:user]]}
+    pagination_params = {:order => "queries.created_at DESC", :page => params[:page], :include => [:user_command => [:user]]}
     
     if @user
       if params[:command]
         # => /zeke/g/queries
-        @command = @user.commands.find_by_keyword(params[:command])
+        @user_command = @user.user_commands.find_by_keyword(params[:command])
         return unless command_query_is_public?
-        @queries = @command.queries.paginate(pagination_params)
+        @queries = @user_command.queries.paginate(pagination_params)
       else
-        publicity = owner? ? "any" : "public"
-        query_publicity = owner? ? "any" : "publicly_queriable"
-      
         if @tags
           # => /zeke/queries/tag/google
-          commands = @user.commands.send(query_publicity).find_tagged_with(@tags.join(", "), :match_all => true, :select => [:id])
+          query_publicity = current_user? ? "any" : "publicly_queriable"
+          commands = @user.user_commands.send(query_publicity).find_tagged_with(@tags.join(", "), :match_all => true, :select => [:id])
           command_ids = commands.map(&:id).join(", ")
-          @queries = Query.non_empty.paginate({:conditions => ["command_id IN (#{command_ids})"]}.merge(pagination_params)) unless command_ids.blank?
+          @queries = Query.non_empty.paginate({:conditions => ["queries.command_id IN (#{command_ids})"]}.merge(pagination_params)) unless command_ids.blank?
           @queries ||= [].paginate
         else
           # => /zeke/queries
+          publicity = current_user? ? "any" : "public"
           @queries = @user.queries.non_empty.send(publicity).paginate(pagination_params)
         end
       end
@@ -42,11 +41,11 @@ class QueriesController < ApplicationController
         
         # Rather than doing a crazy/slow join, do two queries..
         # First query gets all commands with the specified tag(s) and throws them into a string
-        commands = Command.publicly_queriable.find_tagged_with(@tags.join(", "), :match_all => true, :select => [:id])
+        commands = UserCommand.publicly_queriable.find_tagged_with(@tags.join(", "), :match_all => true, :select => [:id])
         command_ids = commands.map(&:id).join(", ")
         
         # Second query gets all queries with command_ids from above..
-        @queries = Query.non_empty.paginate({:conditions => ["command_id IN (#{command_ids})"]}.merge(pagination_params)) unless command_ids.blank?
+        @queries = Query.non_empty.paginate({:conditions => ["queries.command_id IN (#{command_ids})"]}.merge(pagination_params)) unless command_ids.blank?
         @queries ||= [].paginate
       else
         # => /queries
@@ -61,7 +60,7 @@ class QueriesController < ApplicationController
     end
     
     respond_to do |format|
-      format.html # show.rhtml
+      format.html
       format.xml  { render :xml => @queries.to_xml }
     end
   end
@@ -98,7 +97,7 @@ class QueriesController < ApplicationController
   
   protected
   def owner_required
-    unless owner?
+    unless current_user?
       flash[:warning] = "You are not allowed to administer this query. "
       if logged_in?
         redirect_to user_home_path(@user)
@@ -112,14 +111,9 @@ class QueriesController < ApplicationController
   
   # Don't display private queries to anyone but their commands' owners.
   def command_query_is_public?
-    unless owner? || @command.public_queries?
-      flash[:warning] = "Sorry, that command's queries are private. "
-      if logged_in?
-        redirect_to user_home_path(@user)
-      else
-        flash[:warning] += "If it's your command, you'll need to log in to view its queries."
-        redirect_to home_path
-      end
+    unless user_command_owner? || @user_command.public_queries?
+      flash[:warning] = "The user command's queries are private. "
+      redirect_to public_user_command_path(@user_command)
       return false
     end
     true

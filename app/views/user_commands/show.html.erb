@@ -1,0 +1,94 @@
+<h1 class="inline">
+	<%= @user_command.name %>
+</h1>
+
+<% if logged_in? %>
+	<ul class="options header">
+		<% if user_command_owner? %>
+				<li class="edit"><%= link_to 'Edit', edit_user_command_path(@user_command) %></li>
+				<li class="delete"><%= link_to 'Delete', user_command_path(@user_command), :confirm => "Are you sure you want to delete this command?", :method=>:delete %></li>
+		<% else %>
+			<li class="add"><%= link_to 'Copy', copy_user_command_path(@user_command) %></li>
+		<% end %>
+	</ul>
+<% end %>
+
+<hr />
+<p class="small-url">
+	<%= @user_command.url.ellipsize(:max => 150, :delimiter => " . . . . . ") %>
+</p>
+
+<div id="primary">
+		
+	<% if @user_command.public_queries? || user_command_owner? %>
+		<h2>
+			<%= "Queries (Last #{@queries.size})" %>
+		</h2>
+		<table>
+		  <tr>
+		    <th>Query</th>
+		    <th>Date</th>
+		  </tr>		
+		
+			<% for query in @queries %>
+				<tr <%= cycle('class="offset"', '') -%>>
+				  <td><%= link_to_query query %></td>
+				  <td><%= time_ago_in_words_or_date query.created_at %></td>
+				</tr>
+			<% end %>
+		</table>
+	<p><%= link_to "View all queries", user_command_queries_path(@user_command), :class => "faded"  %></p>
+
+	<% else %>
+		<h2>Queries for this user command are private.</h2>
+	<% end %>
+	
+</div>
+
+
+<div id="secondary">
+	<% @command = @user_command.command %>
+	<h2>
+		<%= render_favicon_for_command @user_command %>
+		About this User Command
+	</h2>
+	<p><b>Base Command:</b> <%= link_to @user_command.command.name, command_path(@user_command.command) %></p>
+	
+	<% unless @user_command.description.blank? %>
+		<p><b>Description:</b> <%= textilize_without_paragraph @user_command.description %></p>
+	<% end %>
+	
+	<% if user_command_owner? %>
+	<p><b>Url Status:</b>
+		<span id="url_status">
+		<% if @user_command.command_url_changed? %>
+		Not up to date.<br/>
+		 The base command's url has changed to: <%= h @user_command.command.url %><br/>
+		<%= link_to_remote 'Click to update url', :url=>update_url_user_command_path(@user_command) %>
+		<% else %>
+			Up to date
+		<% end %>
+		</span>
+	</p>
+	<% end %>
+	
+	<p><b>Original Keyword:</b> <%=h @command.keyword %></p>	
+	
+	<p><b>User's Keyword:</b> <%=h @user_command.keyword %></p>	
+	
+	<p><b>Kind:</b> <%=h @command.kind %> <%= "(uses POST)" if @user_command.http_post? %></p>
+	
+	<p><b>Visible to Public:</b> <%= @user_command.public? ? "Yes" : "No" %></p>
+	
+	<p><b>Queries visible to Public:</b> <%= @user_command.public_queries? ? "Yes" : "No" %></p>
+
+	<p><b>Owner queries:</b>
+		<span style="font-size: 12px"><%= link_to "#{@user_command.queries_count} queries",user_command_queries_path(@user_command)%></span>
+	</p>
+	
+	<% unless @user_command.tags.empty? %>	
+		<p><b>Tags:</b> <%= @user_command.tag_string.split(" ").map{|tag| "<a href='#{tagged_user_commands_path(@user_command.user, tag)}'>#{tag}</a>"}.join(" ") %></p>	
+	<% end %>
+
+	
+</div>
