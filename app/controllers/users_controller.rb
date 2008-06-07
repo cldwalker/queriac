@@ -77,7 +77,7 @@ class UsersController < ApplicationController
       current_user.activate
       flash[:notice] = "Account activation complete! You are now logged in."
     end
-    redirect_to settings_path
+    redirect_to setup_path
   end
   
   def destroy

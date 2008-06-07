@@ -152,14 +152,14 @@ describe 'users/activate:' do
   
   it 'activates user and redirects' do
     get :activate, :activation_code=>@user.activation_code
-    response.should redirect_to(settings_path)
+    response.should redirect_to(setup_path)
     flash[:notice].should_not be_blank
     @user.reload.should be_activated
   end
   
   it 'silently redirects invalid activation' do
     get :activate, :activation_code=>'XXXXXXX'
-    response.should redirect_to(settings_path)
+    response.should redirect_to(setup_path)
     flash[:notice].should be_blank
     @user.reload.should_not be_activated
   end
