@@ -101,7 +101,7 @@ module ApplicationHelper
   def link_to_query(query)
     label = query.query_string.empty? ? "(Command run with no parameters)" : query.query_string.ellipsize
     klass = query.query_string.empty? ? "faded" : ""
-    link_to(label, query.user_command.url_for(query.query_string), :class => klass)
+    link_to(label, query.user_command.url_for(query.query_string), :class => klass, :title=>"Date: #{query.created_at.to_s(:long)}")
   end
   
   def query_user(query)

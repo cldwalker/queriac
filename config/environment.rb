@@ -85,6 +85,6 @@ require 'hpricot'
 
 # STOPWORDS = %w(default_to delete tags help home tutorial settings queries commands opensearch users search_form user_commands)
 common_stopwords = %w(user_commands commands tags queries users opensearch)
-COMMAND_STOPWORDS = %w(default_to delete search_form) + common_stopwords
+COMMAND_STOPWORDS = %w(default_to delete search_form search_all execute update) + common_stopwords
 USER_STOPWORDS = %w(help home tutorial setup settings) + common_stopwords
 HOST = 'localhost:3000' unless Object.const_defined?('HOST')

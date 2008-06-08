@@ -37,8 +37,9 @@
 				</tr>
 			<% end %>
 		</table>
+	<% unless @user_command.queries_count.zero? %>
 	<p><%= link_to "View all queries", user_command_queries_path(@user_command), :class => "faded"  %></p>
-
+	<% end %>
 	<% else %>
 		<h2>Queries for this user command are private.</h2>
 	<% end %>
@@ -83,7 +84,8 @@
 	<p><b>Queries visible to Public:</b> <%= @user_command.public_queries? ? "Yes" : "No" %></p>
 
 	<p><b>Owner queries:</b>
-		<span style="font-size: 12px"><%= link_to "#{@user_command.queries_count} queries",user_command_queries_path(@user_command)%></span>
+		<span style="font-size: 12px"><%= @user_command.queries_count.zero? ? "#{@user_command.queries_count} queries" :
+		 link_to("#{@user_command.queries_count} queries",user_command_queries_path(@user_command))%></span>
 	</p>
 	
 	<% unless @user_command.tags.empty? %>	

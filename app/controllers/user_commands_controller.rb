@@ -300,6 +300,7 @@ class UserCommandsController < ApplicationController
   end
   
   def parse_tag_input
+    return nil, nil unless params[:v]
     keyword_string, tags = params[:v].split(/\s+/, 2)
     keywords = keyword_string.split(',')
     return keywords, tags
@@ -314,9 +315,24 @@ class UserCommandsController < ApplicationController
       redirect_to specific_user_commands_path(current_user)
     else
       flash[:notice] = "Updated tags for commands: #{successful_commands.map(&:keyword).to_sentence}."
-      redirect_to public_user_command_path(successful_commands[0])
+      redirect_back_or_default public_user_command_path(successful_commands[0])
     end
   end
   
+end
+
+__END__
+#maybe implement later
+def search_all
+  if params[:q].blank?
+    flash[:warning] = "Your search is empty. Try again."
+    @commands = [].paginate
+  else
+    #:select + :group ensure unique urls for commands
+    all_commands = Command.find(:all, :conditions=>["keyword REGEXP ? OR url REGEXP ?", params[:q], params[:q]],
+      :select=>'*, count(url)', :group=>"url HAVING count(url)>=1", :order=>'queries_count_all DESC' )
+    @commands = all_commands.paginate(index_pagination_params)
+  end
+  render :action => 'index'
 end
 

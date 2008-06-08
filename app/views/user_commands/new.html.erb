@@ -1,7 +1,7 @@
 <h1><%= @original_command ? "Copy User Command: #{link_to(@original_command.name, public_user_command_path(@original_command))}" :
 	(@base_command ? "Copy Command: #{link_to(@base_command.name, command_path(@base_command))}" : "New User Command" )%></h1>
 
-<%= link_to 'Import Your Commands', import_user_commands_path %>
+<%= link_to 'Import Your Commands', import_user_commands_path unless controller.action_name == 'copy' %>
 <% if current_user.user_commands.count < 10 %>
 <div class="msg">
  <p>Sorry to be patronizing, but it looks like you're a new user, so here are some tips to help you create your first command.</p>
