@@ -28,7 +28,7 @@ class UserCommand < ActiveRecord::Base
   #fields which are passed from creating user_command to command on create + updates
   COMMAND_FIELDS = %w{url http_post url_encode public}
   #fields which are passed from creating user_command to command on create
-  COMMAND_CREATE_FIELDS = %w{name description origin}
+  COMMAND_CREATE_FIELDS = %w{name description origin keyword}
   COMMAND_ONLY_FIELDS = %w{public}
   
   def validate
