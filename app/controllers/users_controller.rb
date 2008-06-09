@@ -41,6 +41,12 @@ class UsersController < ApplicationController
   end
 
   def create
+    if (hidden_value = params[:user].delete(:contact_info)) && ! hidden_value.blank?
+      logger.info "BOT tried to signup with the value '#{hidden_value}' for the hidden field."
+      render :action=>'new'
+      return
+    end
+    
     @user = User.new(params[:user])      
     @user.save!
     flash[:notice] = "Thanks for signing up! Before you can log in, you'll have to verify your account by checking your email."

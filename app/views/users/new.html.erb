@@ -43,6 +43,10 @@
 			<%= f.text_field :email %>
 		</div>
 		
+		<div class="special_field">
+			<%= f.label :contact_info, "If you're seeing this field, please don't fill in. It's being used to prevent spamming." %><br />
+			<%= text_field_tag 'user[contact_info]' %>
+		</div>
 		<div>
 			<%= f.label :login, "Choose a nice, short login name." %><br />
 			<%= f.text_field :login %>
