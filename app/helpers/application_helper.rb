@@ -8,7 +8,8 @@ module ApplicationHelper
       crumbs << "users" if current_page_matches?(users_path)
       crumbs << @user.login if @user
       crumbs << "commands" unless @commands.nil?
-      if ! @tags.blank? && ! current_page_matches?(user_home_path(@user))
+      #shouldn't display @tags for any pages with @tags used in tag clouds
+      if ! @tags.blank? && ! current_page_matches?(user_home_path(@user)) && ! current_page_matches?(current_user_home_path)
         crumbs << "tag"
         crumbs << @tags.join("+")
       end

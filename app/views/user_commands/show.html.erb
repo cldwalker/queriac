@@ -53,6 +53,8 @@
 		<%= render_favicon_for_command @user_command %>
 		About this User Command
 	</h2>
+	<p>Created by <%= link_to @user_command.user.login, user_home_path(@user_command.user) %> on <%= @user_command.created_at.to_s(:medium) %>.
+	</p>
 	<p><b>Base Command:</b> <%= link_to @user_command.command.name, command_path(@user_command.command) %></p>
 	
 	<% unless @user_command.description.blank? %>

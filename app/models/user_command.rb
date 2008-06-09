@@ -61,7 +61,8 @@ class UserCommand < ActiveRecord::Base
   def create_command_from_hash(command_hash)
     if command_hash
       #if desired command is public, look for existing command
-      if ['1', true].include?(command_hash[:public]) && (existing_command = Command.find_by_url_and_public(command_hash[:url], true))
+      #nil in case public not specified
+      if ['1', true, nil].include?(command_hash['public']) && (existing_command = Command.find_by_url_and_public(command_hash['url'], true))
         self.command = existing_command
       else
         begin

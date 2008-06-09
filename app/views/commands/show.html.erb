@@ -1,7 +1,6 @@
 <h1 class="inline">
 	<%= @command.name %>
 </h1>
-
 <% if logged_in? %>
 	<ul class="options header">
 		<% if current_user.is_admin? %>
@@ -50,6 +49,7 @@
 		<%= render_favicon_for_command @command %>
 		About this Command
 	</h2>
+	<p>Created by <%= link_to @command.user.login, user_home_path(@command.user)%> on <%= @command.created_at.to_s(:medium)%>.</p>
 	
 	<% unless @command.description.blank? %>
 		<p><b>Description:</b> <%= textilize_without_paragraph @command.description %></p>
@@ -60,7 +60,6 @@
 	<p><b>Kind:</b> <%=h @command.kind %> <%= "(uses POST)" if @command.http_post? %></p>
 	
 	<p><b>Visible to Public:</b> <%= @command.public? ? "Yes" : "No" %></p>
-	<p><b>Created by:</b> <%= link_to @command.user.login, user_home_path(@command.user)%></p>
 	<p><b>Number of Users:</b> <%= @command.users.size %></p>
 		
 	<p><b>Total Queries:</b> <%= @command.queries_count_all %></p>
