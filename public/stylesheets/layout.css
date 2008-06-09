@@ -268,3 +268,8 @@ div.msg p {
 .no_padding {
 	padding: 0;
 }
+
+/*used to hide negative captcha field*/
+.special_field {
+	display: none;
+}
