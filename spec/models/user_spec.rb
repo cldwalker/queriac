@@ -51,8 +51,8 @@ describe User do
   # end
   
   it "should prevent saving of commands with reserved stopwords" do
-    STOPWORDS.should_not be_empty
-    for word in STOPWORDS
+    USER_STOPWORDS.should_not be_empty
+    for word in USER_STOPWORDS
       # puts "Checking for invalidity of #{word}"
       @user.attributes = valid_user_attributes.with(:login => word)
       @user.should_not be_valid
@@ -69,7 +69,7 @@ describe User do
   it "should set default command" do
     @user.attributes = valid_user_attributes
     @user.save!
-    @command = @user.commands.first
+    @command = @user.user_commands.first
     @command.keyword.should eql("g")
     @user.default_command_id = @command.id
     @user.save!

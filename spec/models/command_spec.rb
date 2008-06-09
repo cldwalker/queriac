@@ -32,8 +32,8 @@ describe Command do
   end
   
   it "should prevent saving of commands with reserved stopwords" do
-    STOPWORDS.should_not be_empty
-    for word in STOPWORDS
+    COMMAND_STOPWORDS.should_not be_empty
+    for word in COMMAND_STOPWORDS
       # puts "Checking for invalidity of #{word}"
       @command.attributes = valid_command_attributes.with(:keyword => word)
       @command.should_not be_valid
@@ -85,18 +85,6 @@ describe Command do
     @command.should_not be_public
   end
   
-  it "should allow public queries" do
-    @command.attributes = valid_command_attributes
-    @command.save!
-    @command.should be_public_queries
-  end
-
-  it "should not allow public queries" do
-    @command.attributes = valid_command_attributes.with(:public_queries => false)
-    @command.save!
-    @command.should_not be_public_queries
-  end
-  
   it "should generate a url using a simple query" do
     @command.attributes = valid_command_attributes
     @command.save!
@@ -112,26 +100,7 @@ describe Command do
     @url = @command.url_for(query)
     @url.should eql("http://google.com/search?q=this%2Fis%2Ffucked%3B+and+crazy%21")
   end
-
-  it "should update tags" do
-    @command.attributes = valid_command_attributes
-    @command.save!
-    @command.update_tags("this that other")
-    @command.should have(3).tags
-    @command.tags.first.name.should eql("this")
-    @command.tags.last.name.should eql("other")
-  end
-  
-  it "should generate space-delimited tag string" do
-    @command.attributes = valid_command_attributes
-    @command.save!
-    @command.update_tags("this that other")
-    @command.tag_string.should eql("this that other")
-  end
-  
   
   it "should update query counts"
   
-  it "should count outsider queries" 
-
 end
