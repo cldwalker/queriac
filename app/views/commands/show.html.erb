@@ -61,7 +61,7 @@
 	
 	<p><b>Visible to Public:</b> <%= @command.public? ? "Yes" : "No" %></p>
 	<p><b>Created by:</b> <%= link_to @command.user.login, user_home_path(@command.user)%></p>
-	<p><b>Number of Subscribed Users:</b> <%= @command.user_commands.size %></p>
+	<p><b>Number of Users:</b> <%= @command.users.size %></p>
 		
 	<p><b>Total Queries:</b> <%= @command.queries_count_all %></p>
 	

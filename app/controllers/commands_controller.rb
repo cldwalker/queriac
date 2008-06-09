@@ -26,7 +26,7 @@ class CommandsController < ApplicationController
     #   @commands = @user.commands.send(publicity).paginate(pagination_params)
     # end
     
-    @commands = Command.send("public").paginate(pagination_params.merge(:order=>'created_at DESC'))
+    @commands = Command.send("public").paginate(pagination_params.merge(:order=>'commands.created_at DESC'))
     
     if @commands.empty?
       flash[:warning] = "Sorry, no commands matched your request."
@@ -177,9 +177,8 @@ class CommandsController < ApplicationController
   protected
     
   def index_pagination_params
-    #don't see any effect from :order, does :include work?
     #{:order => "commands.queries_count_all DESC", :page => params[:page], :include => [:tags]}
-    {:page => params[:page]}
+    {:page => params[:page], :include=>:user}
   end
   
   def set_command

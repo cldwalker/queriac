@@ -2,8 +2,6 @@ class UserCommand < ActiveRecord::Base
   include CommandHelper
   belongs_to :user
   belongs_to :command
-  belongs_to :temp_command, :foreign_key=>'command_id'
-  belongs_to :old_command, :class_name=>'Command'
   has_many :queries, :dependent => :destroy, :foreign_key=>'command_id', :order=>'queries.created_at DESC'
   
   acts_as_taggable

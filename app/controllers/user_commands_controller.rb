@@ -98,7 +98,7 @@ class UserCommandsController < ApplicationController
     end
     
     @user_command = UserCommand.new
-    @user_command.attributes = (@original_command || @base_command).attributes.slice(*%w{name keyword url})
+    @user_command.attributes = (@original_command || @base_command).attributes.slice(*%w{name keyword url description})
     render :action=>'new'
   end
   

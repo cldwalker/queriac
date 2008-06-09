@@ -44,7 +44,7 @@
 				<%= link_to command.name, command_path(command), :title=>command.url, :class => "iconed" %>
 			</p>
 		</td>
-	<td class="centered"><%= command.user_commands.size %></td>
+	<td class="centered"><%= command.users.count %></td>
     <td class="centered <%= "faded" if command.queries_count_all == 0 %>"><%= command.queries_count_all %></td>	
     <td class="centered"><%= command.keyword %></td>
 	<%# command.queries is too db-intensive for now %>
