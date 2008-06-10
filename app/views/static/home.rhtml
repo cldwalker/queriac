@@ -49,7 +49,10 @@
 		</tr>
 		<% for command in @commands %>
 		<tr <%= cycle('class="offset"', '') -%>>
-			<td><%= link_to command.name, command_path(command) %></td>
+			<td>
+				<%= render_favicon_for_command command %>
+				<%= link_to command.name, command_path(command) %>
+			</td>
 			<td class="centered"><%= link_to command.user.login, user_home_path(command.user) %></td>
 		</tr>
 		<% end %>

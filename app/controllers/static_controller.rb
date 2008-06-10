@@ -7,7 +7,7 @@ class StaticController < ApplicationController
     # keep out anonymous queries, too costly to do in db
     @queries = @queries.select {|e| !e.user_id.nil? }.slice(0,30)
     @users = User.find_top_users 
-    @commands = Command.find(:all, :order=>'commands.created_at DESC', :limit=>3, :include=>:user)
+    @commands = Command.public.find(:all, :order=>'commands.created_at DESC', :limit=>3, :include=>:user)
   end
   
 end
