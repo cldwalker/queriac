@@ -9,8 +9,6 @@
 	    <th>Query</th>
 	  </tr>
 	<% for query in @queries %>
-		<%# keep out anonymous queries, too costly to do in db %>
-		<% next if query.user_id.nil? %>
 		<tr <%= cycle('class="offset"', '') -%>>
 			<td>
 				<%= query_user(query) %>
