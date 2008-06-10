@@ -24,4 +24,12 @@ module SharedHelper
   def user_command_owner_or_admin?
     user_command_owner? || admin?
   end
+  
+  def get_bot_param_for(action)
+    unless @crypted_param
+      action_salt = Digest::SHA1.hexdigest "--#{action}--"
+      @crypted_param = Digest::SHA1.hexdigest "--#{action_salt}--#{Date.today}--"
+    end
+    @crypted_param
+  end
 end

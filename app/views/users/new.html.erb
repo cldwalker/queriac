@@ -44,8 +44,8 @@
 		</div>
 		
 		<div class="special_field">
-			<%= f.label :contact_info, "If you're seeing this field, please don't fill in. It's being used to prevent spamming." %><br />
-			<%= text_field_tag 'user[contact_info]' %>
+			<%= f.label get_bot_param_for(:signup), "If you're seeing this field, please don't fill it in. It's being used to keep out unwanted users." %><br />
+			<%= text_field_tag "user[#{get_bot_param_for(:signup)}]" %>
 		</div>
 		<div>
 			<%= f.label :login, "Choose a nice, short login name." %><br />

@@ -41,8 +41,8 @@ class UsersController < ApplicationController
   end
 
   def create
-    if (hidden_value = params[:user].delete(:contact_info)) && ! hidden_value.blank?
-      logger.info "BOT tried to signup with the value '#{hidden_value}' for the hidden field."
+    if (hidden_value = params[:user].delete(get_bot_param_for(:signup))) && ! hidden_value.blank?
+      logger.info "BOT tried to signup with the value '#{hidden_value}' for the hidden field '#{get_bot_param_for(:signup)}'."
       render :action=>'new'
       return
     end
