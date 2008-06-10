@@ -30,8 +30,8 @@ class ApplicationController < ActionController::Base
   end
   
   def redirect_no_user
-    if @user.nil?
-      flash[:warning] = "The user '#{params[:login]}' doesn't exist."
+    if @user.nil? || ! @user.activated?
+      flash[:warning] = %[The user '#{params[:login]}' #{@user ? "hasn't been activated" : "doesn't exist"}.]
       redirect_to home_path
       return false
     end
@@ -40,8 +40,8 @@ class ApplicationController < ActionController::Base
   
   #this won't redirect actions that don't need params[:login] to be reached ie commands/index
   def redirect_invalid_user
-    if @user.nil? && ! params[:login].nil?
-      flash[:warning] = "The user '#{params[:login]}' doesn't exist."
+    if ! params[:login].nil? && (@user.nil? || !@user.activated?)
+      flash[:warning] = %[The user '#{params[:login]}' #{@user ? "hasn't been activated" : "doesn't exist"}.]
       redirect_to home_path
       return false
     end
