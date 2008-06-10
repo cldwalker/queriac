@@ -1,6 +1,6 @@
 <div id="primary">
 	
-	<h1>Latest Public Queries</h1>
+	<h1>Latest Public Queries <span style="font-size: 14px">(by logged-in users) <span></h1>
 
 	<table>
 	  <tr>
@@ -9,6 +9,8 @@
 	    <th>Query</th>
 	  </tr>
 	<% for query in @queries %>
+		<%# keep out anonymous queries, too costly to do in db %>
+		<% next if query.user_id.nil? %>
 		<tr <%= cycle('class="offset"', '') -%>>
 			<td>
 				<%= query_user(query) %>
@@ -41,6 +43,21 @@
 	
 	<p>To start using Queriac, <%= link_to "create an account", new_user_path %>. It's easy, free, and awesome.</p>
 	
+	<h1>Latest Commands</h1>
+	<table>
+		<tr>
+			<th>Name</th>
+			<th>Creator</th>
+		</tr>
+		<% for command in @commands %>
+		<tr <%= cycle('class="offset"', '') -%>>
+			<td><%= link_to command.name, command_path(command) %></td>
+			<td class="centered"><%= link_to command.user.login, user_home_path(command.user) %></td>
+		</tr>
+		<% end %>
+	</table>
+	<p><%= link_to "View more commands", commands_path %></p>
+
 	<h1>Updates &amp; Support</h1>
 
 	<h2>Google Group</h2>
@@ -53,7 +70,7 @@
 	<h2>Bugs</h2>
 	<p>Queri.ac is a one-man project at the moment so it's got its share of minor issues. If you find something, please submit a ticket at <%= link_to "Queriac's Google Code Project Page", "http://code.google.com/p/monoquery/issues/list" %>.</p>
 	
-
+	
 	<%= render :partial => "users/user_list"  %>
 
 </div>
