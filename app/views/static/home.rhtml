@@ -52,12 +52,12 @@
 		<tr <%= cycle('class="offset"', '') -%>>
 			<td>
 				<%= render_favicon_for_command uc %>
-				<%= link_to truncate(uc.name, 15), public_user_command_path(uc) %>
+				<%= link_to truncate(uc.name, 30), public_user_command_path(uc), :title=>uc.name %>
 			</td>
 			<td>
-				<%= link_to truncate(uc.name, 10), command_path(uc.command)%>
+				<%= link_to truncate(uc.name, 25), command_path(uc.command), :title=>uc.name %>
 				<% if uc.command.created_at > 7.days.ago %>
-				<span style="color: #427f0b; font-weight: bold">NEW</span>
+				<span style="color: #427f0b; font-weight: bold">NEW!</span>
 				<% end %>
 			</td>
 			<td class="centered"><%= link_to truncate(uc.user.login, 10), user_home_path(uc.user) %></td>
