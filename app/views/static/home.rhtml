@@ -41,23 +41,31 @@
 	
 	<p>To start using Queriac, <%= link_to "create an account", new_user_path %>. It's easy, free, and awesome.</p>
 	
-	<h1>Latest Commands</h1>
+	<h1>Latest User Commands</h1>
 	<table>
 		<tr>
-			<th>Name</th>
-			<th>Creator</th>
+			<th width="150">User Command</th>
+			<th width="120">Command</th>
+			<th width="80">User</th>
 		</tr>
-		<% for command in @commands %>
+		<% for uc in @user_commands %>
 		<tr <%= cycle('class="offset"', '') -%>>
 			<td>
-				<%= render_favicon_for_command command %>
-				<%= link_to command.name, command_path(command) %>
+				<%= render_favicon_for_command uc %>
+				<%= link_to truncate(uc.name, 15), public_user_command_path(uc) %>
 			</td>
-			<td class="centered"><%= link_to command.user.login, user_home_path(command.user) %></td>
+			<td>
+				<%= link_to truncate(uc.name, 10), command_path(uc.command)%>
+				<% if uc.command.created_at > 7.days.ago %>
+				<span style="color: #427f0b; font-weight: bold">NEW</span>
+				<% end %>
+			</td>
+			<td class="centered"><%= link_to truncate(uc.user.login, 10), user_home_path(uc.user) %></td>
 		</tr>
 		<% end %>
 	</table>
-	<p><%= link_to "View more commands", commands_path %></p>
+	<p><%= link_to "View more commands", commands_path %> <%= link_to "View more user commands", user_commands_path %></p>
+	<%= link_to "What's the difference between a command and a user command?", help_path + "#command_difference", :class=>'faded'%>
 
 	<h1>Updates &amp; Support</h1>
 

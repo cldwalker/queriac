@@ -207,10 +207,6 @@ class UserCommandsController < ApplicationController
     render_tag_action(tag_string, keywords, edited_commands)
   end
   
-  def index_pagination_params
-    {:page => params[:page], :include => [:tags, :command, :user]}
-  end
-
   def search
     if params[:q].blank?
       flash[:warning] = "Your search is empty. Try again."
@@ -254,6 +250,11 @@ class UserCommandsController < ApplicationController
   end
   
   protected
+  #PERF: pagination at 15 for performance
+  def index_pagination_params
+    {:page => params[:page], :per_page=>15, :include => [:tags, :command, :user], :order=>"user_commands.created_at DESC"}
+  end
+
   #only command owner can access their usercommands for most actions due to current routes
   #hence no admin permission
   def permission_required

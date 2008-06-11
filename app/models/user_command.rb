@@ -21,6 +21,7 @@ class UserCommand < ActiveRecord::Base
   has_finder :quicksearches, :conditions => ["commands.kind ='parametric' AND commands.bookmarklet=0"], :include=>:command
   has_finder :bookmarklets, :conditions => ["commands.bookmarklet=1"], :include=>:command
   has_finder :shortcuts, :conditions => ["commands.kind ='shortcut' AND commands.bookmarklet=0"], :include=>:command
+  has_finder :non_bootstrap, :conditions=>["commands.id NOT IN (1,2,3,4,5,6,7,8)"], :include=>:command
   has_finder :any
   
   #fields which are passed from creating user_command to command on create + updates
