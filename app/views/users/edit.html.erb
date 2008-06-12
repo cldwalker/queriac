@@ -1,42 +1,53 @@
-	<div id="secondary" class="boxed">
-		<h1>Edit Your Account</h1>
+<div id="secondary" class="boxed">
+	<h1>Edit Your Account</h1>
 
-		<%= error_messages_for :user %>
+	<%= error_messages_for :user %>
 
-		<% form_for(:user, @user, :url => user_path(@user), :html => { :method => :put }) do |f| %>
+	<% form_for(:user, @user, :url => user_path(@user), :html => { :method => :put }) do |f| %>
 
-			<div>
-			  <%= f.label :first_name %><br />
-			  <%= f.text_field :first_name  %>
-			</div>
+		<div>
+		  <%= f.label :first_name %><br />
+		  <%= f.text_field :first_name  %>
+		</div>
 
-			<div>
-			  <%= f.label :last_name %><br />
-			  <%= f.text_field :last_name  %>
-			</div>
+		<div>
+		  <%= f.label :last_name %><br />
+		  <%= f.text_field :last_name  %>
+		</div>
 
-			<div>
-			  <%= f.label :email %><br />
-			  <%= f.text_field :email  %>
-			</div>
+		<div>
+		  <%= f.label :email %><br />
+		  <%= f.text_field :email  %>
+		</div>
+		
+		<h2>Change Password</h2>
+		<div>
+		  <%= f.label :password %><br/>
+		  <%= f.password_field :password %>
+		</div>
 
-			<h2>Orphan Queries</h2>
-			<p>When a query is made and the command doesn't exist..</p>
+		<div>
+		  <%= f.label :password_confirmation %><br/>
+		  <%= f.password_field :password_confirmation %>
+		</div>
+		
+		<h2>Orphan Queries</h2>
+		<p>When a query is made and the command doesn't exist..</p>
 
-			<div class="floatkill">
-				<%= radio_button_tag 'use_default_command', 'no', !current_user.default_command? %> 
-				<label for="use_default_command_no">Tell me the command doesn't exist.</label>
-			</div>
+		<div class="floatkill">
+			<%= radio_button_tag 'use_default_command', 'no', !current_user.default_command? %> 
+			<label for="use_default_command_no">Tell me the command doesn't exist.</label>
+		</div>
 
-			<div class="floatkill">
-				<%= radio_button_tag 'use_default_command', 'yes', current_user.default_command? %> 
-				<label for="use_default_command_yes">Run the query using this command: </label>
+		<div class="floatkill">
+			<%= radio_button_tag 'use_default_command', 'yes', current_user.default_command? %> 
+			<label for="use_default_command_yes">Run the query using this command: </label>
 
-				<%= f.select :default_command_id, current_user.user_commands.quicksearches.find(:all, :order => "user_commands.keyword ASC").collect {|c| [ "#{c.keyword} - #{c.name.ellipsize(:max => 25)}", c.id ] }, {}, :onfocus => "$('use_default_command_yes').checked = true" %>
-			</div>
+			<%= f.select :default_command_id, current_user.user_commands.quicksearches.find(:all, :order => "user_commands.keyword ASC").collect {|c| [ "#{c.keyword} - #{c.name.ellipsize(:max => 25)}", c.id ] }, {}, :onfocus => "$('use_default_command_yes').checked = true" %>
+		</div>
 
-		  <p>
-		    <%= submit_tag "Save Settings", :class => "submit" %>
-		  </p>
-		<% end %>
-	</div>
+	  <p>
+	    <%= submit_tag "Save Settings", :class => "submit" %>
+	  </p>
+	<% end %>
+</div>

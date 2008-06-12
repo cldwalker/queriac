@@ -25,7 +25,6 @@ class User < ActiveRecord::Base
   include ActionController::UrlWriter
   
   has_many :commands
-  #has_many :commands, :through=>:user_commands
   has_many :user_commands, :dependent => :destroy
   has_many :queries, :dependent=>:destroy
   has_many :tags, :through => :user_commands
