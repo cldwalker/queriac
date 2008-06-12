@@ -125,6 +125,11 @@ class UserCommandsController < ApplicationController
   end
   
   def create
+      if params[:commit].include?('Cancel')
+        redirect_back_or_default home_path
+        return
+      end
+      
       @user_command = current_user.user_commands.new(params[:user_command])
       
       respond_to do |format|      

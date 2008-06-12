@@ -22,5 +22,6 @@
 
   <div class="floatkiller">	
     <%= submit_tag "Create Command", :class => "submit" %>
+    <%= submit_tag "Cancel", :class => "submit" if controller.action_name == 'copy' %>
   </div>
 <% end %>
