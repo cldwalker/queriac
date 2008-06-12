@@ -89,8 +89,6 @@ class Command < ActiveRecord::Base
   
   def update_query_counts
     self.update_attribute(:queries_count_all, self.queries_count_all + 1)
-    #too db-intensive for now
-    # self.update_attribute(:queries_count_all, self.queries.count)
   end
   
   def self.create_commands_for_user_from_bookmark_file(user, file)
@@ -119,6 +117,6 @@ class Command < ActiveRecord::Base
   end
   
   def self.find_by_keyword_or_id(id, options={})
-    find(:first, {:conditions=>["commands.keyword = '#{id}' OR commands.id = '#{id}'"]}.merge(options))
+    find(:first, {:conditions=>["commands.keyword = ? OR commands.id = ?", id, id]}.merge(options))
   end
 end

@@ -26,7 +26,7 @@ class CommandsController < ApplicationController
     #   @commands = @user.commands.send(publicity).paginate(pagination_params)
     # end
     
-    @commands = Command.send("public").paginate(pagination_params.merge(:order=>'commands.created_at DESC'))
+    @commands = Command.send("public").paginate(pagination_params.merge(:order=>sort_param_value))
     
     if @commands.empty?
       flash[:warning] = "Sorry, no commands matched your request."
@@ -38,14 +38,14 @@ class CommandsController < ApplicationController
       format.html
       format.xml { render :xml => @commands.to_xml }
     end
-  end  
+  end
   
   def search_all
     if params[:q].blank?
       flash[:warning] = "Your search is empty. Try again."
       @commands = [].paginate
     else
-      @commands = Command.any.paginate(index_pagination_params.merge(:conditions=>["keyword REGEXP ? OR url REGEXP ?", params[:q], params[:q]], :order=>'commands.queries_count_all DESC'))
+      @commands = Command.any.paginate(index_pagination_params.merge(:conditions=>["keyword REGEXP ? OR url REGEXP ?", params[:q], params[:q]], :order=>sort_param_value('commands.queries_count_all DESC')))
     end
     render :action => 'index'
   end
@@ -175,6 +175,20 @@ class CommandsController < ApplicationController
   end
 
   protected
+  
+  def sort_param_value(default_sort = 'commands.created_at DESC')
+    valid_sort_columns = %w{name queries_count_all created_at keyword}
+    valid_directions = %w{down up}
+    #format: up_by_column, down_by_column
+    sort = params[:sort]
+    return default_sort if sort.nil?
+    sort =~ /^(\w+)_by_(\w+)$/
+    if $1 && $2 && valid_sort_columns.include?($2) && valid_directions.include?($1)
+      "commands.#{$2} #{$1 == 'up' ? 'ASC' : 'DESC'}"
+    else
+      default_sort
+    end
+  end
     
   def index_pagination_params
     #{:order => "commands.queries_count_all DESC", :page => params[:page], :include => [:tags]}

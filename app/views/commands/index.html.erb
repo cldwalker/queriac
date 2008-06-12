@@ -24,13 +24,25 @@
 
 <table class="top_spaced">
   <tr>
-    <th>Name</th>
+    <th>Name<br/>
+		<%= sort_link_up 'name'%>
+		<%= sort_link_down 'name'%>
+	</th>
    	<th width="30">Users</th>
- <th width="30" class="centered">Queries</th>
-    <th width="70">Keyword</th>
+ <th width="30" class="centered">Queries<br/>
+	<%= sort_link_up 'queries_count_all' %>
+	<%= sort_link_down 'queries_count_all' %>
+ </th>
+    <th width="70" class="centered">Keyword<br/>
+	<%= sort_link_up 'keyword'%>
+	<%= sort_link_down 'keyword'%>
+</th>
     <!-- <th width="120">Last Used</th> -->
 	<th>Creator</th>
-	<th>Created</th>
+	<th>Created<br/>
+		<%= sort_link_up 'created_at'%>
+		<%= sort_link_down 'created_at'%>
+	</th>
 	<% if logged_in? %>
 	<th>Options</th>
 	<% end %>
@@ -47,7 +59,7 @@
 	<td class="centered"><%= command.users.count %></td>
     <td class="centered <%= "faded" if command.queries_count_all == 0 %>"><%= command.queries_count_all %></td>	
     <td class="centered"><%= command.keyword %></td>
-	<%# command.queries is too db-intensive for now %>
+	<%# PERF: command.queries is too db-intensive for now %>
     <!-- <td>
 		<%# command.queries_count_all > 0 ? time_ago_in_words_or_date(command.queries.find(:first).created_at) : link_to("(Unused)", command_path(command), :class => "faded") %>
 	</td> -->
