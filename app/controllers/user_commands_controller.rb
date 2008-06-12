@@ -3,6 +3,7 @@ class UserCommandsController < ApplicationController
   before_filter :load_valid_user_if_specified, :only=>[:index, :show]
   before_filter :set_user_command, :only=>[:show, :edit, :update, :destroy, :update_url]
   before_filter :permission_required, :only=>[:edit, :update, :destroy, :update_url]
+  before_filter :store_location, :only=>[:index, :show, :edit]
   before_filter :set_disabled_fields, :only=>[:copy, :edit]
   before_filter :load_tags_if_specified, :only=>:index
   verify :method=>:delete, :only=>:destroy
@@ -125,7 +126,7 @@ class UserCommandsController < ApplicationController
   end
   
   def create
-      if params[:commit].include?('Cancel')
+      if params[:commit] && params[:commit].include?('Cancel')
         redirect_back_or_default home_path
         return
       end

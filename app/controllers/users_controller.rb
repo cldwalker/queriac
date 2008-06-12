@@ -2,6 +2,7 @@
 class UsersController < ApplicationController
   before_filter :login_required, :only => [:edit, :destroy, :update, :home]
   before_filter :load_valid_user, :only=>:show
+  before_filter :store_location, :only=>[:index, :show, :edit, :home]
   before_filter :load_user_from_param, :only => [:opensearch]
 
   def index

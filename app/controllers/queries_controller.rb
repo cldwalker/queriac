@@ -1,7 +1,7 @@
 class QueriesController < ApplicationController
-
   before_filter :load_valid_user_if_specified, :only=>:index
   before_filter :load_tags_if_specified, :only=>:index
+  before_filter :store_location, :only=>:index
   before_filter :owner_required, :only => [:edit, :update, :destroy]
 
   def index

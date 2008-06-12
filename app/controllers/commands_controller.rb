@@ -6,6 +6,7 @@ class CommandsController < ApplicationController
   # before_filter :load_tags_if_specified, :only=>:index
   before_filter :admin_required, :only=>[:search_all, :edit, :update]
   before_filter :set_command, :only=>[:show, :edit, :update]
+  before_filter :store_location, :only=>[:index, :show]
   
   # Possiblities..
   # /commands                   => public commands
