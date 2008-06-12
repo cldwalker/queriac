@@ -111,6 +111,7 @@ describe 'commands/execute:' do
   it 'executes default_to command passing along original command + arguments'
   it 'executes search_form command'
   it 'executes default_to via search_form'
+  it 'handles search_form with no command'
   
   #this happens when querying other ppl's commands from browser
   it 'executes w/ spaces between command + argument' do

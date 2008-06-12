@@ -70,7 +70,7 @@ class CommandsController < ApplicationController
       param_parts = params[:search_command].split(/\s+/)
       #set just in case it goes to user's default_command
       params[:command] = param_parts
-      keyword = param_parts.shift.downcase
+      keyword = (param_parts.shift || '').downcase
     end
     
     # Handle stealth queries (allowing for presence or absence of space following the !)
