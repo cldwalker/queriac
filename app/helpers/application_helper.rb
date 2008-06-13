@@ -141,5 +141,11 @@ module ApplicationHelper
       #FIXME: second half of OR statement w/ '/' only there until q command is fixed to not have '/' at the end
       @current_page_uri == url_string || @current_page_uri == url_string + "/"
     end
-  end  
+  end
+  
+  def pagination_description(will_paginate_collection)
+    possible_last_item = will_paginate_collection.per_page * will_paginate_collection.current_page
+    last_item = possible_last_item < will_paginate_collection.total_entries ? possible_last_item : will_paginate_collection.total_entries
+    %[#{will_paginate_collection.offset + 1}-#{last_item} of #{will_paginate_collection.total_entries}]
+  end
 end

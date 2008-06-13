@@ -2,7 +2,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect  'commands/new', :controller=>'commands', :action=>'show', :id=>'new'
   map.resources :commands, :member => { :execute => :get } , :collection=>{:search_all=>:get}
   map.resources :sessions
-  map.resources :user_commands, :member=>{:copy=>:get, :update_url=>:post}, 
+  map.resources :user_commands, :member=>{:copy=>:get, :update_url=>:post, :destroy=>:get}, 
     :collection=>{:import=>:any, :tag_set=>:get, :tag_add_remove=>:get, :search=>:get, :copy_yubnub_command=>:get}
   map.with_options(:controller=>'user_commands') do |c|
     c.tagged_user_commands   ':login/commands/tag/*tag',   :action=>'index'

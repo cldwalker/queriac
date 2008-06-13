@@ -5,6 +5,7 @@
 		<%= @user_commands.empty? ? 'No' : (@user ? whose_commands(@user_commands.first) : "All") %> user commands
 		<%= "tagged with '#{@tags.join("+").gsub("+", "' and '")}'" unless @tags.blank? %>
 	<% end %>
+	<span class="pagination_description">(<%= pagination_description @user_commands %>)</span>
 </h1>
 
 <ul class="bolder options header">

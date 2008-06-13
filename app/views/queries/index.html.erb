@@ -1,6 +1,7 @@
 <h1 class="inline">
 	<%= @queries.blank? ? 'No' : @user ? whose_commands(@queries.first.user_command) : "All" %> queries
 	<%= "tagged with '#{@tags.join("+").gsub("+", "' and '")}'" unless @tags.blank? %>
+	<span class="pagination_description">(<%= pagination_description @queries %>)</span>
 </h1>
 
 <ul class="bolder options header">

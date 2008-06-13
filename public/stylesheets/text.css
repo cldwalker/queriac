@@ -94,6 +94,9 @@ h1.inline {
   float: left;
   margin-bottom: 2px;
 }
+h1 .pagination_description {
+  font-size: 15px;
+}
 
 h2 {
 	line-height: 1.2em;

@@ -6,7 +6,6 @@ class UserCommandsController < ApplicationController
   before_filter :store_location, :only=>[:index, :show, :edit]
   before_filter :set_disabled_fields, :only=>[:copy, :edit]
   before_filter :load_tags_if_specified, :only=>:index
-  verify :method=>:delete, :only=>:destroy
   
   # Possiblities..
   # /user_commands                   => public commands
