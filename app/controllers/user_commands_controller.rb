@@ -2,6 +2,7 @@ class UserCommandsController < ApplicationController
   before_filter :login_required, :except => [:index, :show]
   before_filter :load_valid_user_if_specified, :only=>[:index, :show]
   before_filter :set_user_command, :only=>[:show, :edit, :update, :destroy, :update_url]
+  before_filter :set_command, :only=>[:command_user_commands]
   before_filter :permission_required, :only=>[:edit, :update, :destroy, :update_url]
   before_filter :store_location, :only=>[:index, :show, :edit]
   before_filter :set_disabled_fields, :only=>[:copy, :edit]
@@ -14,19 +15,18 @@ class UserCommandsController < ApplicationController
   # /zeke/commands/tag/google   => all || public commands for a specific user for a tag or tags
   def index
     publicity = (current_user? || admin?) ? "any" : "public"
-    pagination_params = index_pagination_params.dup
 
     if @tags
       if @user
-        @user_commands = @user.user_commands.send(publicity).find_tagged_with(@tags.join(", "), :match_all => true, :order => "user_commands.queries_count DESC", :include=>:command).paginate(pagination_params)
+        @user_commands = @user.user_commands.send(publicity).find_tagged_with(@tags.join(", "), :match_all => true, :include=>:command).paginate(index_pagination_params)
       else
-        @user_commands = UserCommand.send("public").find_tagged_with(@tags.join(", "), :match_all => true, :order => "user_commands.queries_count DESC").paginate(pagination_params)
+        @user_commands = UserCommand.send("public").find_tagged_with(@tags.join(", "), :match_all => true).paginate(index_pagination_params)
       end
     else
       if @user
-        @user_commands = @user.user_commands.send(publicity).paginate(pagination_params.merge(:order=>'user_commands.queries_count DESC'))
+        @user_commands = @user.user_commands.send(publicity).paginate(index_pagination_params)
       else
-        @user_commands = UserCommand.send("public").paginate(pagination_params)
+        @user_commands = UserCommand.send("public").paginate(index_pagination_params.merge(:order=>'user_commands.created_at DESC'))
       end
     end
 
@@ -41,6 +41,11 @@ class UserCommandsController < ApplicationController
       format.atom
       format.xml
     end
+  end
+  
+  def command_user_commands
+    @user_commands = @command.user_commands.paginate(index_pagination_params)
+    render :action=>'index'
   end
   
   def show
@@ -259,7 +264,7 @@ class UserCommandsController < ApplicationController
   protected
   #PERF: pagination at 15 for performance
   def index_pagination_params
-    {:page => params[:page], :per_page=>15, :include => [:tags, :command, :user], :order=>"user_commands.created_at DESC"}
+    {:page => params[:page], :per_page=>15, :include => [:tags, :command, :user], :order=>"user_commands.queries_count DESC"}
   end
 
   #only command owner can access their usercommands for most actions due to current routes

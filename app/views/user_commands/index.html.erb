@@ -2,7 +2,10 @@
 	<% if current_page_matches?(search_user_commands_path) || current_page_matches?(search_all_commands_path) %>
 		Search Results for '<%= params[:q] %>'
 	<% else %>
-		<%= @user_commands.empty? ? 'No' : (@user ? whose_commands(@user_commands.first) : "All") %> <%= 'and private' if admin? && ! current_user? %> user commands
+		<%= @user_commands.empty? ? 'No' : (@user ? whose_commands(@user_commands.first) : "All") %> 
+		<%= 'and private' if admin? && @user && ! current_user? %> 
+		<%= link_to @command.keyword, command_path(@command) if @command %>
+		user commands
 		<%= "tagged with '#{@tags.join("+").gsub("+", "' and '")}'" unless @tags.blank? %>
 	<% end %>
 	<span class="pagination_description">(<%= pagination_description @user_commands %>)</span>
@@ -39,17 +42,17 @@
   </tr>
  
 <% for uc in @user_commands %>
-	<% command = uc.command %>
 	<tr <%= cycle('class="offset"', '') -%>>
     <td>
 			<p class="command_title">
-				<%= render_favicon_for_command command %>
+				<%= render_favicon_for_command uc %>
 				<%= link_to uc.name, public_user_command_path(uc), :title=>uc.url, :class => "iconed" %>
 			</p>
 			<p class="tag_list">Tags: <%= uc.tags.map{|t| link_to(t.name, tagged_user_commands_path(uc.user,t.name)) }.join(" ") %></p>
 	</td>
 	<td>
 		<p class="command_title">
+			<% command = uc.command %>
 			<%= link_to command.name, command_path(command), :title=>command.url, :class => "iconed" %>
 		</p>
 	</td>
@@ -64,7 +67,7 @@
 		<% end %>
 	</td>
 	<td>
-		<%= time_ago_in_words_or_date(command.created_at) %>
+		<%= time_ago_in_words_or_date(uc.created_at) %>
 	</td>		
 	<td>
 	<% if logged_in? %>

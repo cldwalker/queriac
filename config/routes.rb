@@ -5,6 +5,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :user_commands, :member=>{:copy=>:get, :update_url=>:post, :destroy=>:get}, 
     :collection=>{:import=>:any, :tag_set=>:get, :tag_add_remove=>:get, :search=>:get, :copy_yubnub_command=>:get}
   map.with_options(:controller=>'user_commands') do |c|
+    c.command_user_commands  'commands/:id/user_commands', :action=>'command_user_commands'
     c.tagged_user_commands   ':login/commands/tag/*tag',   :action=>'index'
     c.all_tagged_user_commands   'user_commands/tag/*tag',   :action=>'index'
     c.specific_user_commands   ':login/commands', :action=>'index'
