@@ -34,7 +34,7 @@ ActionController::Routing::Routes.draw do |map|
   
   map.with_options(:controller=>'queries', :action=>'index') do |c|
     c.tagged_queries        'queries/tag/*tag'
-    c.user_command_queries  ':login/:command/queries'
+    c.user_command_queries  ':login/commands/:command/queries'
     c.user_queries          ':login/queries'
     c.user_tagged_queries   ':login/queries/tag/*tag'
   end

@@ -17,6 +17,10 @@ module SharedHelper
     logged_in? && current_user == user
   end
   
+  def can_view_queries?
+    user_command_owner? || @user_command.public_queries?
+  end
+  
   def user_command_owner?
     @user_command.owned_by?(current_user)
   end

@@ -50,8 +50,8 @@ class UserCommandsController < ApplicationController
       return
     end
 
-    if @user_command.public_queries? || user_command_owner?
-      @queries = @user_command.queries.find(:all, :limit=>30, :order=>'queries.created_at DESC', :include=>:user_command)
+    if can_view_queries?
+      @queries =  @user_command.queries.find(:all, :limit=>30, :order=>'queries.created_at DESC', :include=>:user_command)
     else
       @queries = []
     end

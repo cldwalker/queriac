@@ -118,7 +118,7 @@ class QueriesController < ApplicationController
   
   # Don't display private queries to anyone but their commands' owners.
   def command_query_is_public?
-    unless user_command_owner? || @user_command.public_queries?
+    unless can_view_queries?
       flash[:warning] = "The user command's queries are private. "
       redirect_to public_user_command_path(@user_command)
       return false
