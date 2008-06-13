@@ -76,4 +76,22 @@ class ApplicationController < ActionController::Base
       end
     end
   end
+  
+  def set_command
+    #   action_include_hash = {'edit'=>[:user], 'destroy'=>[:queries]} for /commands
+    #   @command = @user.commands.find_by_keyword(params[:command], :include=>action_include_hash[self.action_name] || [])
+    @command = Command.find_by_keyword_or_id(params[:id])    
+    if @command.nil?
+      flash[:warning] = "Command '#{params[:id]}' not found."
+      redirect_back_or_default commands_path
+      return false
+    else
+      if @command.private? && ! command_owner_or_admin?
+        flash[:warning] = "Sorry, the command '#{@command.keyword}' is private."
+        redirect_back_or_default user_home_path(@command.user)
+        return false
+      end
+    end
+    true
+  end  
 end

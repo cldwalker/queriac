@@ -145,14 +145,7 @@ class CommandsController < ApplicationController
 
   #desired behavior for private queries is just a sidebar?
   def show
-    if @command.private? && ! command_owner_or_admin?
-      flash[:warning] = "Sorry, the command '#{@command.keyword}' is private."
-      redirect_back_or_default user_home_path(@command.user)
-      return
-    end
-
-    @queries = @command.queries.public.paginate(:order => "queries.created_at DESC", :page => params[:page])
-
+    @queries = @command.queries.public.find(:all, :order => "queries.created_at DESC", :limit=>30)
     respond_to do |format|
       format.html
       format.xml  { render :xml => @command.to_xml }
@@ -194,22 +187,6 @@ class CommandsController < ApplicationController
   def index_pagination_params
     #{:order => "commands.queries_count_all DESC", :page => params[:page], :include => [:tags]}
     {:page => params[:page], :include=>:user}
-  end
-  
-  def set_command
-    #   action_include_hash = {'edit'=>[:user], 'destroy'=>[:queries]}
-    #   @command = @user.commands.find_by_keyword(params[:command], :include=>action_include_hash[self.action_name] || [])
-    @command = Command.find_by_keyword_or_id(params[:id])    
-    command_is_nil? ? false : true
-  end
-  
-  def command_is_nil?
-    if @command.nil?
-      flash[:warning] = "Command '#{params[:id]}' not found."
-      redirect_back_or_default commands_path
-      return true
-    end
-    false
   end
 
 end

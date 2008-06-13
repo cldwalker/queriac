@@ -1,11 +1,13 @@
 <h1 class="inline">
-	<%= @queries.blank? ? 'No' : @user ? whose_commands(@queries.first.user_command) : "All" %> queries
+	<%= @queries.blank? ? 'No' : (@user ? whose_commands(@queries.first.user_command) : "All") %> 
+	<%= "#{(@command || @user_command).keyword}" if @command || @user_command %>	
+	queries
 	<%= "tagged with '#{@tags.join("+").gsub("+", "' and '")}'" unless @tags.blank? %>
 	<span class="pagination_description">(<%= pagination_description @queries %>)</span>
 </h1>
 
 <ul class="bolder options header">
-	<% if logged_in? && !current_user? %>
+	<% if logged_in? && !current_user? && @command.nil? %>
 		<li class="search"><%= link_to 'Yours', (@tags.blank? ? user_queries_path(current_user) : user_tagged_queries_path(current_user, @tags)) %></li>
 	<% end %>
 	<% if @user %>

@@ -21,7 +21,7 @@
 		
 		<h2>
 			Public Queries
-			<%= "(Showing #{@queries.size} of #{@queries.total_entries})" unless @queries.page_count.nil? || @queries.page_count == 1 %>
+			<%= "(Last #{@queries.size})" %>
 		</h2>
 
 		<table>
@@ -37,9 +37,7 @@
 				</tr>
 			<% end %>
 		</table>
-
-		<%= will_paginate @queries %>
-	
+		<p><%= link_to "View all queries", command_queries_path(@command), :class => "faded"  %></p>
 </div>
 
 

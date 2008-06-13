@@ -13,7 +13,7 @@ class UserCommandsController < ApplicationController
   # /zeke/commands/             => all || public commands for a specific user
   # /zeke/commands/tag/google   => all || public commands for a specific user for a tag or tags
   def index
-    publicity = current_user? ? "any" : "public"
+    publicity = (current_user? || admin?) ? "any" : "public"
     pagination_params = index_pagination_params.dup
 
     if @tags

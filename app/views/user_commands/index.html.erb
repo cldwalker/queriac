@@ -2,7 +2,7 @@
 	<% if current_page_matches?(search_user_commands_path) || current_page_matches?(search_all_commands_path) %>
 		Search Results for '<%= params[:q] %>'
 	<% else %>
-		<%= @user_commands.empty? ? 'No' : (@user ? whose_commands(@user_commands.first) : "All") %> user commands
+		<%= @user_commands.empty? ? 'No' : (@user ? whose_commands(@user_commands.first) : "All") %> <%= 'and private' if admin? %> user commands
 		<%= "tagged with '#{@tags.join("+").gsub("+", "' and '")}'" unless @tags.blank? %>
 	<% end %>
 	<span class="pagination_description">(<%= pagination_description @user_commands %>)</span>

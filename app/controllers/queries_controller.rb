@@ -1,7 +1,8 @@
 class QueriesController < ApplicationController
   before_filter :load_valid_user_if_specified, :only=>:index
   before_filter :load_tags_if_specified, :only=>:index
-  before_filter :store_location, :only=>:index
+  before_filter :set_command, :only=>:command_queries
+  before_filter :store_location, :only=>[:index, :command_queries]
   before_filter :owner_required, :only => [:edit, :update, :destroy]
 
   def index
@@ -64,7 +65,13 @@ class QueriesController < ApplicationController
       format.xml  { render :xml => @queries.to_xml }
     end
   end
+  
+  def command_queries
+    @queries = @command.queries.public.paginate(:order => "queries.created_at DESC", :page => params[:page])
+    render :action=>'index'
+  end
 
+  #CRUD actions below aren't currently used
   def edit
     @query = current_user.queries.find(params[:id])
   end

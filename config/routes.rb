@@ -27,7 +27,11 @@ ActionController::Routing::Routes.draw do |map|
     c.user_home           ':login',                         :action => 'show'
     c.opensearch_user     ':login/opensearch',              :action => 'opensearch'
   end
-
+  
+  map.with_options(:controller=>'queries') do |c|
+    c.command_queries 'commands/:id/queries', :action=>'command_queries'
+  end
+  
   map.with_options(:controller=>'queries', :action=>'index') do |c|
     c.tagged_queries        'queries/tag/*tag'
     c.user_command_queries  ':login/:command/queries'
