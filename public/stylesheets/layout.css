@@ -273,3 +273,10 @@ div.msg p {
 .special_field {
 	display: none;
 }
+
+#command_description_box, #user_command_description_box {
+	background-color: #F5F5F5;
+	font-size: 12px;
+	border: 1px solid #DDD; 
+	padding: 5px 10px; 
+}

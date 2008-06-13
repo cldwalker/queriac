@@ -18,6 +18,12 @@
 </p>
 
 <div id="primary">
+		<div style="margin: 20px 0px">
+			<h2>Description</h2>
+			<div id="command_description_box">
+				<%= textilize_without_paragraph @command.description || 'No description yet.' %>
+			</div>
+		</div>
 		
 		<h2>
 			Public Queries
@@ -49,10 +55,6 @@
 	</h2>
 	<p>Created by <%= link_to @command.user.login, user_home_path(@command.user)%> on <%= @command.created_at.to_s(:medium)%>.</p>
 	
-	<% unless @command.description.blank? %>
-		<p><b>Description:</b> <%= textilize_without_paragraph @command.description %></p>
-	<% end %>
-	
 	<p><b>Keyword:</b> <%=h @command.keyword %></p>
 	
 	<p><b>Kind:</b> <%=h @command.kind %> <%= "(uses POST)" if @command.http_post? %></p>
@@ -62,6 +64,29 @@
 		
 	<p><b>Total Queries:</b> <%= @command.queries_count_all %></p>
 	
+	<% if @command.public? && ! @user_commands.empty? %>
+		<h2>Top User Commands</h2>
+		<table>
+		  <tr>
+		    <th>User</th>
+		    <th>User Command</th>
+			<th>queries</th>
+		  </tr>		
+	
+			<% for usercommand in @user_commands %>
+				<tr <%= cycle('class="offset"', '') -%>>
+				  <td><%= link_to usercommand.user.login, user_home_path(usercommand.user) %></td>
+				  <td>
+					<%= render_favicon_for_command usercommand %>
+					<%= link_to usercommand.name, public_user_command_path(usercommand)  %>
+				  </td>
+				  <td><%= usercommand.queries_count %></td>
+				</tr>
+			<% end %>
+		</table>
+		<p><%= link_to "View all user commands", command_user_commands_path(@command), :class => "faded"  %></p>
+	
+	<% end %>
 	<% if false %>
 		<h2>Tags</h2>
 		<%= tag_cloud @command.tags %>

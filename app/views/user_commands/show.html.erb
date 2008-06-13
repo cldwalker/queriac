@@ -19,6 +19,12 @@
 </p>
 
 <div id="primary">
+	<div style="margin: 20px 0px">		
+		<h2>Description</h2>
+		<div id="user_command_description_box">
+			<%= textilize_without_paragraph @user_command.description || 'No description yet.' %>
+		</div>
+	</div>
 		
 	<% if can_view_queries? %>
 		<h2>
@@ -56,10 +62,6 @@
 	<p>Created by <%= link_to @user_command.user.login, user_home_path(@user_command.user) %> on <%= @user_command.created_at.to_s(:medium) %>.
 	</p>
 	<p><b>Command:</b> <%= link_to @user_command.command.name, command_path(@user_command.command) %></p>
-	
-	<% unless @user_command.description.blank? %>
-		<p><b>Description:</b> <%= textilize_without_paragraph @user_command.description %></p>
-	<% end %>
 	
 	<% if user_command_owner? %>
 	<p><b>Url Status:</b>

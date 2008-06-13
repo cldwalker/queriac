@@ -145,6 +145,7 @@ class CommandsController < ApplicationController
 
   #desired behavior for private queries is just a sidebar?
   def show
+    @user_commands = @command.user_commands.find(:all, :limit=>5, :order=>'queries_count DESC', :include=>:user)
     @queries = @command.queries.public.find(:all, :order => "queries.created_at DESC", :limit=>30)
     respond_to do |format|
       format.html

@@ -1,7 +1,7 @@
 class Command < ActiveRecord::Base
   include CommandHelper
   belongs_to :user
-  has_many :queries, :through=>:user_commands, :order=>'queries.created_at DESC'
+  has_many :queries, :through=>:user_commands
   has_many :user_commands, :dependent=>:destroy
   has_many :users, :through=>:user_commands, :conditions=>User::VIEWABLE_SQL
   has_many :user_tags, :through=>:user_commands
