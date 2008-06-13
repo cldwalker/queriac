@@ -86,13 +86,15 @@ class UserCommandsController < ApplicationController
       redirect_back_or_default home_path
       return
     else
-      if @original_command && @original_command.owned_by?(current_user)
-        flash[:notice] = "No need to copy this command. You already have it."
-        redirect_to public_user_command_path(@original_command)
+      if @original_command && (existing_user_command = @original_command.command.user_commands.detect {|e| e.user_id == current_user.id}) #@original_command.owned_by?(current_user)
+        flash[:notice] = "No need to copy this command. You already have " + 
+          render_to_string(:inline=>%[<%= link_to('it', public_user_command_path(existing_user_command)) %>], :locals=>{:existing_user_command=>existing_user_command})
+        redirect_back_or_default public_user_command_path(existing_user_command)
         return
-      elsif @base_command && @base_command.created_by?(current_user)
-        flash[:notice] = "No need to copy this command. You already have it."
-        redirect_to command_path(@base_command)
+      elsif @base_command && (existing_user_command = @base_command.user_commands.detect {|e| e.user_id == current_user.id})
+        flash[:notice] = "No need to copy this command. You already have "  + 
+          render_to_string(:inline=>%[<%= link_to('it', public_user_command_path(existing_user_command)) %>], :locals=>{:existing_user_command=>existing_user_command})
+        redirect_back_or_default public_user_command_path(existing_user_command)
         return
       end
     end
