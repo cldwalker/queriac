@@ -64,7 +64,7 @@ class CommandsController < ApplicationController
     # If first part of string is 'default_to', take note and use next
     # word in string as the command to execute
     if keyword == "default_to"
-      keyword = param_parts.shift.downcase 
+      keyword = (param_parts.shift || '').downcase 
       defaulted = true
     end
     if keyword == 'search_form'
@@ -76,7 +76,7 @@ class CommandsController < ApplicationController
     
     # Handle stealth queries (allowing for presence or absence of space following the !)
     dont_save_query = true if keyword.starts_with? "!"
-    keyword = param_parts.shift.downcase if keyword == "!"
+    keyword = (param_parts.shift || '').downcase if keyword == "!"
     keyword = keyword.slice(1, keyword.length-1) if keyword.starts_with? "!"
     
     # This is the remainder of the string,
