@@ -28,7 +28,7 @@ module ApplicationHelper
     #set_command filter
     if @command
       crumbs << ["commands", commands_path]
-      crumbs << [@command.keyword, command_path(@command)]
+      crumbs << [@command.to_param.to_s, command_path(@command)]
       if params[:controller] == 'queries'
         crumbs << 'queries'
       elsif params[:controller] == 'user_commands'
@@ -47,7 +47,7 @@ module ApplicationHelper
         crumbs << 'queries'
         add_tags_to_crumbs(crumbs)
       elsif params[:controller] == 'user_commands'
-        crumbs << 'commands'
+        crumbs << 'user commands'
         add_tags_to_crumbs(crumbs)
         end
     #index-ish user_controller actions
@@ -177,8 +177,7 @@ module ApplicationHelper
     else
       #request.request_uri.include?(url_string)
       @current_page_uri ||= request.request_uri.sub(/\?.*$/,'')
-      #FIXME: second half of OR statement w/ '/' only there until q command is fixed to not have '/' at the end
-      @current_page_uri == url_string || @current_page_uri == url_string + "/"
+      @current_page_uri == url_string
     end
   end
   

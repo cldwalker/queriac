@@ -265,7 +265,9 @@ class UserCommandsController < ApplicationController
   protected
   #PERF: pagination at 15 for performance
   def index_pagination_params
-    {:page => params[:page], :per_page=>15, :include => [:tags, :command, :user], :order=>"user_commands.queries_count DESC"}
+    #PERF: avoiding :include=>:tags b/c it's slower
+    # {:page => params[:page], :per_page=>15, :include => [:tags, :command, :user], :order=>"user_commands.queries_count DESC"}
+    {:page => params[:page], :per_page=>15, :include => [:command, :user], :order=>"user_commands.queries_count DESC"}
   end
 
   #only command owner can access their usercommands for most actions due to current routes

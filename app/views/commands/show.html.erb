@@ -21,7 +21,7 @@
 		<div style="margin: 20px 0px">
 			<h2>Description</h2>
 			<div id="command_description_box">
-				<%= textilize_without_paragraph @command.description || 'No description yet.' %>
+				<%= textilize_without_paragraph @command.description.blank? ? 'No description yet.' : @command.description %>
 			</div>
 		</div>
 		
