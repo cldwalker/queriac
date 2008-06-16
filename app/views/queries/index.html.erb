@@ -17,32 +17,6 @@
 
 <hr />
 
-<table class="top_spaced">
-  <tr>
-    <th>User</th>
-    <th>Query</th>
-    <th>User Command</th>
-    <th>Date</th>
-  </tr>
-
-<% for query in @queries %>
-	<tr <%= cycle('class="offset"', '') -%>>	
-		<td>
-			<%= query_user(query) %>
-		</td>
-	  <td>
-			<%= link_to_query query %>
-		</td>
-	  <td>
-			<%= render_favicon_for_command query.user_command.command %>
-			<%= link_to query.user_command.name, public_user_command_path(query.user_command) %>
-		</td>
-	  <td>
-			<%= time_ago_in_words_or_date query.created_at %>
-		</td>
-	</tr>
-<% end %>
-
-</table>
+<%= query_table @queries, :table=>{:class=>'top_spaced'}, :columns=>[:user, :query_string, :user_command, :created_at]%>
 
 <%= will_paginate @queries %>

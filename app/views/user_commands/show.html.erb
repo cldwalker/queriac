@@ -22,7 +22,7 @@
 	<div style="margin: 20px 0px">		
 		<h2>Description</h2>
 		<div id="user_command_description_box">
-			<%= textilize_without_paragraph @user_command.description || 'No description yet.' %>
+			<%= textilize_without_paragraph @user_command.description.blank? ? 'No description yet.' : @user_command.description %>
 		</div>
 	</div>
 		
@@ -30,21 +30,10 @@
 		<h2>
 			<%= "Queries (Last #{@queries.size})" %>
 		</h2>
-		<table>
-		  <tr>
-		    <th>Query</th>
-		    <th>Date</th>
-		  </tr>		
+		<%= query_table(@queries, :columns=>[:query_string, :created_at])%>
 		
-			<% for query in @queries %>
-				<tr <%= cycle('class="offset"', '') -%>>
-				  <td><%= link_to_query query %></td>
-				  <td><%= time_ago_in_words_or_date query.created_at %></td>
-				</tr>
-			<% end %>
-		</table>
 		<% unless @user_command.queries_count.zero? %>
-			<p><%= link_to "View all queries", user_command_queries_path(@user_command), :class => "faded"  %></p>
+			<%= table_link_to "View all queries", user_command_queries_path(@user_command) %>
 		<% end %>
 	<% else %>
 		<h2>Queries for this user command are private.</h2>
@@ -54,7 +43,7 @@
 
 
 <div id="secondary">
-	<% @command = @user_command.command %>
+	<% command = @user_command.command %>
 	<h2>
 		<%= render_favicon_for_command @user_command %>
 		About this User Command
@@ -77,11 +66,11 @@
 	</p>
 	<% end %>
 	
-	<p><b>Original Keyword:</b> <%=h @command.keyword %></p>	
+	<p><b>Original Keyword:</b> <%=h command.keyword %></p>	
 	
 	<p><b>User's Keyword:</b> <%=h @user_command.keyword %></p>	
 	
-	<p><b>Kind:</b> <%=h @command.kind %> <%= "(uses POST)" if @user_command.http_post? %></p>
+	<p><b>Kind:</b> <%=h command.kind %> <%= "(uses POST)" if @user_command.http_post? %></p>
 	
 	<p><b>Visible to Public:</b> <%= @user_command.public? ? "Yes" : "No" %></p>
 	
@@ -95,6 +84,12 @@
 	
 	<% unless @user_command.tags.empty? %>	
 		<p><b>Tags:</b> <%= @user_command.tag_string.split(" ").map{|tag| "<a href='#{tagged_user_commands_path(@user_command.user, tag)}'>#{tag}</a>"}.join(" ") %></p>	
+	<% end %>
+	
+	<% if @user_command.public? && ! @related_user_commands.empty? %>
+		<h2>Top Related User Commands</h2>
+		<%= user_command_table(@related_user_commands, :columns=>[:user, :name, :queries_count]) %>
+		<%= table_link_to "View all related user commands", command_user_commands_path(@user_command.command) %>
 	<% end %>
 
 	

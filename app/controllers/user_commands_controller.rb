@@ -1,10 +1,11 @@
 class UserCommandsController < ApplicationController
-  before_filter :login_required, :except => [:index, :show]
+  before_filter :login_required, :except => [:index, :show, :command_user_commands]
   before_filter :load_valid_user_if_specified, :only=>[:index, :show]
   before_filter :set_user_command, :only=>[:show, :edit, :update, :destroy, :update_url]
   before_filter :set_command, :only=>[:command_user_commands]
   before_filter :permission_required, :only=>[:edit, :update, :destroy, :update_url]
-  before_filter :store_location, :only=>[:index, :show, :edit]
+  before_filter :store_location, :only=>[:index, :show, :edit, :command_user_commands]
+  before_filter :allow_breadcrumbs, :only=>[:search, :index, :command_user_commands, :show, :edit]
   before_filter :set_disabled_fields, :only=>[:copy, :edit]
   before_filter :load_tags_if_specified, :only=>:index
   
@@ -54,7 +55,7 @@ class UserCommandsController < ApplicationController
       redirect_to user_home_path(current_user)
       return
     end
-
+    @related_user_commands = @user_command.command.user_commands.find(:all, :limit=>5, :order=>'user_commands.queries_count DESC', :include=>:user)
     if can_view_queries?
       @queries =  @user_command.queries.find(:all, :limit=>30, :order=>'queries.created_at DESC', :include=>:user_command)
     else
@@ -287,11 +288,7 @@ class UserCommandsController < ApplicationController
       return false unless login_required #only needed for show
       @user_command = current_user.user_commands.find_by_keyword(params[:id])
     end
-    if @user_command.nil?
-      flash[:warning] = "User command '#{params[:id]}' not found."
-      redirect_back_or_default user_commands_path
-      return false
-    end
+    return false if user_command_is_nil?(params[:id])
     true
   end
   

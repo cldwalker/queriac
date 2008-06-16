@@ -29,21 +29,8 @@
 			Public Queries
 			<%= "(Last #{@queries.size})" %>
 		</h2>
-
-		<table>
-		  <tr>
-		    <th>Query</th>
-		    <th>Date</th>
-		  </tr>		
-		
-			<% for query in @queries %>
-				<tr <%= cycle('class="offset"', '') -%>>
-				  <td><%= link_to_query query %></td>
-				  <td><%= time_ago_in_words_or_date query.created_at %></td>
-				</tr>
-			<% end %>
-		</table>
-		<p><%= link_to "View all queries", command_queries_path(@command), :class => "faded"  %></p>
+		<%= query_table @queries, :columns=>[:query_string, :created_at]%>
+		<%= table_link_to "View all queries", command_queries_path(@command) %>
 </div>
 
 
@@ -66,25 +53,8 @@
 	
 	<% if @command.public? && ! @user_commands.empty? %>
 		<h2>Top User Commands</h2>
-		<table>
-		  <tr>
-		    <th>User</th>
-		    <th>User Command</th>
-			<th>queries</th>
-		  </tr>		
-	
-			<% for usercommand in @user_commands %>
-				<tr <%= cycle('class="offset"', '') -%>>
-				  <td><%= link_to usercommand.user.login, user_home_path(usercommand.user) %></td>
-				  <td>
-					<%= render_favicon_for_command usercommand %>
-					<%= link_to usercommand.name, public_user_command_path(usercommand)  %>
-				  </td>
-				  <td><%= usercommand.queries_count %></td>
-				</tr>
-			<% end %>
-		</table>
-		<p><%= link_to "View all user commands", command_user_commands_path(@command), :class => "faded"  %></p>
+		<%= user_command_table(@user_commands, :columns=>[:user, :name, :queries_count]) %>
+		<%= table_link_to "View all user commands", command_user_commands_path(@command) %>
 	
 	<% end %>
 	<% if false %>

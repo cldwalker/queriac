@@ -1,30 +1,9 @@
 <div id="primary">
 	
 	<h1>Latest Public Queries <span style="font-size: 14px">(by logged-in users) <span></h1>
-
-	<table>
-	  <tr>
-			<th>User</th>
-			<th>User Command</th>
-	    <th>Query</th>
-	  </tr>
-	<% for query in @queries %>
-		<tr <%= cycle('class="offset"', '') -%>>
-			<td>
-				<%= query_user(query) %>
-			</td>
-		  <td>
-				<%= render_favicon_for_command query.user_command %>
-				<%= link_to query.user_command.name, public_user_command_path(query.user_command) %>
-			</td>
-		  <td>
-			<%= link_to_query query %>
-		  </td>
-		</tr>
-	<% end %>
-	</table>
 	
-	<p><%= link_to "View all queries", queries_path, :class => "faded"  %></p>
+	<%= query_table @queries, :columns=>[:user, :user_command, :query_string]%>
+	<%= table_link_to "View all queries", queries_path %>
 </div>
 
 <div id="secondary">
@@ -65,7 +44,7 @@
 		<% end %>
 	</table>
 	<p><%= link_to "View more commands", commands_path %> <%= link_to "View more user commands", user_commands_path %></p>
-	<%= link_to "What's the difference between a command and a user command?", help_path + "#command_difference", :class=>'faded'%>
+	<%= link_to "What's the difference between a command and a user command?", help_path + "#command_difference", :class=>'faded' %>
 
 	<h1>Updates &amp; Support</h1>
 

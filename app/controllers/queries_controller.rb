@@ -3,6 +3,7 @@ class QueriesController < ApplicationController
   before_filter :load_tags_if_specified, :only=>:index
   before_filter :set_command, :only=>:command_queries
   before_filter :store_location, :only=>[:index, :command_queries]
+  before_filter :allow_breadcrumbs, :only=>[:index, :command_queries]
   before_filter :owner_required, :only => [:edit, :update, :destroy]
 
   def index
@@ -18,8 +19,9 @@ class QueriesController < ApplicationController
     
     if @user
       if params[:command]
-        # => /zeke/g/queries
+        # => /zeke/commands/g/queries
         @user_command = @user.user_commands.find_by_keyword(params[:command])
+        return if user_command_is_nil?(params[:command])
         return unless command_query_is_public?
         @queries = @user_command.queries.paginate(pagination_params)
       else

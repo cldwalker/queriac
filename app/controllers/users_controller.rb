@@ -4,7 +4,8 @@ class UsersController < ApplicationController
   before_filter :load_valid_user, :only=>:show
   before_filter :store_location, :only=>[:index, :show, :edit, :home]
   before_filter :load_user_from_param, :only => [:opensearch]
-
+  before_filter :allow_breadcrumbs, :only=>[:index, :home, :edit, :show]
+  
   def index
     pagination_params = {:order => "users.created_at DESC", :page => params[:page]}
     @users = User.paginate_users(pagination_params)

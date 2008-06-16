@@ -10,6 +10,9 @@ class ApplicationController < ActionController::Base
   include AuthenticatedSystem
   before_filter :login_from_cookie
 
+  def allow_breadcrumbs
+    @breadcrumbs_allowed = true
+  end
   protected
   
   ####Methods below are used in before filters
@@ -80,7 +83,7 @@ class ApplicationController < ActionController::Base
   def set_command
     #   action_include_hash = {'edit'=>[:user], 'destroy'=>[:queries]} for /commands
     #   @command = @user.commands.find_by_keyword(params[:command], :include=>action_include_hash[self.action_name] || [])
-    @command = Command.find_by_keyword_or_id(params[:id])    
+    @command = Command.find_by_keyword_or_id(params[:id])
     if @command.nil?
       flash[:warning] = "Command '#{params[:id]}' not found."
       redirect_back_or_default commands_path
@@ -93,5 +96,16 @@ class ApplicationController < ActionController::Base
       end
     end
     true
-  end  
+  end
+  
+  def user_command_is_nil?(attempt=nil)
+    if @user_command.nil?
+      flash[:warning] = %[User command #{"'#{attempt}'" if attempt} not found.]
+      redirect_to user_commands_path
+      return true
+    else
+      return false
+    end
+  end
+  
 end

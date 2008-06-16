@@ -1,3 +1,12 @@
+<% if logged_in? %>
+	<div style="float: right">
+	<% form_tag search_user_commands_path, :method=>:get  do %>
+	<label for="q">Search your user commands by url or keyword</label>
+		<%= text_field_tag 'q' %>
+		<%= submit_tag 'Search' %>
+	<% end %>
+	</div>
+<% end %>
 <h1 class="inline">
 	<% if current_page_matches?(search_user_commands_path) || current_page_matches?(search_all_commands_path) %>
 		Search Results for '<%= params[:q] %>'
@@ -12,6 +21,7 @@
 </h1>
 
 <ul class="bolder options header">
+	
 	<% if logged_in? && ! current_user? %>
 		<li class="search"><%= link_to 'Yours', (@tags.blank? ? specific_user_commands_path(current_user) : tagged_user_commands_path(current_user, @tags)) %></li>
 	<% end %>

@@ -1,6 +1,7 @@
 
 class StaticController < ApplicationController
   before_filter :store_location
+  before_filter :allow_breadcrumbs, :except=>:home
   def home
     @queries = Query.public.non_empty.find(:all, :order => "queries.created_at DESC", 
       :include => [{:user_command=>[:command, :user]}, :user], :limit=>45)

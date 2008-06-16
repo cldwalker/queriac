@@ -1,44 +1,83 @@
 module ApplicationHelper
-  include PathHelper, SharedHelper
+  include PathHelper, SharedHelper, TableHelper
 
-  #TODO: clean up + perhaps combine render_page_title + render_nav
   def render_page_title
-    if @user || @command || @tags || params[:controller] == "users"
-      crumbs = ["queriac"]
-      crumbs << "users" if current_page_matches?(users_path)
-      crumbs << @user.login if @user
-      crumbs << "commands" unless @commands.nil?
-      #shouldn't display @tags for any pages with @tags used in tag clouds
-      if ! @tags.blank? && ! current_page_matches?(user_home_path(@user)) && ! current_page_matches?(current_user_home_path)
-        crumbs << "tag"
-        crumbs << @tags.join("+")
-      end
-      crumbs << @command.keyword unless @command.blank? || @command.new_record?
-      crumbs << "queries" if params[:controller] == "queries"
-      return crumbs.join("/")
-    else 
-      return "Queriac. All our quicksearches are belong to us."
+    if breadcrumbs.empty?
+      "Queriac. All our quicksearches are belong to us."
+    else
+      breadcrumbs.map {|e| e.is_a?(Array) ? e[0].tr(" ", '_') : e.tr(' ', '_') }.join("/")
     end
   end
   
-  #TODO: enable breadcrumbs once new routes are stable
   def render_nav
-    return
-    crumbs = [link_to("queriac", home_path)]
-    crumbs << link_to("users", users_path) if current_page_matches?(users_path)
-    crumbs << link_to(@user.login, user_home_path(@user)) if @user
-    crumbs << link_to("commands", specific_user_commands_path(@user)) if @user && !@commands.nil? && ! current_page_matches?(user_home_path(@user))
-    crumbs << link_to("queries", user_queries_path(@user)) if params[:controller] == "queries" && @user
-    crumbs << link_to("queries", queries_path) if current_page_matches?(queries_path)
-    if ! @tags.blank? && ! current_page_matches?(user_home_path(@user))
+    if breadcrumbs.empty?
+      link_to('queriac', home_path)
+    else
+      breadcrumbs.map {|e| e.is_a?(Array) ? link_to(*e) : e }.join(" &raquo; ")
+    end
+  end
+  
+  def breadcrumbs
+    @breadcrumbs ||= get_crumbs
+  end
+  
+  #can use boolean @breadcrumbs_allowed to include/exclude actions from breadcrumbs
+  def get_crumbs
+    crumbs = [['queriac', home_path]]
+    return [] unless @breadcrumbs_allowed
+    #set_command filter
+    if @command
+      crumbs << ["commands", commands_path]
+      crumbs << [@command.keyword, command_path(@command)]
+      if params[:controller] == 'queries'
+        crumbs << 'queries'
+      elsif params[:controller] == 'user_commands'
+        crumbs << 'user commands'
+      end
+    #most are set_user_command filter
+    elsif @user_command
+      crumbs << [@user_command.user.login, user_home_path(@user_command.user)]
+      crumbs << [@user_command.keyword, public_user_command_path(@user_command)]      
+      if params[:controller] == 'queries'
+        crumbs << 'queries'
+      end
+    elsif @user
+      crumbs << [@user.login, user_home_path(@user)]
+      if params[:controller] == 'queries'
+        crumbs << 'queries'
+        add_tags_to_crumbs(crumbs)
+      elsif params[:controller] == 'user_commands'
+        crumbs << 'commands'
+        add_tags_to_crumbs(crumbs)
+        end
+    #index-ish user_controller actions
+    elsif @user_commands && params[:controller] == 'user_commands'
+      crumbs << ['user commands', user_commands_path]
+      add_tags_to_crumbs(crumbs)
+    elsif @commands && params[:controller] == 'commands'
+      crumbs << ['commands', commands_path]
+    elsif @users && params[:controller] = 'users'
+      crumbs << ['users', users_path]
+    elsif @queries && params[:controller] == 'queries'
+      crumbs << ['queries', queries_path]
+      add_tags_to_crumbs(crumbs)
+    elsif params[:controller] == 'static'
+      crumbs << params[:action]
+    end
+    crumbs
+  rescue
+    logger.info "BREADCRUMB FAILED: "
+    logger.info $!
+    logger.info "breadcrumb_parent: #{@breadcrumb_parent}"
+    logger.info "crumbs: #{crumbs.inspect}"
+    ['queriac', home_path]
+  end
+  
+  def add_tags_to_crumbs(crumbs)
+    if ! @tags.blank?
       crumbs << "tag"
       crumbs << @tags.join("+")
     end
-    crumbs << link_to(@command.keyword, command_path(@command)) unless @command.blank? || @command.new_record?
-    #used only by help so far
-    crumbs << params[:action] if params[:controller] == "static" && params[:action] != "home"
-    #crumbs << "<form><input type='text'></input></form>" if nil # !command.blank? && commmand.parametric? && !command.bookmarklet? 
-    return crumbs.join(" &raquo; ")
   end
   
   def render_mininav
