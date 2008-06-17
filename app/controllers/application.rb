@@ -15,6 +15,19 @@ class ApplicationController < ActionController::Base
   end
   protected
   
+  def general_sort_param_value(table_name, valid_sort_columns, default_sort)
+    valid_directions = %w{down up}
+    #format: up_by_column, down_by_column
+    sort = params[:sort]
+    return default_sort if sort.nil?
+    sort =~ /^(\w+)_by_(\w+)$/
+    if $1 && $2 && valid_sort_columns.include?($2) && valid_directions.include?($1)
+      "#{table_name}.#{$2} #{$1 == 'up' ? 'ASC' : 'DESC'}"
+    else
+      default_sort
+    end
+  end
+  
   ####Methods below are used in before filters
   
   #load_valid_user* used to load @user in controllers

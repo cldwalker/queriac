@@ -174,18 +174,9 @@ class CommandsController < ApplicationController
   
   def sort_param_value(default_sort = 'commands.created_at DESC')
     valid_sort_columns = %w{name queries_count_all created_at keyword}
-    valid_directions = %w{down up}
-    #format: up_by_column, down_by_column
-    sort = params[:sort]
-    return default_sort if sort.nil?
-    sort =~ /^(\w+)_by_(\w+)$/
-    if $1 && $2 && valid_sort_columns.include?($2) && valid_directions.include?($1)
-      "commands.#{$2} #{$1 == 'up' ? 'ASC' : 'DESC'}"
-    else
-      default_sort
-    end
+    general_sort_param_value('commands', valid_sort_columns, default_sort)
   end
-    
+  
   def index_pagination_params
     #{:order => "commands.queries_count_all DESC", :page => params[:page], :include => [:tags]}
     {:page => params[:page], :include=>:user}

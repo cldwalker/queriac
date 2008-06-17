@@ -186,4 +186,11 @@ module ApplicationHelper
     last_item = possible_last_item < will_paginate_collection.total_entries ? possible_last_item : will_paginate_collection.total_entries
     %[#{will_paginate_collection.offset + 1}-#{last_item} of #{will_paginate_collection.total_entries}]
   end
+  
+  def sort_description
+    direction, preposition, column = params[:sort].split('_')
+    #chopping off first word in underscored column ie created_at -> created and queries_sort-> queries
+    column = column[/\w+/]
+    "sorted #{direction} #{preposition} #{column}"
+  end
 end

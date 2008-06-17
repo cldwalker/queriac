@@ -19,15 +19,15 @@ class UserCommandsController < ApplicationController
 
     if @tags
       if @user
-        @user_commands = @user.user_commands.send(publicity).find_tagged_with(@tags.join(", "), :match_all => true, :include=>:command).paginate(index_pagination_params)
+        @user_commands = @user.user_commands.send(publicity).find_tagged_with(@tags.join(", "), :match_all => true, :order=>'user_commands.queries_count DESC').paginate(index_pagination_params)
       else
-        @user_commands = UserCommand.send("public").find_tagged_with(@tags.join(", "), :match_all => true).paginate(index_pagination_params)
+        @user_commands = UserCommand.send("public").find_tagged_with(@tags.join(", "), :match_all => true, :order=>'user_commands.queries_count DESC').paginate(index_pagination_params)
       end
     else
       if @user
-        @user_commands = @user.user_commands.send(publicity).paginate(index_pagination_params)
+        @user_commands = @user.user_commands.send(publicity).paginate(index_pagination_params.merge(:order=>sort_param_value))
       else
-        @user_commands = UserCommand.send("public").paginate(index_pagination_params.merge(:order=>'user_commands.created_at DESC'))
+        @user_commands = UserCommand.send("public").paginate(index_pagination_params.merge(:order=>sort_param_value('user_commands.created_at DESC')))
       end
     end
 
@@ -45,7 +45,7 @@ class UserCommandsController < ApplicationController
   end
   
   def command_user_commands
-    @user_commands = @command.user_commands.paginate(index_pagination_params)
+    @user_commands = @command.user_commands.paginate(index_pagination_params.merge(:order=>sort_param_value))
     render :action=>'index'
   end
   
@@ -226,7 +226,7 @@ class UserCommandsController < ApplicationController
       @user_commands = [].paginate
     else
       all_commands = current_user.user_commands.find(:all, :conditions=>["user_commands.keyword REGEXP ? OR user_commands.url REGEXP ?", params[:q], params[:q]], 
-        :order=>'queries_count DESC', :include=>[:tags, :command])
+        :order=>sort_param_value, :include=>[:tags, :command])
       @user_commands = all_commands.paginate(index_pagination_params)
     end
     render :action => 'index'
@@ -263,6 +263,11 @@ class UserCommandsController < ApplicationController
   end
   
   protected
+  def sort_param_value(default_sort = 'user_commands.queries_count DESC')
+    valid_sort_columns = %w{name queries_count created_at keyword}
+    general_sort_param_value('user_commands', valid_sort_columns, default_sort)
+  end
+  
   #PERF: pagination at 15 for performance
   def index_pagination_params
     #PERF: avoiding :include=>:tags b/c it's slower

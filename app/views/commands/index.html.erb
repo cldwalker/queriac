@@ -5,6 +5,7 @@
 		<%# @commands.empty? ? 'No' : (@user ? whose_commands(@commands.first) : "All") %>
 		<%= @commands.empty? ? 'No' : 'All' %>
 		commands
+		<%= sort_description if params[:sort ]%>
 	<% end %>
 	<span class="pagination_description">(<%= pagination_description @commands %>)</span>
 </h1>

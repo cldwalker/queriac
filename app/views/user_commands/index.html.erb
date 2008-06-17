@@ -15,6 +15,7 @@
 		<%= 'and private' if admin? && @user && ! current_user? %> 
 		<%= link_to @command.keyword, command_path(@command) if @command %>
 		user commands
+		<%= sort_description if params[:sort ]%>
 		<%= "tagged with '#{@tags.join("+").gsub("+", "' and '")}'" unless @tags.blank? %>
 	<% end %>
 	<span class="pagination_description">(<%= pagination_description @user_commands %>)</span>
@@ -42,12 +43,24 @@
 
 <table class="top_spaced">
   <tr>
-    <th>User Command</th>
+    <th>User Command<br/>
+		<%= sort_link_up 'name'%>
+		<%= sort_link_down 'name'%>
+	</th>
 	<th width="150">Command</th>
-    <th width="30" class="centered">Queries</th>
-    <th width="70">Keyword</th>
+    <th width="30" class="centered">Queries<br/>
+		<%= sort_link_up 'queries_count' %>
+		<%= sort_link_down 'queries_count' %>
+	</th>
+    <th width="70">Keyword<br/>
+		<%= sort_link_up 'keyword'%>
+		<%= sort_link_down 'keyword'%>
+	</th>
     <th><%= "User" %></th>
-	<th>Created</th>
+	<th>Created<br/>
+		<%= sort_link_up 'created_at'%>
+		<%= sort_link_down 'created_at'%>
+	</th>
 	<th>Options</th>
   </tr>
  
