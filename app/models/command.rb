@@ -8,6 +8,7 @@ class Command < ActiveRecord::Base
   
   has_finder :public, :conditions => {:public => true}
   has_finder :any
+  has_finder :unique, :select=>'*, count(url)', :group=>"url HAVING count(url)>=1"
   
   validates_presence_of :name, :url
   validates_uniqueness_of :name
