@@ -170,10 +170,10 @@ class CommandsController < ApplicationController
     end
   end
 
+  def valid_sort_columns; %w{name queries_count_all created_at keyword}; end
   protected
   
   def sort_param_value(default_sort = 'commands.created_at DESC')
-    valid_sort_columns = %w{name queries_count_all created_at keyword}
     general_sort_param_value('commands', valid_sort_columns, default_sort)
   end
   

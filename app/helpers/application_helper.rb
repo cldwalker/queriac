@@ -188,9 +188,10 @@ module ApplicationHelper
   end
   
   def sort_description
-    direction, preposition, column = params[:sort].split('_')
+    direction, preposition, column = params[:sort].scan(/^([a-z]+)_([a-z]+)_(.*)$/).flatten
+    return '' unless @controller.valid_sort_columns.include?(column)
     #chopping off first word in underscored column ie created_at -> created and queries_sort-> queries
-    column = column[/\w+/]
+    column = column[/[a-z]+/]
     "sorted #{direction} #{preposition} #{column}"
   end
 end

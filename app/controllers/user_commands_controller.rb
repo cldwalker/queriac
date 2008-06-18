@@ -261,10 +261,11 @@ class UserCommandsController < ApplicationController
     end
     redirect_back_or_default user_home_path(current_user)
   end
+
+  def valid_sort_columns; %w{name queries_count created_at keyword}; end
   
   protected
   def sort_param_value(default_sort = 'user_commands.queries_count DESC')
-    valid_sort_columns = %w{name queries_count created_at keyword}
     general_sort_param_value('user_commands', valid_sort_columns, default_sort)
   end
   

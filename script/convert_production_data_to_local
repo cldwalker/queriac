@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+ENV['RAILS_ENV'] = ARGV[0] || 'development'
+require File.expand_path(File.dirname(__FILE__) + '/../config/environment')
+
+commands = Command.find(:all, :conditions=>"url REGEXP 'queri.ac'")
+commands.each do |c|
+  c.update_attribute :url, c.url.gsub('queri.ac', HOST)
+end
+puts "updated #{commands.size} commands"
+
+ucommands = UserCommand.find(:all, :conditions=>"url REGEXP 'queri.ac'")
+ucommands.each do |c|
+  c.update_attribute :url, c.url.gsub('queri.ac', HOST)
+end
+puts "updated #{ucommands.size} user commands"
