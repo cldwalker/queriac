@@ -2,7 +2,7 @@ class UserCommand < ActiveRecord::Base
   include CommandHelper
   belongs_to :user
   belongs_to :command
-  has_many :queries, :dependent => :destroy, :foreign_key=>'command_id'
+  has_many :queries, :dependent => :destroy
   
   acts_as_taggable
   validates_presence_of :user_id, :keyword, :name, :url

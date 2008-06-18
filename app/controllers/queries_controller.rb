@@ -30,7 +30,7 @@ class QueriesController < ApplicationController
           query_publicity = current_user? ? "any" : "publicly_queriable"
           commands = @user.user_commands.send(query_publicity).find_tagged_with(@tags.join(", "), :match_all => true, :select => [:id])
           command_ids = commands.map(&:id).join(", ")
-          @queries = Query.non_empty.paginate({:conditions => ["queries.command_id IN (#{command_ids})"]}.merge(pagination_params)) unless command_ids.blank?
+          @queries = Query.non_empty.paginate({:conditions => ["queries.user_command_id IN (#{command_ids})"]}.merge(pagination_params)) unless command_ids.blank?
           @queries ||= [].paginate
         else
           # => /zeke/queries
@@ -48,7 +48,7 @@ class QueriesController < ApplicationController
         command_ids = commands.map(&:id).join(", ")
         
         # Second query gets all queries with command_ids from above..
-        @queries = Query.non_empty.paginate({:conditions => ["queries.command_id IN (#{command_ids})"]}.merge(pagination_params)) unless command_ids.blank?
+        @queries = Query.non_empty.paginate({:conditions => ["queries.user_command_id IN (#{command_ids})"]}.merge(pagination_params)) unless command_ids.blank?
         @queries ||= [].paginate
       else
         # => /queries

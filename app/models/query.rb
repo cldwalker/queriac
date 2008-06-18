@@ -13,9 +13,7 @@
 #
 
 class Query < ActiveRecord::Base
-  belongs_to :user_command, :foreign_key=>'command_id', :class_name=>"UserCommand"
-  def command; user_command.command; end
-  # belongs_to :command
+  belongs_to :user_command
   belongs_to :user
   has_many :tags, :through => :user_command
 
@@ -23,6 +21,7 @@ class Query < ActiveRecord::Base
   has_finder :non_empty, :conditions => ["LENGTH(query_string) > 0"]
   has_finder :any
 
+  def command; user_command.command; end
   def after_create
     if self.user_command
       self.user_command.update_query_counts 

@@ -182,9 +182,10 @@ module ApplicationHelper
   end
   
   def pagination_description(will_paginate_collection)
+    first_item = will_paginate_collection.size == 0 ? 0 : "#{will_paginate_collection.offset + 1}" 
     possible_last_item = will_paginate_collection.per_page * will_paginate_collection.current_page
     last_item = possible_last_item < will_paginate_collection.total_entries ? possible_last_item : will_paginate_collection.total_entries
-    %[#{will_paginate_collection.offset + 1}-#{last_item} of #{will_paginate_collection.total_entries}]
+    %[#{first_item}-#{last_item} of #{will_paginate_collection.total_entries}]
   end
   
   def sort_description
