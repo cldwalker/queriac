@@ -151,7 +151,7 @@ module WillPaginate
           raise ArgumentError, ':count and :total_entries are mutually exclusive parameters'
         end
 
-        page     = options.delete(:page) || 1
+        page     = (page = options.delete(:page)) && page =~ /^\d+$/ ? page : 1
         per_page = options.delete(:per_page) || self.per_page
         total    = options.delete(:total_entries)
         [options, page, per_page, total]
