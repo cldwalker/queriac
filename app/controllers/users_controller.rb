@@ -83,6 +83,7 @@ class UsersController < ApplicationController
     self.current_user = User.find_by_activation_code(params[:activation_code])
     if logged_in? && !current_user.activated?
       current_user.activate
+      current_user.create_default_user_commands
       flash[:notice] = "Account activation complete! You are now logged in."
     end
     redirect_to setup_path

@@ -89,9 +89,7 @@ describe 'users/create:' do
   setup_users_controller_example_group
   
   it 'creates a user' do
-    lambda {
-      lambda { post :create, :user=>random_valid_user_attributes }.should change(User, :count).by(1)
-    }.should change(UserCommand, :count).by_at_least(8)
+    lambda { post :create, :user=>random_valid_user_attributes }.should change(User, :count).by(1)
     response.should be_redirect
     flash[:notice].should_not be_blank
   end
@@ -151,7 +149,10 @@ describe 'users/activate:' do
   before(:each) { @user = create_user; @user.send(:make_activation_code); @user.save}
   
   it 'activates user and redirects' do
-    get :activate, :activation_code=>@user.activation_code
+    lambda {
+      get :activate, :activation_code=>@user.activation_code
+    }.should change(UserCommand, :count).by_at_least(8)
+    
     response.should redirect_to(setup_path)
     flash[:notice].should_not be_blank
     @user.reload.should be_activated

@@ -94,7 +94,7 @@ class User < ActiveRecord::Base
     default_url_options[:host] = ::HOST
   end
   
-  def after_create
+  def create_default_user_commands
     set_default_url_options
     default_commands_config.each do |e|
       ucommand = self.user_commands.create!(e.slice(:name, :keyword, :url, :description))
