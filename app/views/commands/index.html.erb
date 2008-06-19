@@ -1,3 +1,13 @@
+<% if logged_in? %>
+	<div style="float: right">
+	<% form_tag search_all_commands_path, :method=>:get  do %>
+	<label for="q">Search commands by url or keyword</label>
+		<%= text_field_tag 'q' %>
+		<%= submit_tag 'Search' %>
+	<% end %>
+	</div>
+<% end %>
+
 <h1 class="inline">
 	<% if current_page_matches?(search_all_commands_path) %>
 		Search Results for '<%= params[:q] %>'

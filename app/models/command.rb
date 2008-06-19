@@ -9,6 +9,7 @@ class Command < ActiveRecord::Base
   has_finder :public, :conditions => {:public => true}
   has_finder :any
   has_finder :unique, :select=>'*, count(url)', :group=>"url HAVING count(url)>=1"
+  has_finder :search, lambda {|v| {:conditions=>["commands.keyword REGEXP ? OR commands.url REGEXP ?", v, v]} }
   
   validates_presence_of :name, :url
   validates_uniqueness_of :name

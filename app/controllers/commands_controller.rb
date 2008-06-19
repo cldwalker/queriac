@@ -4,7 +4,7 @@ class CommandsController < ApplicationController
   before_filter :load_valid_user, :only=>[:execute]
   # before_filter :load_valid_user_if_specified, :only=>:index
   # before_filter :load_tags_if_specified, :only=>:index
-  before_filter :admin_required, :only=>[:search_all, :edit, :update]
+  before_filter :admin_required, :only=>[:edit, :update]
   before_filter :set_command, :only=>[:show, :edit, :update]
   before_filter :allow_breadcrumbs, :only=>[:index, :show, :edit]
   before_filter :store_location, :only=>[:index, :show]
@@ -47,7 +47,8 @@ class CommandsController < ApplicationController
       flash[:warning] = "Your search is empty. Try again."
       @commands = [].paginate
     else
-      @commands = Command.any.paginate(index_pagination_params.merge(:conditions=>["keyword REGEXP ? OR url REGEXP ?", params[:q], params[:q]], :order=>sort_param_value('commands.queries_count_all DESC')))
+      publicity = admin? ? 'any' : 'public'
+      @commands = Command.send(publicity).search(params[:q]).paginate(index_pagination_params.merge(:order=>sort_param_value('commands.queries_count_all DESC')))
     end
     render :action => 'index'
   end

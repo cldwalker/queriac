@@ -225,9 +225,7 @@ class UserCommandsController < ApplicationController
       flash[:warning] = "Your search is empty. Try again."
       @user_commands = [].paginate
     else
-      all_commands = current_user.user_commands.find(:all, :conditions=>["user_commands.keyword REGEXP ? OR user_commands.url REGEXP ?", params[:q], params[:q]], 
-        :order=>sort_param_value, :include=>[:tags, :command])
-      @user_commands = all_commands.paginate(index_pagination_params)
+      @user_commands = current_user.user_commands.search(params[:q]).paginate(index_pagination_params.merge(:order=>sort_param_value, :include=>[:tags, :command]))
     end
     render :action => 'index'
   end
