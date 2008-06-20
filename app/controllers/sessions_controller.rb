@@ -26,7 +26,7 @@ class SessionsController < ApplicationController
       end
 
       flash[:notice] = "Logged in successfully"
-      redirect_to(user_home_path(current_user))
+      redirect_back_or_default(user_home_path(current_user))
     else
       flash[:warning] = "Problem logging in. Please try again."
       render :action=>'new'
