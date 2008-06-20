@@ -23,7 +23,7 @@ xml.rss(:version => '2.0', 'xmlns:media'.to_sym => 'http://search.yahoo.com/mrss
           END
         end
       
-        xml.pubDate(c.created_at.strftime("%d %b %Y %H:%M:%S %z"))
+        xml.pubDate(c.created_at.to_s(:rfc822))
       end
     end
   end
