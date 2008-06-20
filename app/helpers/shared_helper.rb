@@ -29,6 +29,22 @@ module SharedHelper
     user_command_owner? || admin?
   end
   
+  #misc methods
+  
+  def feed_icon_tag(title, url)
+    add_rss_feed(url, title)
+    link_to image_tag('icons/feed.png', :size => '14x14', :alt => "Subscribe to #{title}", :style => 'margin-left:12px;'), url
+  end
+  
+  def add_rss_feed(rss_url=nil,title=nil)
+    #correct way since it's compatible with route definitions
+    # rss_url ||= {}.merge(:format=>'rss')
+    #hack: contructing rss feeds assuming path ends with .rss
+    #necessary for user_commands actions
+    rss_url ||= request.url + ".rss"
+    (@feed_icons ||= []) << { :url => rss_url, :title => title }
+  end
+  
   def get_bot_param_for(action)
     unless @crypted_param
       action_salt = Digest::SHA1.hexdigest "--#{action}--"

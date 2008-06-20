@@ -276,7 +276,10 @@ div.msg p {
 
 #command_description_box, #user_command_description_box {
 	background-color: #F5F5F5;
-	font-size: 12px;
+	font-size: 1.1em;
 	border: 1px solid #DDD; 
 	padding: 5px 10px; 
+}
+#command_description_box p, #user_command_description_box p {
+	font-size: 1.1em;
 }

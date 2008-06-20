@@ -6,12 +6,14 @@ ActionController::Routing::Routes.draw do |map|
     :collection=>{:import=>:any, :tag_set=>:get, :tag_add_remove=>:get, :search=>:get, :copy_yubnub_command=>:get}
   map.with_options(:controller=>'user_commands') do |c|
     c.command_user_commands  'commands/:id/user_commands', :action=>'command_user_commands'
+    c.formatted_command_user_commands  'commands/:id/user_commands.:format', :action=>'command_user_commands', :format=>'rss'
+    c.formatted_tagged_user_commands   ':login/user_commands/tag/*tag.:format',   :action=>'index', :format=>'rss'
     c.tagged_user_commands   ':login/user_commands/tag/*tag',   :action=>'index'
+    c.formatted_all_tagged_user_commands   'user_commands/tag/*tag.:format',   :action=>'index', :format=>'rss'
     c.all_tagged_user_commands   'user_commands/tag/*tag',   :action=>'index'
     c.specific_user_commands   ':login/user_commands', :action=>'index'
-    c.user_commands_xml         ':login/user_commands/feed.xml',       :action => 'index', :format => 'xml'
-    c.user_commands_atom        ':login/user_commands/feed.atom',      :action => 'index', :format => 'atom'
-    #FIXME: remove /show at end once other routes are stable + in right order
+    c.formatted_specific_user_commands   ':login/user_commands.:format', :action=>'index', :format=>/atom|rss|xml/
+    #perhaps remove /show at end once other routes are stable + in right order
     c.public_user_command     ':login/:id/show', :action=>'show'
   end
   map.resources :users, :member => { :opensearch => :get }

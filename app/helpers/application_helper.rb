@@ -3,10 +3,11 @@ module ApplicationHelper
 
   def render_page_title
     if breadcrumbs.empty?
-      "Queriac. All our quicksearches are belong to us."
+      default_title
     else
-      breadcrumbs.map {|e| e.is_a?(Array) ? e[0].tr(" ", '_') : e.tr(' ', '_') }.join("/")
+      @title = breadcrumbs.map {|e| e.is_a?(Array) ? e[0].tr(" ", '_') : e.tr(' ', '_') }.join("/")
     end
+    @title
   end
   
   def render_nav
@@ -194,5 +195,18 @@ module ApplicationHelper
     #chopping off first word in underscored column ie created_at -> created and queries_sort-> queries
     column = column[/[a-z]+/]
     "sorted #{direction} #{preposition} #{column}"
+  end
+  
+  def default_title
+    @title ||= "Queriac. All our quicksearches are belong to us."
+  end
+  
+  def set_rss_header_defaults
+    default_title
+  end
+  
+  #command or user command
+  def command_description(command)
+    simple_format command.description.blank? ? 'No description yet.' : command.description
   end
 end

@@ -8,6 +8,7 @@ class UserCommandsController < ApplicationController
   before_filter :allow_breadcrumbs, :only=>[:search, :index, :command_user_commands, :show, :edit]
   before_filter :set_disabled_fields, :only=>[:copy, :edit]
   before_filter :load_tags_if_specified, :only=>:index
+  before_filter :add_rss_feed, :only=>[:index, :command_user_commands]
   
   # Possiblities..
   # /user_commands                   => public commands
@@ -39,6 +40,7 @@ class UserCommandsController < ApplicationController
 
     respond_to do |format|
       format.html
+      format.rss
       format.atom
       format.xml
     end

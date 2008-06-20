@@ -8,10 +8,11 @@ class CommandsController < ApplicationController
   before_filter :set_command, :only=>[:show, :edit, :update]
   before_filter :allow_breadcrumbs, :only=>[:index, :show, :edit]
   before_filter :store_location, :only=>[:index, :show]
+  before_filter :add_rss_feed, :only=>:index
   
   # Possiblities..
   # /commands                   => public commands
-  def index 
+  def index
     pagination_params = index_pagination_params.dup
     
     #TODO: enable tag + user listings of commands    
@@ -38,6 +39,7 @@ class CommandsController < ApplicationController
         
     respond_to do |format|
       format.html
+      format.rss
       format.xml { render :xml => @commands.to_xml }
     end
   end
