@@ -72,6 +72,8 @@ Time::DATE_FORMATS[:long] = "%A, %B %d at %l:%M%p"
 Time::DATE_FORMATS[:ymdhms] = Time::DATE_FORMATS[:batch] = "%Y%m%d%H%M%S"
 
 DEFAULT_PARAM = "(q)"
+#option is a word with an optional default value delimited by '=' ie [:type=normal]
+OPTION_PARAM_REGEX = /\[:(\w+)(=[^\[\]]+)?\]/    
 
 ExceptionNotifier.exception_recipients = %w(zeke@queri.ac gabriel.horner@gmail.com)
 ExceptionNotifier.sender_address = %("Application Error" <admin@queri.ac>)

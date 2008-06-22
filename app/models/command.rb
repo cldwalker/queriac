@@ -51,7 +51,7 @@ class Command < ActiveRecord::Base
   def after_validation
     self.keyword.downcase! if self.keyword
     self.url.sub!('%s', DEFAULT_PARAM )
-    self.kind = self.url.include?(DEFAULT_PARAM) ? "parametric" : "shortcut"
+    self.kind = (self.url.include?(DEFAULT_PARAM) || self.url =~ OPTION_PARAM_REGEX) ? "parametric" : "shortcut"
     self.bookmarklet = self.url.downcase.starts_with?('javascript') ? true : false
   end
   

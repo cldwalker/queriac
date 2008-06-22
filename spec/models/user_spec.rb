@@ -59,9 +59,10 @@ describe User do
     end
   end
   
-  it "should generate some starter commands" do
+  it "create_default_user_commands() should generate some starter commands" do
     @user.attributes = valid_user_attributes
     @user.save!
+    @user.create_default_user_commands
     @user.should have(8).commands
     @user.commands.map(&:keyword).join(" ").should eql("g gms w word q show edit new")
   end
@@ -69,6 +70,7 @@ describe User do
   it "should set default command" do
     @user.attributes = valid_user_attributes
     @user.save!
+    @user.create_default_user_commands
     @command = @user.user_commands.first
     @command.keyword.should eql("g")
     @user.default_command_id = @command.id
