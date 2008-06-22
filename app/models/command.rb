@@ -121,4 +121,33 @@ class Command < ActiveRecord::Base
   def self.find_by_keyword_or_id(id, options={})
     find(:first, {:conditions=>["commands.keyword = ? OR commands.id = ?", id, id]}.merge(options))
   end
+  
+  def self.parse_into_keyword_and_query(command_string)
+    options = {:defaulted=>false, :dont_save_query=>false}
+    
+    # Note: When upgrading to Rails 2, split(' ') had to be changed into split('+')
+    param_parts = command_string.gsub(' ', '+').split('+')
+    
+    ##Parsing Starts
+    keyword = (param_parts.shift || '').downcase
+    
+    if keyword == "default_to"
+      keyword = (param_parts.shift || '').downcase 
+      options[:defaulted] = true
+    end
+    
+    # Handle stealth queries (allowing for presence or absence of space following the !)
+    if keyword.starts_with? "!"
+      options[:dont_save_query] = true
+      if keyword == "!"
+        keyword = (param_parts.shift || '').downcase
+      else
+        keyword = keyword.slice(1, keyword.length-1)
+      end
+    end
+    
+    query_string = param_parts.join(' ') 
+    
+    return keyword, query_string, options
+  end
 end

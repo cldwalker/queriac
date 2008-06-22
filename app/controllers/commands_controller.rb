@@ -54,46 +54,23 @@ class CommandsController < ApplicationController
     end
     render :action => 'index'
   end
-  
+
   def execute
-    # Extract command and query string from params
-    # (The join is here to bring query strings back together, as queries containing
-    # slashes are broken into array elements by Rails' routing
-    
-    # Note: When upgrading to Rails 2, split(' ') had to be changed into split('+')
-    # ..not sure why
-    param_parts = params[:command].join("/").gsub(' ', '+').split('+')
-    keyword = param_parts.shift.downcase # steal first word of the string
-    
-    # If first part of string is 'default_to', take note and use next
-    # word in string as the command to execute
-    if keyword == "default_to"
-      keyword = (param_parts.shift || '').downcase 
-      defaulted = true
+    if params[:command] == ['search_form'] && params[:search_command]
+      command_string = params[:search_command]
+    else
+      #here because Rails routing splits urls by '/' into an array
+      command_string = params[:command].join("/")
     end
-    if keyword == 'search_form'
-      param_parts = params[:search_command].split(/\s+/)
-      #set just in case it goes to user's default_command
-      params[:command] = param_parts
-      keyword = (param_parts.shift || '').downcase
-    end
+    keyword, query_string, options = Command.parse_into_keyword_and_query(command_string)
     
-    # Handle stealth queries (allowing for presence or absence of space following the !)
-    dont_save_query = true if keyword.starts_with? "!"
-    keyword = (param_parts.shift || '').downcase if keyword == "!"
-    keyword = keyword.slice(1, keyword.length-1) if keyword.starts_with? "!"
-    
-    # This is the remainder of the string,
-    # after command has been lopped off the beginning of string
-    query_string = param_parts.join(' ') 
-    
-    @command = @user.user_commands.find_by_keyword(keyword)
+    @user_command = @user.user_commands.find_by_keyword(keyword)
     
     # If command doesn't exist, route the query to the user's default command,
     # or redirect to user's home path and show options, depending on their settings.
-    if @command.nil?
+    if @user_command.nil?
       if @user.default_command?
-        redirect_to user_default_command_path(@user, params[:command].join("/"))
+        redirect_to user_default_command_path(@user, command_string)
       else
         redirect_to user_home_path(@user) + "?bad_command=#{keyword}"
       end
@@ -101,34 +78,34 @@ class CommandsController < ApplicationController
     end
 
     # Don't allow outsiders to run private commands  
-    if @command.private? && ! @command.owned_by?(current_user)
+    if @user_command.private? && ! @user_command.owned_by?(current_user)
       redirect_path = user_home_path(@user)
       redirect_path << (logged_in? ? "?illegal_command=#{keyword}" : "?private_command=#{keyword}")
       redirect_to(redirect_path) and return
     end
     
     # Store the query in the database (or not)
-    @command.queries.create(
+    @user_command.queries.create(
       :query_string => query_string,
-      :run_by_default => defaulted || false,
+      :run_by_default => options[:defaulted] || false,
       :user_id => logged_in? ? current_user.id : nil,
       :referrer => request.env["HTTP_REFERER"]
-    ) unless dont_save_query
+    ) unless options[:dont_save_query]
     
     # Needs to be constructed if commands takes arguments
-    @result = if @command.parametric?
+    @result = if @user_command.parametric?
       #manually set url encode
       if (url_encode = params.delete(:_encode))
         is_url_encoded = url_encode == '1'
-        @command.url_for(query_string, is_url_encoded)
+        @user_command.url_for(query_string, is_url_encoded)
       else
-        @command.url_for(query_string)
+        @user_command.url_for(query_string)
       end
     else
-      @command.url
+      @user_command.url
     end
       
-    if @command.bookmarklet?
+    if @user_command.bookmarklet?
       # Command is a Javascript bookmarklet, so rather than redirect to it,
       # we simply render it so the script that called it can use it as its source.
       render :text => @result
@@ -138,7 +115,7 @@ class CommandsController < ApplicationController
       # so convert the URL into Javascript that will redirect to the URL.
       # render :text => "document.window.location='http://shit.com';"
       
-    elsif @command.http_post?
+    elsif @user_command.http_post?
       redirect_to "http://zeke.sikelianos.com/projects/queriac/postaget.php?__action=" + @result
     else
       # Command is a simple URL to which we redirect

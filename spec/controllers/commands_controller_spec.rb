@@ -69,7 +69,7 @@ describe 'commands/execute:' do
   
   def basic_expectations
     response.should be_redirect
-    assigns[:command].should be_an_instance_of(UserCommand)
+    assigns[:user_command].should be_an_instance_of(UserCommand)
     assigns[:result].should_not be_blank
   end
   
@@ -108,8 +108,32 @@ describe 'commands/execute:' do
     basic_expectations
   end
   
-  it 'executes default_to command passing along original command + arguments'
-  it 'executes search_form command'
+  it 'executes default_to command passing along original command + arguments' do
+    lambda {get_request(:command=>["default_to #{@command.keyword}+blues"])}.should change(Query, :count).by(1)
+    basic_expectations
+    query = Query.find_last
+    query.run_by_default?.should be_true
+    query.user_command.should == @command
+    query.query_string.should == 'blues'
+  end
+  
+  it 'executes search_form command' do
+    lambda {get_request(:command=>["search_form"], :search_command=>"#{@command.keyword}+blues")}.should change(Query, :count).by(1)
+    basic_expectations
+  end
+  
+  it 'executes stealth query starting w/ !' do
+    lambda { get_request(:command=>["!#{@command.keyword}"])}.should_not change(Query, :count)
+    basic_expectations
+  end
+  
+  it 'executes stealth query w/ separate !' do
+    lambda { get_request(:command=>["!+#{@command.keyword}"])}.should_not change(Query, :count)
+    basic_expectations
+  end
+  
+  it 'executes bookmarklet'
+  
   it 'executes default_to via search_form'
   it 'handles search_form with no command'
   
@@ -123,14 +147,14 @@ describe 'commands/execute:' do
     @command.user.update_attribute(:default_command_id, create_command(:user=>@user).id)
     lambda { get_request(:command=>['invalid_command'])}.should_not change(Query, :count)
     response.should be_redirect
-    assigns[:command].should be_nil
+    assigns[:user_command].should be_nil
     assigns[:result].should be_nil
   end
   
   it 'redirects nil command w/ params[:bad_command]' do
     lambda { get_request(:command=>['invalid_command'])}.should_not change(Query, :count)
     response.should be_redirect
-    assigns[:command].should be_nil
+    assigns[:user_command].should be_nil
     assigns[:result].should be_nil
     #flash[:warning].should_not be_blank
   end
@@ -139,7 +163,7 @@ describe 'commands/execute:' do
     @command = create_user_command(:command=>create_command(:public=>false))
     lambda { get_request}.should_not change(Query, :count)
     response.should be_redirect
-    assigns[:command].should be_an_instance_of(UserCommand)
+    assigns[:user_command].should be_an_instance_of(UserCommand)
     assigns[:result].should be_nil
   end
   
@@ -155,23 +179,10 @@ describe 'commands/execute:' do
     login_user
     lambda { get_request}.should change(Query, :count).by(0)
     response.should be_redirect
-    assigns[:command].should be_an_instance_of(UserCommand)
+    assigns[:user_command].should be_an_instance_of(UserCommand)
     assigns[:result].should be_nil
   end
   
-  it 'executes stealth query starting w/ !' do
-    lambda { get_request(:command=>["!#{@command.keyword}"])}.should_not change(Query, :count)
-    response.should be_redirect
-    assigns[:result].should_not be_blank
-  end
-  
-  it 'executes stealth query w/ separate !' do
-    lambda { get_request(:command=>["!+#{@command.keyword}"])}.should_not change(Query, :count)
-    response.should be_redirect
-    assigns[:result].should_not be_blank
-  end
-  
-  it 'executes bookmarklet'
 end
 
 describe 'commands/show (default as anonymous user):' do

@@ -127,7 +127,7 @@ module ApplicationHelper
     
     content_tag(:ul, :class=>'normal') do
       tags_by_number.map do |tag_count, tag_names|
-        tags = tag_names.map {|e| link_to e, tagged_user_commands_path(@user, e)}.join (", ")
+        tags = tag_names.map {|e| link_to(e, tagged_user_commands_path(@user, e))}.join(", ")
         content_tag(:li, "#{tag_count}: #{tags}", :class=>'normal')
       end.join("\n")
     end
