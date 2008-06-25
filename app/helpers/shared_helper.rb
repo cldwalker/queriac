@@ -44,12 +44,10 @@ module SharedHelper
     rss_url ||= request.url + ".rss"
     (@feed_icons ||= []) << { :url => rss_url, :title => title }
   end
-  
+
   def get_bot_param_for(action)
-    unless @crypted_param
-      action_salt = Digest::SHA1.hexdigest "--#{action}--"
-      @crypted_param = Digest::SHA1.hexdigest "--#{action_salt}--#{Date.today}--"
-    end
+    action_salt = Digest::SHA1.hexdigest "--#{action}--"
+    @crypted_param = Digest::SHA1.hexdigest "--#{action_salt}--#{Date.today}--"
     @crypted_param
   end
 end
