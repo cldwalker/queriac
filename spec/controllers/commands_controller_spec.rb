@@ -60,6 +60,10 @@ describe 'commands/index:' do
     flash[:warning].should_not be_blank
     assigns[:commands].should be_empty
   end
+  
+  it 'rss'
+  it 'sorting up/down valid/invalid'
+  it 'search_all action'
 end
 
 describe 'commands/execute:' do
@@ -203,17 +207,7 @@ describe 'commands/show (default as anonymous user):' do
     basic_expectations
     assigns[:queries][0].should be_an_instance_of(Query)
   end
-  
-  #should_redirect_nonexistent_command('show')
-    
-  # it "gets no queries for another's private queries" do
-  #   command = create_command(:user=>@user, :public_queries=>false)
-  #   create_query(:command=>command)
-  #   get :show, :login=>@user.login, :command=>command.to_param
-  #   basic_expectations
-  #   assigns[:queries].should be_nil
-  # end
-  
+      
   it "redirects another's private command" do
     command = create_command(:public=>false)
     create_query(:user_command=>create_user_command(:command=>command))
@@ -234,63 +228,54 @@ describe 'commands/show (default as anonymous user):' do
   it "handles publicity of user's own command vs another's command"
 end
 
-# TODO: renable edit/update tests
-# describe 'commands/edit:' do
-#   setup_commands_controller_example_group
-#   
-#   setup_login_user
-#   after(:each) { @user.commands.each {|e| e.destroy} }  
-#   
-#   it 'displays form' do
-#     command = create_command(:user=>current_user)
-#     get 'edit', :login=>current_user.login, :command=>command.keyword
-#     response.should be_success
-#     response.should render_template('edit')
-#     assigns[:command].should be_an_instance_of(Command)
-#   end
-#   
-#   should_redirect_nonexistent_user('edit')
-#   should_redirect_nonexistent_command('edit')
-#   should_redirect_prohibited_action('edit')
-# end
+describe 'commands/edit:' do
+  setup_commands_controller_example_group
+  
+  setup_login_user(:is_admin=>true)
+  after(:each) { @user.commands.each {|e| e.destroy} }  
+  
+  it 'displays form' do
+    command = create_command(:user=>current_user)
+    get :edit, :id=>command.to_param
+    response.should be_success
+    response.should render_template('edit')
+    assigns[:command].should be_an_instance_of(Command)
+  end
+  
+  it "redirects for non-admin" do
+    @user.update_attribute :is_admin, false
+    login_user @user
+    command = create_command(:user=>current_user)
+    get :edit, :id=>command.to_param
+    response.should be_redirect
+  end
+end
 
-# describe 'commands/update:' do
-#   setup_commands_controller_example_group
-#   
-#   setup_login_user
-#   after(:each) { @user.commands.each {|e| e.destroy} }  
-#     
-#   it 'updates command' do
-#     command = create_command(:user=>@user)
-#     put :update, :id=>command.id, :command=>{:name=>'another name'}, :tags=>''
-#     command.reload.name.should eql('another name')
-#     response.should be_redirect
-#     flash[:notice].should_not be_blank
-#   end
-#   
-#   it "redirects a prohibited action" do
-#     command = create_command
-#     put :update, :id=>command.id, :command=>{:name=>'another name'}, :tags=>''    
-#     response.should be_redirect
-#     flash[:warning].should match(/not allowed/)
-#   end
-#   
-#   it 'redisplays invalid submission' do
-#     command = create_command(:user=>@user)
-#     command.stub!(:update_attributes).and_return(false)
-#     Command.should_receive(:find).and_return(command)
-#     put :update, :id=>command.id, :command=>{:name=>'another name'}, :tags=>''
-#     response.should be_success
-#     response.should render_template('edit')
-#   end
-#   
-#   it 'raises error for invalid command id' do
-#     lambda {
-#       put :update, :id=>'some id', :command=>{:name=>'another name'}, :tags=>''
-#     }.should raise_error(ActiveRecord::RecordNotFound)
-#   end
-# end
+describe 'commands/update:' do
+  setup_commands_controller_example_group
+  
+  setup_login_user(:is_admin=>true)
+  after(:each) { @user.commands.each {|e| e.destroy} }  
+    
+  it 'updates command' do
+    command = create_command(:user=>@user)
+    put :update, :id=>command.to_param, :command=>{:name=>'another name'}, :tags=>''
+    command.reload.name.should eql('another name')
+    response.should be_redirect
+    flash[:notice].should_not be_blank
+  end
+  
+  it 'redisplays invalid submission' do
+    command = create_command(:user=>@user)
+    command.stub!(:update_attributes).and_return(false)
+    Command.should_receive(:find_by_keyword_or_id).and_return(command)
+    put :update, :id=>command.to_param, :command=>{:name=>'another name'}, :tags=>''
+    response.should be_success
+    response.should render_template('edit')
+  end
+end
 
+__END__
 # describe 'commands/new:' do
 #   setup_commands_controller_example_group
 #   

@@ -10,6 +10,14 @@ describe 'user_commands/show:' do
   
   it 'displays public command'
   it "gets no queries for another's private queries"
+  # it "gets no queries for another's private queries" do
+  #   command = create_command(:user=>@user, :public_queries=>false)
+  #   create_query(:command=>command)
+  #   get :show, :login=>@user.login, :command=>command.to_param
+  #   basic_expectations
+  #   assigns[:queries].should be_nil
+  # end
+  
   it "redirects another's private command"
   it "displays private command to command owner"
   it "handles publicity of user's own command vs another's command"

@@ -19,7 +19,7 @@ class QueriesController < ApplicationController
     
     if @user
       if params[:command]
-        # => /zeke/commands/g/queries
+        # => /zeke/g/queries
         @user_command = @user.user_commands.find_by_keyword(params[:command])
         return if user_command_is_nil?(params[:command])
         return unless command_query_is_public?

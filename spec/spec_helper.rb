@@ -21,8 +21,8 @@ Spec::Runner.configure do |config|
   
   #using before(:all) to minimize db calls (speed up tests) until objects can be mocked
   #coupling examples to the same test object is a no-no: http://rspec.info/documentation/before_and_after.html
-  def setup_login_user
-    before(:all) { @user = create_user }
+  def setup_login_user(hash={})
+    before(:all) { @user = create_user(hash) }
     before(:each) { login_user(@user)}
   end
   

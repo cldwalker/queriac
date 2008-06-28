@@ -11,6 +11,7 @@ describe 'static actions:' do
     response.should be_success
     assigns[:queries][0].should be_an_instance_of(Query)
     assigns[:users][0].should be_an_instance_of(User)
+    assigns[:user_commands][0].should be_an_instance_of(UserCommand)
   end
   
   it 'get static pages' do

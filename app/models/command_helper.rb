@@ -5,6 +5,7 @@ module CommandHelper
   #position: google.com?q=[:1]&v=[:2]
   #options must start at beginning of query
   #option parsing can be turned off by specifying -off
+  #TODO: escape characters used in regexs ie value[/[^\\]\|/]
   def url_for(query_string, manual_url_encode=nil)
     #no warning is given for options that aren't valid for a command
     options = parse_query_options(query_string)
@@ -17,19 +18,33 @@ module CommandHelper
        
        #position value
        if name =~ /^\d$/
-         value = query_array_value(query_string, name.to_i)
+         value = query_array_value(query_string, name.to_i) || default
         #option value
        else
-         value = options[name]
+         #boolean option detected
+         if default && default.include?("|")
+           true_value, false_value = default.split("|", 2)
+           value = options[name] ? true_value : false_value
+         #enumerated option detected
+         elsif default && default.include?(",")
+           possible_values = default.split(",")
+           value = possible_values.include?(options[name]) ? options[name] : possible_values[0]
+         else
+           value = options[name] || default
+         end
        end
+       
        # p [name, default]
-       value ||= default
        #TODO: give user option to error out for parameters without value or default
        value ? url_encode_string(value) : ''
     end
     
     redirect_url.gsub(DEFAULT_PARAM, url_encode_string(query_string))
   end
+  
+  # def alias_option_value(option_value, alias_definition='')
+  #   alias_definition.include?(":") && (alias_definition.split(":")[0] == option_value) ? alias_definition.split(":")[1] : option_value
+  # end
   
   def query_array_value(query_string, number)
     unless @query_array
@@ -40,17 +55,22 @@ module CommandHelper
   
   def parse_query_options(query_string)
     options = {}
-    option_regex = /-(\w+)(\s*=\s*|\s+)?(\w+|'[^'-]+')?/
+    option_regex = /-(\w+)(\s*=\s*|\s+)?(\w+|'[^'-]+')?|--(\w+)/
     #-(\w+)             option is a word, should match option regex in OPTION_PARAM_REGEX
     #(?:\s*=\s*|\s+)    space(s) or '=' delimits option from value
     #(\w+|'[^'-]+')   value can be a word or anything between quotes
     
     #option parsing starts with '-' unless it's -off
-    if query_string =~ /^\s*-(?!off)/
+    if query_string.sub!(/^\s*-off/, '').nil? && query_string =~ /^\s*-/
       query_string.gsub!(option_regex) do
-        name, value = $1, $3
-        value = $1 if value[/^'(.*)'$/]
-        options[name] = value
+        #boolean option set
+        if $4
+          options[$4] = true
+        else
+          name, value = $1, $3
+          value = $1 if value[/^'(.*)'$/]
+          options[name] = value
+        end
         ''
       end
     end

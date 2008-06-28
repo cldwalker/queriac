@@ -104,16 +104,17 @@ describe Command do
   it "should update query counts"
   
   it "should parse query options" do
-    query_string = "-view normal -type = cool -r='one two' -q 'three' still here"
-    expected_options = {'view'=>'normal', 'type'=>'cool', 'r'=>'one two', 'q'=>'three'}
+    query_string = "--L -view normal -type = cool -r='one two' -q 'three' still here"
+    expected_options = {'L'=>true, 'view'=>'normal', 'type'=>'cool', 'r'=>'one two', 'q'=>'three'}
     @command.parse_query_options(query_string).should == expected_options
     query_string.should =~ /^\s*still here$/
   end
   
   it 'no option parsing when query starts with option -off' do
     query_string = '-off -type cool more still'
+    original_query_string = query_string.dup
     @command.parse_query_options(query_string).should == {}
-    query_string.should == query_string
+    query_string.should_not == original_query_string
   end
   
   it "no option parsing when query doesn't start with '-'" do
@@ -185,6 +186,7 @@ describe 'url_for: ' do
     expected_url = "http://google.com/search?q=dodo&view=normal&type=cool"
     @command.url_for('-type cool normal dodo').should == expected_url
   end
+  
 end
 
 describe 'Command.parse_into_keyword_and_query: ' do

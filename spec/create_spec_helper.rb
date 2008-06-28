@@ -22,6 +22,7 @@ module CreateSpecHelper
     #User.create(random_valid_user_attributes.merge(hash))
     #hacky but done in order to avoid expensive @user.after_create
     user = User.new(random_valid_user_attributes.merge(hash))
+    user.is_admin = true if hash[:is_admin]
     user.send(:create_without_callbacks)
     user
   end

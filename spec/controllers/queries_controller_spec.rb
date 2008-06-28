@@ -48,14 +48,14 @@ describe 'queries/index:' do
   it 'handles user publicity'
   it 'handles query publicity'
   
-  it "displays public command queries" do
+  it "displays public user command queries" do
     get :index, :command=>@command.keyword, :login=>@command.user.login
     basic_expectations
     assigns[:user_command].should be_an_instance_of(UserCommand)
     assigns[:user].should be_an_instance_of(User)
   end
   
-  it "displays private command queries to command's owner" do
+  it "displays private user command queries to command's owner" do
     @command.update_attribute(:public_queries, false)
     login_user @query.user_command.user
     get :index, :command=>@command.keyword, :login=>@command.user.login
@@ -65,7 +65,7 @@ describe 'queries/index:' do
     @command.update_attribute(:public_queries, true)
   end
   
-  it "redirects user for trying to view another's private command queries" do
+  it "redirects user for trying to view another's private user command queries" do
     @command.update_attribute(:public_queries, false)
     login_user
     get :index, :command=>@command.keyword, :login=>@command.user.login
@@ -75,8 +75,9 @@ describe 'queries/index:' do
     assigns[:user].should be_an_instance_of(User)
     @command.update_attribute(:public_queries, true)
   end
-  
+    
   it 'displays no queries when no queries by tag found'
+  it 'displays command queries'
 
   it 'redirects when no other queries found' do
     Query.should_receive(:find).and_return([])
