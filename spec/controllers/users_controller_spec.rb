@@ -5,7 +5,7 @@ def setup_users_controller_example_group
   integrate_views
 end
 
-describe 'user actions' do
+describe 'user actions:' do
   setup_users_controller_example_group
   
   it 'new' do
@@ -13,7 +13,24 @@ describe 'user actions' do
     response.should be_success
   end
   
-  it 'index'
+  it 'index' do
+    #mock User.paginate_users
+    user = create_user
+    user.stub!(:user_commands_count).and_return(1)
+    User.should_receive(:find).and_return([user])
+    
+    get :index
+    response.should be_success
+    assigns[:users][0].should be_an_instance_of(User)
+  end
+  
+  it 'home' do
+    login_user
+    get :home
+    response.should be_success
+    assigns[:user].should be_an_instance_of(User)
+  end
+  
   it 'opensearch'
 end
 
@@ -21,8 +38,8 @@ describe 'users/show:' do
   setup_users_controller_example_group
   before(:all) { 
     @command = create_command(:kind=>'parametric')
-    ucommand = create_user_command(:command=>@command)
-    #@command.tags << create_tag
+    ucommand = create_user_command(:command=>@command, :user=>@command.user)
+    ucommand.tags << create_tag
     #setup @users
     @active_user = create_user
     @active_user.activate
@@ -35,7 +52,6 @@ describe 'users/show:' do
   def basic_expectations
     response.should be_success
     assigns[:user].should be_an_instance_of(User)
-    pending 'TAG FIXME'
     assigns[:tags][0].should be_an_instance_of(Tag)
     assigns[:users][0].should be_an_instance_of(User)
   end
@@ -44,7 +60,7 @@ describe 'users/show:' do
     mock_find_top_users(@active_user)
     get :show, :login=>@command.user.login
     basic_expectations
-    assigns[:commands][0].should be_an_instance_of(Command)
+    assigns[:user_commands][0].should be_an_instance_of(UserCommand)
   end
   
   it "displays advanced user's homepage to advanced user" do
@@ -55,9 +71,9 @@ describe 'users/show:' do
     
     get :show, :login=>@command.user.login
     basic_expectations
-    assigns[:quicksearches][0].should be_an_instance_of(Command)
-    assigns[:shortcuts][0].should be_an_instance_of(Command)
-    assigns[:bookmarklets][0].should be_an_instance_of(Command)
+    assigns[:quicksearches][0].should be_an_instance_of(UserCommand)
+    assigns[:shortcuts][0].should be_an_instance_of(UserCommand)
+    assigns[:bookmarklets][0].should be_an_instance_of(UserCommand)
   end
   
   it "displays advanced user's homepage to another user" do
@@ -69,9 +85,9 @@ describe 'users/show:' do
     
     get :show, :login=>@command.user.login
     basic_expectations
-    assigns[:quicksearches][0].should be_an_instance_of(Command)
-    assigns[:shortcuts][0].should be_an_instance_of(Command)
-    assigns[:bookmarklets][0].should be_an_instance_of(Command)
+    assigns[:quicksearches][0].should be_an_instance_of(UserCommand)
+    assigns[:shortcuts][0].should be_an_instance_of(UserCommand)
+    assigns[:bookmarklets][0].should be_an_instance_of(UserCommand)
   end
   
   it 'redirects when no user specified' do
@@ -83,6 +99,7 @@ describe 'users/show:' do
   it 'displays bad command'
   it 'displays private command'
   it 'displays illegal command'
+  it "publicity of user's user commands"
 end
 
 describe 'users/create:' do
@@ -102,6 +119,8 @@ describe 'users/create:' do
     response.should render_template('new')
     assigns[:user].should be_an_instance_of(User)
   end
+  
+  it "doesn't create when bot param is filled in"
 end
 
 describe 'users/edit:' do
@@ -114,7 +133,6 @@ describe 'users/edit:' do
     assigns[:user].should be_an_instance_of(User)
   end
   
-  it 'displays page when settings page is requested'
 end
 
 describe 'users/update:' do
@@ -158,25 +176,26 @@ describe 'users/activate:' do
     @user.reload.should be_activated
   end
   
-  it 'silently redirects invalid activation' do
+  it 'warns and redirects for invalid activation' do
     get :activate, :activation_code=>'XXXXXXX'
     response.should redirect_to(setup_path)
-    flash[:notice].should be_blank
+    flash[:warning].should_not be_blank
     @user.reload.should_not be_activated
   end
 end
 
-describe 'users/destroy:' do
-  setup_users_controller_example_group
-  before(:each) {@user = login_user; create_command(:user=>@user)}
-  
-  it 'deletes user and their commands' do
-    lambda {
-    lambda {
-      delete :destroy
-    }.should change(User, :count).by(-1)
-    }.should_not change(Command, :count)
-    response.should be_redirect
-    flash[:notice].should_not be_blank
-  end
-end
+#enable once user destroy is used
+# describe 'users/destroy:' do
+#   setup_users_controller_example_group
+#   before(:each) {@user = login_user; create_command(:user=>@user)}
+#   
+#   it 'deletes user and their commands' do
+#     lambda {
+#     lambda {
+#       delete :destroy
+#     }.should change(User, :count).by(-1)
+#     }.should_not change(Command, :count)
+#     response.should be_redirect
+#     flash[:notice].should_not be_blank
+#   end
+# end

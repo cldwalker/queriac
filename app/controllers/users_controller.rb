@@ -85,6 +85,8 @@ class UsersController < ApplicationController
       current_user.activate
       current_user.create_default_user_commands
       flash[:notice] = "Account activation complete! You are now logged in."
+    else
+      flash[:warning] = "Sorry, you are either already activated or have an invalid activation key."
     end
     redirect_to setup_path
   end

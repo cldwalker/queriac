@@ -19,10 +19,10 @@ module CreateSpecHelper
   
   #should use mocks for create_* once controller specs focus only on controller logic
   def create_user(hash={})
-    #User.create(random_valid_user_attributes.merge(hash))
     #hacky but done in order to avoid expensive @user.after_create
     user = User.new(random_valid_user_attributes.merge(hash))
     user.is_admin = true if hash[:is_admin]
+    user.created_at ||= Time.now #since date isn't set w/o callbacks
     user.send(:create_without_callbacks)
     user
   end

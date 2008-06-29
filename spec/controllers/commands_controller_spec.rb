@@ -234,6 +234,7 @@ describe 'commands/edit:' do
   setup_login_user(:is_admin=>true)
   after(:each) { @user.commands.each {|e| e.destroy} }  
   
+  #intermittently passes
   it 'displays form' do
     command = create_command(:user=>current_user)
     get :edit, :id=>command.to_param

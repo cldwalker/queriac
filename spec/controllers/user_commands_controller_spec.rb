@@ -25,7 +25,12 @@ end
 
 describe 'user_commands/index:' do
   setup_user_commands_controller_example_group
-  it 'all actions'
+  it 'by user'
+  it 'by user + tags'
+  it 'by tags'
+  it 'all public'
+  it 'rss'
+  it 'command_user_commands'
 end
  
 describe 'user_commands/new:' do
@@ -348,7 +353,26 @@ describe 'user_command actions:' do
   end
   
   it 'update_url'
-  it 'search'
+  
+  it 'search: displays results' do
+    user_command = create_user_command
+    login_user user_command.user
+    get :search, :q=>user_command.keyword
+    response.should be_success
+    response.should render_template('index')
+    assigns[:user_commands][0].should be_an_instance_of(UserCommand)
+  end
+  
+    it 'search: warns and redisplays page for an empty search string' do
+      user_command = create_user_command
+      login_user user_command.user
+      get :search, :q=>''
+      response.should be_success
+      response.should render_template('index')
+      flash[:warning].should_not be_blank
+      assigns[:user_commands].should be_empty
+    end
+  
 end
 
 describe 'user_commands/tag_set:' do
@@ -405,86 +429,8 @@ describe 'user_commands/tag_add_remove:' do
   end
 end
 
-# describe 'commands/search:' do
-#   setup_commands_controller_example_group
-#   
-#   setup_login_user
-#   before(:all) {@command = create_command(:user=>@user)}
-#   
-#   it 'displays results' do
-#     get :search, :login=>@command.user.login, :q=>@command.keyword
-#     response.should be_success
-#     response.should render_template('index')
-#     assigns[:commands][0].should be_an_instance_of(Command)
-#   end
-# 
-#   it 'warns and redisplays page for an empty search string' do
-#     get :search, :login=>@command.user.login, :q=>''
-#     response.should be_success
-#     response.should render_template('index')
-#     flash[:warning].should_not be_blank
-#     assigns[:commands].should be_empty
-#   end
-#   
-#   #user executing another user's private action
-#   should_redirect_prohibited_action('search')
-#   
-#   it 'search_all'
-# end
+__END__
 
-# describe 'commands/tag_add_remove:' do
-#   setup_commands_controller_example_group
-#   setup_login_user
-#   before(:all) {@command = create_command(:user=>@user)}
-#   
-#   it 'adds and removes tags' do
-#     tag1 = create_tag
-#     @command.tags << tag1
-#     command2 = create_command(:user=>@user)
-#     tag2 = create_tag
-#     tag3 = create_tag
-#     command2.tags << tag2
-#     command2.tags << tag3
-#     
-#     lambda {
-#       get :tag_add_remove, :v=>"#{@command.keyword},#{command2.keyword} -#{tag2.name} -#{tag3.name} sweet"
-#     }.should change(Tag, :count).by(1)
-#     response.should be_redirect
-#     flash[:notice].should_not be_blank
-#     @command.tag_list.should == [tag1.name, 'sweet']
-#     command2.tag_list.should == ['sweet']
-#   end
-# end
-
-# describe 'commands/tag_set:' do
-#   setup_commands_controller_example_group
-#   
-#   setup_login_user
-#   before(:all) {@command = create_command(:user=>@user)}
-#   
-#   it 'sets tags' do
-#     command2 = create_command(:user=>@user)
-#     lambda {
-#       get :tag_set, :v=>"#{@command.keyword},#{command2.keyword} so awesome"
-#     }.should change(Tag, :count).by(2)
-#     response.should be_redirect
-#     flash[:notice].should_not be_blank
-#     @command.tag_list.should == ['so', 'awesome']
-#     command2.tag_list.should == ['so', 'awesome']
-#   end
-#   
-#   it 'warns on blank tags' do
-#     get :tag_set, :v=>@command.keyword
-#     response.should be_redirect
-#     flash[:warning].should match(/No tags/)
-#   end
-#    
-#   it 'warns when no commands found' do
-#     get :tag_set, :v=>"invalid_command cool"
-#     response.should be_redirect
-#     flash[:warning].should match(/Failed.*commands/)
-#   end
-# end
 # 
 # describe 'commands/copy_yubnub_command:' do
 #   setup_commands_controller_example_group
