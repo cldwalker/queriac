@@ -105,6 +105,8 @@ describe 'user_commands/create:' do
   
   it 'redisplays invalid submission' do
     ucommand = UserCommand.new
+    #rspec bug: http://rubyforge.org/pipermail/rspec-users/2008-June/007396.html
+    pending 'rspec stub! bug'
     ucommand.stub!(:save).and_return(false)
     UserCommand.should_receive(:new).and_return(ucommand)
     lambda { post_request}.should_not change(Command, :count)
@@ -233,6 +235,7 @@ describe 'user_commands/edit:' do
   end
   
   it "hides public for command owner when command isn't editable" do
+    pending 'rspec stub! bug'
     @user_command.stub!('command_editable?').and_return(false)
     UserCommand.should_receive(:find_by_keyword).and_return(@user_command)
     get :edit, :id=>@user_command.to_param
@@ -301,6 +304,7 @@ describe 'user_commands/update:' do
   end
 
   it 'redisplays invalid submission' do
+    pending 'rspec stub! bug'
     @user_command.stub!(:update_attributes).and_return(false)
     UserCommand.should_receive(:find_by_keyword).and_return(@user_command)
     put :update, :id=>@user_command.to_param, :user_command=>{:name=>'another name'}, :tags=>''

@@ -68,7 +68,7 @@ module CommandHelper
           options[$4] = true
         else
           name, value = $1, $3
-          value = $1 if value[/^'(.*)'$/]
+          value = $1 if value && value[/^'(.*)'$/]
           options[name] = value
         end
         ''

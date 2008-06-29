@@ -6,10 +6,10 @@ class Command < ActiveRecord::Base
   has_many :users, :through=>:user_commands, :conditions=>User::VIEWABLE_SQL
   has_many :user_tags, :through=>:user_commands
   
-  has_finder :public, :conditions => {:public => true}
-  has_finder :any
-  has_finder :unique, :select=>'*, count(url)', :group=>"url HAVING count(url)>=1"
-  has_finder :search, lambda {|v| {:conditions=>["commands.keyword REGEXP ? OR commands.url REGEXP ?", v, v]} }
+  named_scope :public, :conditions => {:public => true}
+  named_scope :any
+  named_scope :unique, :select=>'*, count(url)', :group=>"url HAVING count(url)>=1"
+  named_scope :search, lambda {|v| {:conditions=>["commands.keyword REGEXP ? OR commands.url REGEXP ?", v, v]} }
   
   validates_presence_of :name, :url
   validates_uniqueness_of :name

@@ -3,13 +3,15 @@
 ENV["RAILS_ENV"] = "test"
 require File.expand_path(File.dirname(__FILE__) + "/../config/environment")
 require File.expand_path(File.dirname(__FILE__) + "/create_spec_helper")
+require 'spec'
 require 'spec/rails'
 
 Spec::Runner.configure do |config|
   include CreateSpecHelper
   config.use_transactional_fixtures = true
   config.use_instantiated_fixtures  = false
-  config.fixture_path = RAILS_ROOT + '/spec/fixtures'
+  config.fixture_path = RAILS_ROOT + '/spec/fixtures/'
+  # config.mock_with :mocha
 
   #@controller of each example is reset so no need to logout users
   def login_user(hash={})
@@ -26,7 +28,7 @@ Spec::Runner.configure do |config|
     before(:each) { login_user(@user)}
   end
   
-  def current_user; @controller.current_user; end
+  def current_user; @controller.send(:current_user); end
   
   def should_have_flash_now_warning_tag(*args)
     args.unshift "div.flash-msg.warning"

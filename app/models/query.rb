@@ -17,9 +17,9 @@ class Query < ActiveRecord::Base
   belongs_to :user
   has_many :tags, :through => :user_command
 
-  has_finder :public, :conditions => ["user_commands.public_queries = 1"]
-  has_finder :non_empty, :conditions => ["LENGTH(query_string) > 0"]
-  has_finder :any
+  named_scope :public, :conditions => ["user_commands.public_queries = 1"]
+  named_scope :non_empty, :conditions => ["LENGTH(query_string) > 0"]
+  named_scope :any
 
   def command; user_command.command; end
   def after_create

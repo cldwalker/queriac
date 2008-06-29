@@ -5,7 +5,7 @@
 # ENV['RAILS_ENV'] ||= 'production'
 
 # Specifies gem version of Rails to use when vendor/rails is not present
-RAILS_GEM_VERSION = '2.0.2' unless defined? RAILS_GEM_VERSION
+RAILS_GEM_VERSION = '2.1.0' unless defined? RAILS_GEM_VERSION
 
 # Load sensitive data like database and SMTP passwords into the environment..
 require File.join(File.dirname(__FILE__), 'secrets')
@@ -80,8 +80,6 @@ ExceptionNotifier.sender_address = %("Application Error" <admin@queri.ac>)
 ExceptionNotifier.email_prefix = "[queriac] "
 
 # Include your application configuration below
-gem 'has_finder'
-require 'has_finder'
 require 'open-uri'
 require 'hpricot'
 
