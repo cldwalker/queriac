@@ -47,6 +47,8 @@ Rails::Initializer.run do |config|
   config.action_mailer.delivery_method = :smtp
   
   config.active_record.observers = :user_observer
+  
+  config.gem "hpricot"
 
   # Use the database for sessions instead of the cookie-based default,
   # which shouldn't be used to store highly confidential information
