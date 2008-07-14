@@ -17,18 +17,49 @@
 </div>
 
 <div class="floatkiller">
-	<% if ! @user_command.new_record? && @user_command.command_url_changed? %>
-	<span id="url_status" style="font-size: 11px">
-	  The command's url has changed to :<br/> <%= h @user_command.command.url %>.<br/>
-	<%= link_to_remote 'Click to update url', :url=>update_url_user_command_path(@user_command) %>
-	</span>
-	<br/>
+	<% if ! @user_command.new_record? %>
+		Url status: <%= url_status @user_command %>
+		<br/>
 	<% end %>
-  <%= f.label :url, "URL or Javascript Command. (Don't forget to include the protocol: http, https, javascript, etc..)" %><br />
+  <% label_string = "URL or Javascript Command. (Don't forget to include the protocol: http, https, javascript, etc..)" %>
+  <%= f.label :url, label_string %><br />
   <%= f.text_field :url, {:size => 90, :disabled=>@disabled_fields.include?(:url)} %>
 </div>
 
-<div>
+<% if @user_command.new_record? || @user_command.command_owned_by?(current_user)%>
+<div style="margin: 0px; padding: 0px; font-size: 11px; color: #666">
+	To create an option, you need to specify it in the url with format [:option_name].<br/>For example, an option named type is defined in this url: http://awesomeexample.com?type=[:type]&q=(q)
+</div>
+<% end %>
+<h3 style="margin-top: 5px">Url options:
+	<%= collapser_for "url_options", :autohide => true, :label => "Hide" %>
+	<%= expander_for "url_options", :autohide => false, :label => "Show" %>
+</h3>
+<div id="options_container" style="margin-left: 20px">
+
+<% if ! @user_command.new_record? && @user_command.has_options? || @user_command.new_record? %>
+<div id="url_options" style="display:none">
+
+	<% if @user_command.new_record? || @user_command.command_owned_by?(current_user)%>
+		<% sync_params = @user_command.new_record? ? {} : {:user_command=>@user_command.id} %>
+		<%= link_to_remote "Synchronize options with url", 
+			{:url=>sync_url_options_user_commands_path(sync_params), :before=>"$('processing').show()", 
+				:complete=>"$('processing').hide()",
+				:with => %['user_command_url=' + escape($('user_command_url').value)]}
+		%>
+		 - do this if you have modified the url. NOTE: any new input you have entered in the options will be erased.<br/>
+		<div id="processing" style="display:none"><%= image_tag "spinner.gif" %></div>
+	<% end %>
+		
+	<div id="user_command_options">
+		<%= render :partial=>'options', :locals=>{:options=>@user_command.ordered_url_options}%>
+	</div>
+</div>
+
+<% end %>
+</div>
+
+<div class="floatkiller">
   <%= f.label :description, "Description (If command is complex, please provide an explanation of it and a sample query)" %><br />
   <%= f.text_area :description, :cols => 100, :rows => 12  %>
 </div>

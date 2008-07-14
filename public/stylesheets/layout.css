@@ -274,7 +274,7 @@ div.msg p {
 	display: none;
 }
 
-#command_description_box, #user_command_description_box {
+#command_description_box, #user_command_description_box, .description_box {
 	background-color: #F5F5F5;
 	font-size: 1.1em;
 	border: 1px solid #DDD; 

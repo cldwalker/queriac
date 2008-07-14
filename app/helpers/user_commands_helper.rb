@@ -27,4 +27,47 @@ module UserCommandsHelper
       link_to sort_image, user_commands_path(:sort=>"down_by_#{column}")
     end
   end
+  
+  def option_type_specific_fields(option_type, form, options={})
+    fields = ''
+    case option_type
+    when 'enumerated'
+      fields += content_tag(:div, :class=>'floater') do
+        text_field_id = "user_command_url_options_#{options[:index]}_values"
+        update_link = link_to_remote("Update Default", :url=>update_default_picker_user_commands_path(:index=>options[:index]),
+          :with=>"'values=' + $('#{text_field_id}').value")
+        label_tag(text_field_id, "Values (comma delimited) #{update_link}") +
+          "<br/>" + form.text_field(:values)
+      end 
+      fields += content_tag(:div, :class=>'floater') do
+        values_array = options[:option_obj] ? options[:option_obj].values_list : []
+        form.label(:default) + "<br/>" +  form.select(:default, values_array, {:include_blank=>true}, :index=>options[:index])
+      end
+      fields += content_tag(:div, nil, :class=>'floatkiller')
+    when 'boolean'
+      fields << content_tag(:div, :class=>'floater') do
+        form.label(:true_value) + "<br/>" + form.text_field(:true_value)
+      end
+      fields << content_tag(:div, :class=>'floater') do
+        form.label(:false_value) + "<br/>" + form.text_field(:false_value)
+      end
+    else
+      fields += content_tag(:div, :class=>'floater') do
+        form.label(:default) + "<br/>" + form.text_field(:default, :size=>20)
+      end
+    end
+    fields
+  end
+  
+  def url_status(user_command, html_options={})
+    content_tag(:span, {:id=>'url_status'}.update(html_options)) do
+		  if user_command.command_url_changed?
+		    %[Not up to date.<br/>
+		      The command's url has changed to: #{h user_command.command.url}<br/>] +
+		      link_to_remote('Click to update url and options', :url=>update_url_user_command_path(user_command))
+		  else
+			  "Up to date"
+		  end
+		end
+  end
 end

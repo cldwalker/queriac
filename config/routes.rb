@@ -3,7 +3,8 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :commands, :member => { :execute => :get } , :collection=>{:search_all=>:get}
   map.resources :sessions
   map.resources :user_commands, :member=>{:copy=>:get, :update_url=>:post, :destroy=>:get}, 
-    :collection=>{:import=>:any, :tag_set=>:get, :tag_add_remove=>:get, :search=>:get, :copy_yubnub_command=>:get}
+    :collection=>{:import=>:any, :tag_set=>:get, :tag_add_remove=>:get, :search=>:get, :copy_yubnub_command=>:get,
+      :change_option_type_fields=>:post, :update_default_picker=>:post, :sync_url_options=>:post}
   map.with_options(:controller=>'user_commands') do |c|
     c.command_user_commands  'commands/:id/user_commands', :action=>'command_user_commands'
     c.formatted_command_user_commands  'commands/:id/user_commands.:format', :action=>'command_user_commands', :format=>'rss'

@@ -4,7 +4,7 @@ class UserCommandsController < ApplicationController
   before_filter :set_user_command, :only=>[:show, :edit, :update, :destroy, :update_url]
   before_filter :set_command, :only=>[:command_user_commands]
   before_filter :permission_required, :only=>[:edit, :update, :destroy, :update_url]
-  before_filter :store_location, :only=>[:index, :show, :edit, :command_user_commands]
+  before_filter :store_location, :only=>[:index, :show, :command_user_commands]
   before_filter :allow_breadcrumbs, :only=>[:search, :index, :command_user_commands, :show, :edit]
   before_filter :set_disabled_fields, :only=>[:copy, :edit]
   before_filter :load_tags_if_specified, :only=>:index
@@ -108,7 +108,7 @@ class UserCommandsController < ApplicationController
     end
     
     @user_command = UserCommand.new
-    @user_command.attributes = (@original_command || @base_command).attributes.slice(*%w{name keyword url description})
+    @user_command.attributes = (@original_command || @base_command).attributes.slice(*%w{name keyword url description url_options})
     render :action=>'new'
   end
   
@@ -140,7 +140,7 @@ class UserCommandsController < ApplicationController
         return
       end
       
-      @user_command = current_user.user_commands.new(params[:user_command])
+      @user_command = current_user.user_commands.new(params[:user_command].merge(:url_options=>get_url_options))
       
       respond_to do |format|      
         if @user_command.save
@@ -160,15 +160,46 @@ class UserCommandsController < ApplicationController
       end
       
   end
+
+  def sync_url_options
+    if params[:user_command]
+      @user_command = UserCommand.find(params[:user_command])
+      url_options = @user_command.merge_url_options_with_options_in_url(params[:user_command_url])
+      options = @user_command.ordered_url_options(url_options, params[:user_command_url])
+    else
+      #@user_command needed for options template
+      @user_command = UserCommand.new
+      options = UserCommand.new.options_from_url(params[:user_command_url]).map {|e| Option.new(:name=>e)}
+    end
+    render :update do |page|
+      page.replace_html :user_command_options, :partial=>'options', :locals=>{:options=>options}
+  	end
+	end
+	
+	def change_option_type_fields
+    render :update do |page|
+      page.replace_html "option_type_specific_fields_#{params[:index]}", :partial=>'option_type_specific_fields'
+  	end
+	end
+  
+  def update_default_picker
+    @values = Option.new.values_list(params[:values]) + [nil]
+    render :update do |page|
+      page.replace_html "user_command_url_options_#{params[:index]}_default", :inline=>%[
+        <%= options_for_select @values %>
+      ]
+  	end
+  end
   
   def update
     respond_to do |format|
-      if @user_command.update_all_attributes(params[:user_command], current_user)
+      if @user_command.update_all_attributes(params[:user_command].merge(:url_options=>get_url_options), current_user)
         @user_command.update_tags(params[:tags])
         flash[:notice] = "Command updated"
-        format.html { redirect_to public_user_command_path(@user_command) }
+        format.html { redirect_back_or_default public_user_command_path(@user_command) }
         #format.xml  { head :ok }
       else
+        set_disabled_fields
         format.html { render :action => "edit" }
         #format.xml  { render :xml => @user_command.errors.to_xml }
       end
@@ -176,16 +207,16 @@ class UserCommandsController < ApplicationController
   end
   
   def update_url
-    @user_command.update_url
+    @user_command.update_url_and_options
     render :update do |page|
-      page.replace 'url_status', "Url updated"
+      page.replace 'url_status', "Url and options updated"
     end
   end
 
   def destroy
     @user_command.destroy
     flash[:notice] = "User command deleted: <b>#{@user_command.name}</b>"      
-    redirect_to user_home_path(current_user)
+    redirect_back_or_default user_home_path(current_user)
   end
   
   def tag_add_remove
@@ -265,6 +296,22 @@ class UserCommandsController < ApplicationController
   def valid_sort_columns; %w{name queries_count created_at keyword}; end
   
   protected
+  def get_url_options
+    if (url_options = params[:user_command].delete(:url_options))
+      #only for update action
+      if @user_command
+        new_url_options = Option.sanitize_input(url_options.values)
+        if @user_command.options_from_url(params[:user_command][:url]).sort != @user_command.options_from_url_options(new_url_options).sort
+          return @user_command.merge_url_options_with_options_in_url(params[:user_command][:url])
+        end
+      end
+      url_options.values
+    else
+      #merge url options based on given url
+      (@user_command || UserCommand.new).merge_url_options_with_options_in_url(params[:user_command][:url])
+    end
+  end
+  
   def sort_param_value(default_sort = 'user_commands.queries_count DESC')
     general_sort_param_value('user_commands', valid_sort_columns, default_sort)
   end

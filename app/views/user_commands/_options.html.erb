@@ -1,0 +1,43 @@
+<% if options.empty? %>
+ No options detected.
+<% else %>
+<% options.each_with_index do |option, i| %>
+	<% alias_is_visible = !@user_command.new_record? && !option.alias.blank? %>
+	<% description_is_visible = !@user_command.new_record? && !option.description.blank? %>
+	<% option_fields_disabled = !@user_command.new_record? && !@user_command.command_owned_by?(current_user)%>
+	<div style="border: 1px dotted #427f0b; padding: 5px">
+	<% fields_for "user_command[url_options][]", option, :index=>i do |f1| %>
+		<div style="text-align: left; padding: 0px; margin: 0px">
+		<%= link_to_function 'Toggle alias', "$('option_box_alias_#{i}').toggle()"%> |
+		<%= link_to_function 'Toggle description', "$('option_box_description_#{i}').toggle()"%>
+		</div>
+		<div class="floater">
+			<%= f1.label :name %><br/>
+		  	<%= f1.text_field :name, :size=>10, :disabled=>option_fields_disabled %>
+			<%# needed to identify options %>
+			<%= f1.hidden_field :name %>
+		</div>
+		<div class="floater">
+			<%= f1.label :option_type %><br/>
+			<%= f1.select :option_type, Option::OPTION_TYPES, {}, :disabled=>option_fields_disabled,
+			 	:index=>i, :onchange=>remote_function(:url=>change_option_type_fields_user_commands_path(:index=>i),
+				:with => %['option_type=' + this.value]
+			)
+			%>
+		</div>
+		<div id="option_box_alias_<%= i %>" style="<%= 'display:none' unless alias_is_visible %>" class="floater">
+			<%= f1.label :alias %><br/>
+			<%= f1.text_field :alias, :size=>10 %>
+		</div>
+		<span id="option_type_specific_fields_<%= i%>">
+		<%= option_type_specific_fields option.option_type, f1, :index=>i, :option_obj=>option %>
+		</span>
+		<div id="option_box_description_<%= i %>" style="<%= 'display:none' unless description_is_visible %>" class="floater">
+			<%= f1.label :description %><br/>
+			<%= f1.text_field :description, :size=>40%>
+		</div>
+		<div class="floatkiller"></div>
+	<% end %>
+	</div>
+<% end %>
+<% end %>

@@ -28,10 +28,10 @@ module CreateSpecHelper
   end
   
   def create_user_command(hash={})
-    hash[:command] ||= create_command(hash)
-    hash = hash[:command].attributes.slice('url', 'name', 'keyword').merge(hash)
     user = hash[:user] || create_user
-    user.user_commands.create(hash)    
+    hash[:command] ||= create_command({:user=>user}.merge(hash.slice(:url, :url_options)))
+    hash = hash[:command].attributes.slice('url', 'name', 'keyword').symbolize_keys.merge(hash)
+    user.user_commands.create(hash)
   end
   
   def create_command(hash={})
@@ -57,5 +57,4 @@ module CreateSpecHelper
     seed = generate_random_alphanumeric(3)
     Tag.create({:name=>"tag_#{seed}"}.merge(hash))
   end
-  
 end

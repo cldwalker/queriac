@@ -59,7 +59,7 @@ describe 'user_commands/new:' do
     all_expectations
   end
   
-  it 'displays copy command, prefills fields' do
+  it 'when copying user command, displays page and prefills fields' do
     ucommand = create_user_command
     get :copy, :id=>ucommand.id
     basic_expectations
@@ -67,11 +67,13 @@ describe 'user_commands/new:' do
     assigns[:user_command].name.should == ucommand.name
     response.should have_tag('#user_command_command_id')
     assigns[:disabled_fields].should_not be_empty
+    
     #hidden/disabled checkboxes
     response.should have_tag('#user_command_url[disabled=disabled]')
     response.should_not have_tag('#user_command_public')
   end
-  
+    
+  it "when copying command, displays page and prefills fields"
   it 'redirects copying private command' do
     ucommand = create_user_command(:command=>create_command(:public=>false))
     get :copy, :id=>ucommand.id
@@ -79,6 +81,8 @@ describe 'user_commands/new:' do
     flash[:warning].should_not be_blank
   end
   
+  it 'copies user command with options'
+  it 'copies command with options'
   it 'redirects copying your own command'
   
 end
@@ -129,6 +133,28 @@ describe 'user_commands/create:' do
       lambda { post_request }.should change(Command, :count).by(1)
     }.should change(UserCommand, :count).by(1)
     basic_expectations
+  end
+  
+  it 'creates new public option command with options in sync' do
+    option_attributes = {"name"=>"q", "default"=>"", "description"=>"", "option_type"=>"normal", "alias"=>""}
+    lambda {
+      lambda { 
+        post_request(:url=>"http://yada.com/[:q]/show", 
+        :url_options=>{"0"=>option_attributes})
+      }.should change(Command, :count).by(1)
+    }.should change(UserCommand, :count).by(1)
+    basic_expectations
+    UserCommand.find_last.url_options[0].should == option_attributes.symbolize_keys
+  end
+  
+  it 'creates new public option command with options not in sync' do
+    lambda {
+      lambda { 
+        post_request(:url=>"http://yada.com/[:q]/show")
+      }.should change(Command, :count).by(1)
+    }.should change(UserCommand, :count).by(1)
+    basic_expectations
+    UserCommand.find_last.url_options[0][:name] == 'q'
   end
   
   it 'creates public user command and points to existing public command' do
@@ -260,12 +286,33 @@ describe 'user_commands/update:' do
     @user_command.reload.name.should eql('another name')
   end
   
+  it 'owner updates option command when url_options in sync' do
+    new_url = 'http://bling.com/search?adr=[:adr]'
+    put :update, :id=>@user_command.to_param, :user_command=>{:url=>new_url, 
+      :url_options=>{'0'=>{'name'=>'adr', 'default'=>''}}}, :tags=>''
+    basic_expectations
+    @user_command.reload
+    @user_command.url == new_url
+    @user_command.url_options[0][:name] == 'adr'
+  end
+  
+  it 'owner updates option command when url_options not in sync' do
+    new_url = 'http://bling.com/search?adr=[:adr]'
+    put :update, :id=>@user_command.to_param, :user_command=>{:url=>new_url, 
+      :url_options=>{'0'=>{'name'=>'wrong_option', 'default'=>''}}}, :tags=>''
+    basic_expectations
+    @user_command.reload
+    @user_command.url == new_url
+    @user_command.url_options[0][:name] == 'adr'
+  end
+  
   it 'owner updates command fields' do
     @user_command.command.http_post.should be_false
     put :update, :id=>@user_command.to_param, :user_command=>{:http_post=>'1', :url=>'bling.com'}, :tags=>''
     basic_expectations
     @user_command.command.reload.http_post.should be_true
     @user_command.command.url.should == 'bling.com'
+    pending 'can also update url_options'
   end
   
   it "user can't update command fields " do
@@ -356,7 +403,7 @@ describe 'user_command actions:' do
     flash[:notice].should_not be_blank
   end
   
-  it 'update_url'
+  it 'update_url updates url and options'
   
   it 'search: displays results' do
     user_command = create_user_command
@@ -367,16 +414,19 @@ describe 'user_command actions:' do
     assigns[:user_commands][0].should be_an_instance_of(UserCommand)
   end
   
-    it 'search: warns and redisplays page for an empty search string' do
-      user_command = create_user_command
-      login_user user_command.user
-      get :search, :q=>''
-      response.should be_success
-      response.should render_template('index')
-      flash[:warning].should_not be_blank
-      assigns[:user_commands].should be_empty
-    end
+  it 'search: warns and redisplays page for an empty search string' do
+    user_command = create_user_command
+    login_user user_command.user
+    get :search, :q=>''
+    response.should be_success
+    response.should render_template('index')
+    flash[:warning].should_not be_blank
+    assigns[:user_commands].should be_empty
+  end
   
+  it 'sync_url_options'
+  it 'change_option_type_fields'
+  it 'update_default_picker'
 end
 
 describe 'user_commands/tag_set:' do

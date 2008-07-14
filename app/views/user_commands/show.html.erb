@@ -25,6 +25,8 @@
 			<%= command_description(@user_command) %>
 		</div>
 	</div>
+	
+	<%= render :partial=>'options_description_box', :locals=>{:command=>@user_command}%>
 		
 	<% if can_view_queries? %>
 		<h2>
@@ -54,15 +56,7 @@
 	
 	<% if user_command_owner? %>
 	<p><b>Url Status:</b>
-		<span id="url_status">
-		<% if @user_command.command_url_changed? %>
-		Not up to date.<br/>
-		 The command's url has changed to: <%= h @user_command.command.url %><br/>
-		<%= link_to_remote 'Click to update url', :url=>update_url_user_command_path(@user_command) %>
-		<% else %>
-			Up to date
-		<% end %>
-		</span>
+		<%= url_status @user_command %>
 	</p>
 	<% end %>
 	

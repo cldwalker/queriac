@@ -16,6 +16,7 @@ class Command < ActiveRecord::Base
   validates_uniqueness_of :url, :scope=>[:public], :unless=>Proc.new {|c| c.private? }
   validates_uniqueness_of :keyword, :allow_nil=>true
   validates_format_of :keyword, :with => /^\w+$/i, :message => "can only contain letters and numbers.", :unless=>Proc.new {|c| c.keyword.nil?}  
+  serialize :url_options, Array
   
   # Validation / Initialization
   #------------------------------------------------------------------------------------------------------------------
@@ -28,9 +29,8 @@ class Command < ActiveRecord::Base
       elsif self.keyword =~ /^\d+$/
         errors.add(:keyword, "can't only contain numbers.")
       end
-      false
     end
-    true
+    validate_url_options if has_options? 
   end
   
   #trying to ensure commands are created from user command creation even
@@ -48,9 +48,12 @@ class Command < ActiveRecord::Base
     end
   end
   
-  def after_validation
+  def before_validation_on_create
     self.keyword.downcase! if self.keyword
     self.url.sub!('%s', DEFAULT_PARAM )
+  end
+  
+  def after_validation
     self.kind = (self.url.include?(DEFAULT_PARAM) || self.url =~ OPTION_PARAM_REGEX) ? "parametric" : "shortcut"
     self.bookmarklet = self.url.downcase.starts_with?('javascript') ? true : false
   end

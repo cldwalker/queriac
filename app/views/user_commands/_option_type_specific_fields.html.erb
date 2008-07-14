@@ -1,0 +1,5 @@
+<% fields_for "user_command[url_options][]", Option.new, :index=>params[:index] do |f1|
+	@f1 = f1
+end %>
+
+<%= option_type_specific_fields params[:option_type] , @f1, :index=>params[:index]%>

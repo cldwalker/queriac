@@ -18,19 +18,20 @@
 </p>
 
 <div id="primary">
-		<div style="margin: 20px 0px">
-			<h2>Description</h2>
-			<div id="command_description_box" style="font-size: 12px">
-				<%= command_description @command %>
-			</div>
+	<div style="margin: 20px 0px">
+		<h2>Description</h2>
+		<div id="command_description_box" style="font-size: 12px">
+			<%= command_description @command %>
 		</div>
-		
-		<h2>
-			Public Queries
-			<%= "(Last #{@queries.size})" %>
-		</h2>
-		<%= query_table @queries, :columns=>[:query_string, :created_at]%>
-		<%= table_link_to "View all queries", command_queries_path(@command) %>
+	</div>
+	<%= render :partial=>'user_commands/options_description_box', :locals=>{:command=>@command}%>
+	
+	<h2>
+		Public Queries
+		<%= "(Last #{@queries.size})" %>
+	</h2>
+	<%= query_table @queries, :columns=>[:query_string, :created_at]%>
+	<%= table_link_to "View all queries", command_queries_path(@command) %>
 </div>
 
 

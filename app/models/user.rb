@@ -31,9 +31,10 @@ class User < ActiveRecord::Base
   
   belongs_to :default_command, :class_name => "UserCommand", :foreign_key => :default_command_id
   
-  # Why do these break shit?
-  # named_scope :activated, :conditions => ["activation_code IS NOT NULL"]
-  # named_scope :any
+  VIEWABLE_SQL = %[users.activation_code IS NULL]
+  #these named_scope methods are just for console since they work intermittently with paginate (only for this model)
+  named_scope :any
+  named_scope :active, :conditions => VIEWABLE_SQL
   
   # Virtual attribute for the unencrypted password
   attr_accessor :password
@@ -51,7 +52,6 @@ class User < ActiveRecord::Base
   validates_format_of       :email,  :with => /^([^@\s]+)@(?:[-a-z0-9]+\.)+[a-z]{2,}$/i
   before_save :encrypt_password
   before_create :make_activation_code
-  VIEWABLE_SQL = %[users.activation_code IS NULL]
   
   def validate
     if self.login && USER_STOPWORDS.include?(self.login.downcase)

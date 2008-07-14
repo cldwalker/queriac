@@ -229,8 +229,18 @@ module ApplicationHelper
     default_title
   end
   
-  #command or user command
+  #command or user command methods
   def command_description(command)
     simple_format command.description.blank? ? 'No description yet.' : command.description
   end
+  
+  def option_metadata(option)
+    metadata = ''
+    metadata << "- description: #{h option.description}<br/>" unless option.description.blank?
+		metadata << "- allowed values: #{h option.values}<br/>" unless option.values.blank?
+		metadata << "- default: #{h option.default}<br/>" unless option.default.blank?
+		metadata << "- alias: #{h option.alias}<br/>" unless option.alias.blank?
+		metadata
+  end
+  
 end

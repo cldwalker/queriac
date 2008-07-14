@@ -1,40 +1,37 @@
+#contains common code used between commands and user_commands: options and domain related methods
 module CommandHelper
   
-  #url supports position and/or option variables with defaults
-  #option:   google.com?q=(q)&v=[:v=normal]
+  #url supports position and/or option variables
+  #option:   google.com?q=(q)&v=[:v]
   #position: google.com?q=[:1]&v=[:2]
   #options must start at beginning of query
   #option parsing can be turned off by specifying -off
-  #TODO: escape characters used in regexs ie value[/[^\\]\|/]
+  
   def url_for(query_string, manual_url_encode=nil)
     #no warning is given for options that aren't valid for a command
-    options = parse_query_options(query_string)
+    query_options = parse_query_options(query_string)
     query_string.strip!
     
-    #OPTION_PARAM_REGEX = /\[:(\w+)(=[^\[\]]+)?\]/
     redirect_url = self.url.gsub(OPTION_PARAM_REGEX) do
       name = $1
-      default = $2 ? $2[1..-1] : nil
+      next unless (option = fetch_url_option(name))
+      # default = $2 ? $2[1..-1] : nil
        
        #position value
        if name =~ /^\d$/
-         value = query_array_value(query_string, name.to_i) || default
+         value = query_array_value(query_string, name.to_i) || option.default
         #option value
        else
-         #boolean option detected
-         if default && default.include?("|")
-           true_value, false_value = default.split("|", 2)
-           value = options[name] ? true_value : false_value
-         #enumerated option detected
-         elsif default && default.include?(",")
-           possible_values = default.split(",")
-           value = possible_values.include?(options[name]) ? options[name] : possible_values[0]
+         case option.option_type
+         when 'boolean'
+           value = query_options[name] ? option.true_value : option.false_value
+         when 'enumerated'
+           value = option.values_list.include?(query_options[name]) ? query_options[name] : option.default
          else
-           value = options[name] || default
+           value = query_options[name] || option.default
          end
        end
        
-       # p [name, default]
        #TODO: give user option to error out for parameters without value or default
        value ? url_encode_string(value) : ''
     end
@@ -42,9 +39,25 @@ module CommandHelper
     redirect_url.gsub(DEFAULT_PARAM, url_encode_string(query_string))
   end
   
-  # def alias_option_value(option_value, alias_definition='')
-  #   alias_definition.include?(":") && (alias_definition.split(":")[0] == option_value) ? alias_definition.split(":")[1] : option_value
-  # end
+  def fetch_url_option(option_name)
+    option_name = option_name.to_s
+    @url_options_hash ||= {}
+    return @url_options_hash[option_name] if @url_options_hash[option_name]
+    if (option = url_options.find {|e| e[:name] == option_name })
+      @url_options_hash[option_name] = Option.new(option)
+      @url_options_hash[option_name]
+    else
+      nil
+    end
+  end
+  
+  def options_from_url(url_value=self.url)
+    url_value ? url_value.scan(OPTION_PARAM_REGEX).map {|e| e[0] } : []
+  end
+  
+  def options_from_url_options(url_options_value=self.url_options)
+    url_options_value.map {|e| e[:name]}
+  end
   
   def query_array_value(query_string, number)
     unless @query_array
@@ -74,12 +87,84 @@ module CommandHelper
         ''
       end
     end
+    
+    #convert aliased names to normal option names
+    options.delete_if {|name, value|
+      #merge with fetch_url_option if this is done again
+      if (option = url_options.find {|e| e[:alias] == name})
+        options[option[:name]] = value
+        true
+      else
+        false
+      end
+    }
     options
+  end
+  
+  def has_options?
+    self.url =~ OPTION_PARAM_REGEX ? true : false
+  end
+  
+  def ordered_url_options(unordered_options=self.url_options, ordered_url=self.url)
+    ordered_option_names = options_from_url(ordered_url)
+    ordered_options = []
+    ordered_option_names.each do |e|
+      if (option = fetch_url_option(e))
+        ordered_options << option
+      end
+    end
+    ordered_options
   end
   
   def url_encode_string(string, manual_url_encode=nil)
     is_url_encoded = !manual_url_encode.nil? ? manual_url_encode : url_encode?
     is_url_encoded ? CGI.escape(string) : string
+  end
+  
+  def url_options=(value)
+    value = Option.sanitize_input(value || [])
+    #to preserve nil value when there are no options
+    value = nil if value.is_a?(Array) && value.empty?
+    super(value)
+  end
+  
+  def url_options
+    read_attribute(:url_options) || []
+  end
+  
+  def validate_url_options
+    #options from url + url_options column match
+    if options_from_url.sort != options_from_url_options.sort
+      missing = options_from_url - options_from_url_options
+      extra = options_from_url_options - options_from_url
+      message = "don't match options defined by url."
+      message += " Extra option(s) are #{extra.join(", ")}." unless extra.empty?
+      message += " Missing option(s) are #{missing.join(", ")}." unless missing.empty?
+      errors.add(:url_options, message)
+    end
+    
+    #option names + aliases must be unique
+    option_names = url_options.map {|e| [e[:name], e[:alias]]}.flatten.delete_if{|e| e.blank? }
+    duplicates = duplicates_in_array(option_names)
+    errors.add(:url_options, "has the following duplicate option names/aliases: #{duplicates.join(", ")}.") unless duplicates.empty?
+    
+    #field lengths must not exceed field_length_max
+    #might need longer length for values and description fields
+    field_length_max = 350
+    options_with_long_fields = url_options.select {|e| e.values.any?{|f| f.length > field_length_max} }.map {|e| e[:name]}
+    unless options_with_long_fields.empty?
+      errors.add(:url_options, "has the following options with fields longer than #{field_length_max} characters: #{options_with_long_fields.join(", ")}") 
+    end
+  end
+  
+  def duplicates_in_array(array)
+    count = {}
+    array.each {|e|
+      count[e] ||= 0
+      count[e] += 1
+    }
+    count.delete_if {|k,v| v<=1}
+    count.keys
   end
   
   # def url_for(query_string, manual_url_encode=nil)
@@ -113,3 +198,74 @@ module CommandHelper
   end
   
 end
+
+__END__
+
+#TODO: escape characters used in regexs ie value[/[^\\]\|/]
+# def old_url_for(query_string, manual_url_encode=nil)
+#   #no warning is given for options that aren't valid for a command
+#   options = parse_query_options(query_string)
+#   query_string.strip!
+#   
+#   #OPTION_PARAM_REGEX = /\[:(\w+)(=[^\[\]]+)?\]/
+#   redirect_url = self.url.gsub(OPTION_PARAM_REGEX) do
+#     name = $1
+#     default = $2 ? $2[1..-1] : nil
+#      
+#      #position value
+#      if name =~ /^\d$/
+#        value = query_array_value(query_string, name.to_i) || default
+#       #option value
+#      else
+#        #boolean option detected
+#        if default && default.include?("|")
+#          true_value, false_value = default.split("|", 2)
+#          value = options[name] ? true_value : false_value
+#        #enumerated option detected
+#        elsif default && default.include?(",")
+#          possible_values = default.split(",")
+#          value = possible_values.include?(options[name]) ? options[name] : possible_values[0]
+#        else
+#          value = options[name] || default
+#        end
+#      end
+#      
+#      # p [name, default]
+#      #TODO: give user option to error out for parameters without value or default
+#      value ? url_encode_string(value) : ''
+#   end
+#   
+#   redirect_url.gsub(DEFAULT_PARAM, url_encode_string(query_string))
+# end
+
+# def extract_url_options
+#     uoptions = {}
+#     self.url.scan(OPTION_PARAM_REGEX).each do |e|
+#       name = e[0].to_sym
+#       default = e[1] ? e[1][1..-1] : nil
+#        #position value
+#       if name =~ /^\d$/
+#          #do nothing
+#       #option value
+#       else
+#          #boolean option detected
+#          if default && default.include?("|")
+#            true_value, false_value = default.split("|", 2)
+#            uoptions[name] = {:type=>:boolean, :true=>true_value, :false=>false_value}
+#            
+#          #enumerated option detected
+#          elsif default && default.include?(",")
+#            possible_values = default.split(",")
+#            uoptions[name] = {:type=>:enumerated, :values=>possible_values, :default=>possible_values[0]}
+#          else
+#            uoptions[name] = default.nil? ? {} : {:default=>default}
+#          end
+#        end
+#     end
+#     uoptions   
+#   end
+#   
+# def alias_option_value(option_value, alias_definition='')
+#   alias_definition.include?(":") && (alias_definition.split(":")[0] == option_value) ? alias_definition.split(":")[1] : option_value
+# end
+
