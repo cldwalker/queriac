@@ -275,6 +275,11 @@ ul.users li {
 	line-height: .9em;
 }
 
+#url_options_descriptions li {
+	list-style-type: disc;
+	list-style-position: inside;
+ 	margin-bottom: 10px
+}
 #option_types ul.normal li, #option_basics ul.normal li {
 	line-height: 170%;
 }
@@ -409,4 +414,27 @@ hr {
 
 .faded {
 	color: #999;
+}
+
+#url_options_instructions {
+	margin: 0px 0px 0px 0px;
+	padding: 0px; 
+	font-size: 11px; 
+	color: #666
+}
+
+#command_options_instructions {
+	margin-top: 10px;
+	font-size: 11px;
+	margin-bottom: 0px;
+}
+
+.option_box {
+	border: 1px dotted #427f0b; 
+	padding: 5px
+}
+.option_toggle_links {
+	text-align: left; 
+	padding: 0px; 
+	margin: 0px
 }

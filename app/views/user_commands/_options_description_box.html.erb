@@ -1,9 +1,9 @@
 <% if command.has_options? %>
 <h2>Options</h2>
 <div style="margin-left: 20px">
-	<ul>
+	<ul id="url_options_descriptions">
 		<% for opt in command.ordered_url_options %>
-		<li style="list-style-type: disc; list-style-position: inside; margin-bottom: 10px">
+		<li>
 			<b style="font-size: 12px"><%= opt.name %></b>
 			<%= " (#{opt.option_type})" if opt.option_type != 'normal' %>
 			<% if (metadata = option_metadata(opt)) && ! metadata.blank? %>

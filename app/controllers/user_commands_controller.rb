@@ -154,6 +154,7 @@ class UserCommandsController < ApplicationController
             flash.now[:warning] = render_to_string :inline=>"The url entered indicates that you already have this command: 
               <%= link_to existing_user_command.name, public_user_command_path(existing_user_command) %>", :locals=>{:existing_user_command=>existing_user_command}
           end
+          set_disabled_fields #for copy
           format.html { render :action => "new" }
           #format.xml  { render :xml => @command.errors.to_xml }
         end
@@ -349,7 +350,7 @@ class UserCommandsController < ApplicationController
   
   def set_disabled_fields
     options = {}
-    options[:copy] = true if self.action_name == 'copy'
+    options[:copy] = true if self.action_name == 'copy' || params[:is_copy]
     @disabled_fields = get_disabled_fields(current_user, options)
   end
   

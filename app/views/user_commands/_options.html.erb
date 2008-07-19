@@ -5,11 +5,11 @@
 	<% alias_is_visible = !@user_command.new_record? && !option.alias.blank? %>
 	<% description_is_visible = !@user_command.new_record? && !option.description.blank? %>
 	<%# disable if subscriber is editing or if user is copying %>
-	<% option_fields_disabled = !@user_command.new_record? && !@user_command.command_owned_by?(current_user) ||
-		@user_command.new_record? && @controller.action_name == 'copy' %>
-	<div style="border: 1px dotted #427f0b; padding: 5px">
+	<% option_fields_disabled = (!@user_command.new_record? && !@user_command.command_owned_by?(current_user)) ||
+		(@user_command.new_record? && @controller.action_name == 'copy') || params[:is_copy] %>
+	<div class="option_box">
 	<% fields_for "user_command[url_options][]", option, :index=>i do |f1| %>
-		<div style="text-align: left; padding: 0px; margin: 0px">
+		<div class="option_toggle_links">
 		<%= link_to_function 'Toggle alias', "$('option_box_alias_#{i}').toggle()"%> |
 		<%= link_to_function 'Toggle description', "$('option_box_description_#{i}').toggle()"%>
 		</div>

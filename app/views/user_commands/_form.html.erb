@@ -1,5 +1,6 @@
 <% if controller.action_name == 'copy' %>
 	<%= hidden_field_tag 'user_command[command_id]', @command_id, :id=>'user_command_command_id' %>
+	<%= hidden_field_tag 'is_copy', 1 %>
 	<div style="font-size: 12px">
 		Since you are copying an existing command, certain fields cannot be edited ie url.
 	</div>
@@ -24,25 +25,23 @@
   <% label_string = "URL or Javascript Command. (Don't forget to include the protocol: http, https, javascript, etc..)" %>
   <%= f.label :url, label_string %><br />
   <%= f.text_field :url, {:size => 90, :disabled=>@disabled_fields.include?(:url)} %>
+  <%= f.hidden_field :url if @disabled_fields.include?(:url) %>
 </div>
 
-<div style="margin: 0px; padding: 0px; font-size: 11px; color: #666">
+<div id="url_options_instructions">
 	<% if @user_command.new_record? || @user_command.command_owned_by?(current_user)%>
 		To create an option, you need to specify it in the url with format [:option_name].<br/>
 		For example, an option named type is defined in this url: http://cowpie.com?type=[:type]&q=(q). 
 		<%= link_to "Learn more ...", static_page_path('options_tutorial') %>
 	<% else %>
-		<%= link_to "Learn more about options ...", static_page_path('options_tutorial') %>
+		<%= link_to "Learn more about url options ...", static_page_path('options_tutorial') %>
 	<% end %>
 </div>
 <h3 style="margin-top: 5px">Url options:
 	<%= collapser_for "url_options", :autohide => true, :label => "Hide" %>
 	<%= expander_for "url_options", :autohide => false, :label => "Show" %>
 </h3>
-<div id="options_container" style="margin-left: 20px">
-
-<% if ! @user_command.new_record? && @user_command.has_options? || @user_command.new_record? %>
-<div id="url_options" style="display:none">
+<div id="url_options" style="display:none; margin-left: 20px">
 
 	<% if @user_command.new_record? || @user_command.command_owned_by?(current_user)%>
 		<% sync_params = @user_command.new_record? ? {} : {:user_command=>@user_command.id} %>
@@ -54,14 +53,12 @@
 		 - Do this if you have modified the url. NOTE: any new input you have entered in the options will be erased.<br/>
 		<div id="processing" style="display:none"><%= image_tag "spinner.gif" %></div>
 	<% end %>
-		
+	
 	<div id="user_command_options">
 		<%= render :partial=>'options', :locals=>{:options=>@user_command.ordered_url_options}%>
 	</div>
 </div>
 
-<% end %>
-</div>
 
 <div class="floatkiller">
   <%= f.label :description, "Description (If command is complex, please provide an explanation of it and a sample query)" %><br />
@@ -83,8 +80,8 @@
 </div>
 
 	
-<h3>COMMAND OPTIONS</h3>
-<div style="margin-top: 10px; font-size: 11px">
+<h3 style="margin-bottom: 0px">COMMAND OPTIONS</h3>
+<div id="command_options_instructions">
 <% if @user_command.new_record? && @controller.action_name != 'copy' %>
 	* Once a command is public and is used by more than one person it must remain public.
 <% elsif ! @user_command.new_record? && @user_command.command_owned_by?(current_user) %>
