@@ -1,9 +1,9 @@
 #contains common code used between commands and user_commands: options and domain related methods
 module CommandHelper
   
-  #url supports position and/or option variables
+  #url supports argument and/or option variables
   #option:   google.com?q=(q)&v=[:v]
-  #position: google.com?q=[:1]&v=[:2]
+  #argument: google.com?q=[:1]&v=[:2]
   #options must start at beginning of query
   #option parsing can be turned off by specifying -off
   
@@ -15,12 +15,11 @@ module CommandHelper
     redirect_url = self.url.gsub(OPTION_PARAM_REGEX) do
       name = $1
       next unless (option = fetch_url_option(name))
-      # default = $2 ? $2[1..-1] : nil
        
-       #position value
+       #argument
        if name =~ /^\d$/
          value = query_array_value(query_string, name.to_i) || option.default
-        #option value
+      #option
        else
          case option.option_type
          when 'boolean'
@@ -36,7 +35,8 @@ module CommandHelper
        value ? url_encode_string(value) : ''
     end
     
-    redirect_url.gsub(DEFAULT_PARAM, url_encode_string(query_string))
+    modified_query_string = @query_array ? (@query_array[@biggest_query_array_index .. -1] || []).join(" ") : query_string
+    redirect_url.gsub(DEFAULT_PARAM, url_encode_string(modified_query_string))
   end
   
   def fetch_url_option(option_name)
@@ -52,7 +52,7 @@ module CommandHelper
   end
   
   def options_from_url(url_value=self.url)
-    url_value ? url_value.scan(OPTION_PARAM_REGEX).map {|e| e[0] } : []
+    url_value ? url_value.scan(OPTION_PARAM_REGEX).map {|e| e[0] }.uniq : []
   end
   
   def options_from_url_options(url_options_value=self.url_options)
@@ -61,33 +61,43 @@ module CommandHelper
   
   def query_array_value(query_string, number)
     unless @query_array
+      @biggest_query_array_index = 0
       @query_array = query_string.split(/\s+/)
     end
+    @biggest_query_array_index = number if number > @biggest_query_array_index
     @query_array[number - 1]
   end
   
+  #names/aliases of boolean options
+  def url_options_booleans
+    url_options.select {|e| e[:option_type] == 'boolean' }.map {|e| [ e[:name], e[:alias]]}.flatten.select {|e| ! e.blank?}
+  end
+    
   def parse_query_options(query_string)
     options = {}
-    option_regex = /-(\w+)(\s*=\s*|\s+)?(\w+|'[^'-]+')?|--(\w+)/
+    #placeholder_for_dollar_1 shouldn't be set, just there to keep $1 constant
+    boolean_regex_string =  url_options_booleans.empty? ? "-(placeholder_for_dollar_1)|" : "-(#{url_options_booleans.join('|')})|"
+    option_regex_string = boolean_regex_string + %q{-(\w+)(\s*=\s*|\s+)?(\w+|'[^'-]+')}
     #-(\w+)             option is a word, should match option regex in OPTION_PARAM_REGEX
     #(?:\s*=\s*|\s+)    space(s) or '=' delimits option from value
     #(\w+|'[^'-]+')   value can be a word or anything between quotes
+    option_regex = Regexp.new option_regex_string
     
     #option parsing starts with '-' unless it's -off
     if query_string.sub!(/^\s*-off/, '').nil? && query_string =~ /^\s*-/
       query_string.gsub!(option_regex) do
         #boolean option set
-        if $4
-          options[$4] = true
+        if $1
+          options[$1] = true
         else
-          name, value = $1, $3
+          name, value = $2, $4
+          #$1 refers to new regexp
           value = $1 if value && value[/^'(.*)'$/]
           options[name] = value
         end
         ''
       end
     end
-    
     #convert aliased names to normal option names
     options.delete_if {|name, value|
       #merge with fetch_url_option if this is done again
@@ -167,15 +177,6 @@ module CommandHelper
     count.keys
   end
   
-  # def url_for(query_string, manual_url_encode=nil)
-  #   is_url_encoded = !manual_url_encode.nil? ? manual_url_encode : url_encode?
-  #   if is_url_encoded
-  #     self.url.gsub(DEFAULT_PARAM, CGI.escape(query_string))
-  #   else
-  #     self.url.gsub(DEFAULT_PARAM,query_string)
-  #   end
-  # end
-  
   #domain value should be the same for command + its usercommand
   #pushing to have no dependence on command when rendering favicons
   def domain
@@ -200,6 +201,16 @@ module CommandHelper
 end
 
 __END__
+
+# def simple_url_for(query_string, manual_url_encode=nil)
+#   is_url_encoded = !manual_url_encode.nil? ? manual_url_encode : url_encode?
+#   if is_url_encoded
+#     self.url.gsub(DEFAULT_PARAM, CGI.escape(query_string))
+#   else
+#     self.url.gsub(DEFAULT_PARAM,query_string)
+#   end
+# end
+
 
 #TODO: escape characters used in regexs ie value[/[^\\]\|/]
 # def old_url_for(query_string, manual_url_encode=nil)

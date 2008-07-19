@@ -33,6 +33,9 @@
 	</p>
 <% end %>
 
+<h2>Using Options</h2>
+<%= link_to "See the tutorial just for options", static_page_path('options_tutorial') %>
+
 <h2>Done?</h2>
 <% if logged_in? %>
 	<p>It looks like you're already logged in, so go ahead and proceed to <%= link_to "your home page", user_home_path(current_user) %>.</p>
@@ -41,7 +44,6 @@
 		You don't seem to be logged in. <%= link_to "Click here to log in and start creating commands", new_session_path %>.
 	</p>
 <% end %>
-
 
 </div>
 <div id="secondary">

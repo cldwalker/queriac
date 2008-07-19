@@ -171,14 +171,14 @@ describe 'users/activate:' do
       get :activate, :activation_code=>@user.activation_code
     }.should change(UserCommand, :count).by_at_least(8)
     
-    response.should redirect_to(setup_path)
+    response.should redirect_to(static_page_path('setup'))
     flash[:notice].should_not be_blank
     @user.reload.should be_activated
   end
   
   it 'warns and redirects for invalid activation' do
     get :activate, :activation_code=>'XXXXXXX'
-    response.should redirect_to(setup_path)
+    response.should redirect_to(static_page_path('setup'))
     flash[:warning].should_not be_blank
     @user.reload.should_not be_activated
   end

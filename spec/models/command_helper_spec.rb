@@ -48,7 +48,7 @@ describe 'url_for: ' do
     @command.url_options = [{:name=>'type', :option_type=>'boolean', :true_value=>'whoop', :false_value=>'ok'}]
     @command.url = "http://google.com/search?q=(q)&type=[:type]"
     expected_url = "http://google.com/search?q=yep&type=whoop"
-    @command.url_for('--type yep').should == expected_url
+    @command.url_for('-type yep').should == expected_url
   end
   
   it 'boolean option left false' do
@@ -72,41 +72,35 @@ describe 'url_for: ' do
     @command.url_for('-type retarded yep').should == expected_url
   end
   
-  it 'option command with no option or default' do
+  it "command doesn't use its option" do
     @command.url_options = [{:name=>'type'}]
     @command.url = "http://google.com/search?q=(q)&type=[:type]"
     expected_url = "http://google.com/search?q=yep&type="
     @command.url_for('yep').should == expected_url
   end
   
-  # it 'option command with default having spaces' do
-  #   @command.url = "http://google.com/search?q=(q)&type=[:type=long type sheesh]"
-  #   expected_url = "http://google.com/search?q=yep&type=long+type+sheesh"
-  #   @command.url_for('yep').should == expected_url
-  # end
-   
-  it 'position command with default' do
+  it 'argument with default' do
     @command.url_options = [{:name=>'1'}, {:name=>'2', :default=>'google'}]
     @command.url = "http://queri.ac/[:1]/user_commands/tag/[:2]"
     expected_url = "http://queri.ac/ghorner/user_commands/tag/google"
     @command.url_for('ghorner').should == expected_url
   end
   
-  it 'position command with multiple positions' do
+  it 'multiple arguments' do
     @command.url_options = [{:name=>'1'}, {:name=>'2'}]
     @command.url = "http://queri.ac/[:1]/user_commands/tag/[:2]"
     expected_url = "http://queri.ac/ghorner/user_commands/tag/google"
     @command.url_for('ghorner google').should == expected_url
   end
   
-  it 'position command with repeat positions' do
+  it 'argument in url multiple times' do
     @command.url_options = [{:name=>'1'}, {:name=>'2'}]
     @command.url = "http://google.com/search?q=[:2]&view=[:1]&type=[:1]"
     expected_url = "http://google.com/search?q=this&view=normal&type=normal"
     @command.url_for('normal this').should == expected_url
   end
   
-  it 'position + option command' do
+  it 'arguments and options combined' do
     @command.url_options = [{:name=>'2'}, {:name=>'1'}, {:name=>'type'}]
     @command.url = "http://google.com/search?q=[:2]&view=[:1]&type=[:type]"
     expected_url = "http://google.com/search?q=dodo&view=normal&type=cool"
@@ -119,8 +113,9 @@ describe 'parse_query_options: ' do
   before(:each) { @command = Command.new }
   
   it "should parse query options" do
-    query_string = "--L -view normal -type = cool -r='one two' -q 'three' still here"
+    query_string = "-L -view normal -type = cool -r='one two' -q 'three' still here"
     expected_options = {'L'=>true, 'view'=>'normal', 'type'=>'cool', 'r'=>'one two', 'q'=>'three'}
+    @command.url_options = [{:name=>'L', :option_type=>'boolean'}]
     @command.parse_query_options(query_string).should == expected_options
     query_string.should =~ /^\s*still here$/
   end
@@ -160,6 +155,10 @@ describe 'misc actions' do
   
   it 'options_from_url: returns empty array for optionless url' do
     @command.options_from_url("http://google.com/search?q=(q)").should == []
+  end
+  
+  it 'options_from_url: should only return one of any option' do
+    @command.options_from_url("http://google.com/search?q=(q)&type=[:type]&blah=[:type]").should == ['type']
   end
   
   it 'url_options=: sanitizes input' do

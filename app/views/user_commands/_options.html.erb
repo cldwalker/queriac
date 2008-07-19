@@ -4,7 +4,9 @@
 <% options.each_with_index do |option, i| %>
 	<% alias_is_visible = !@user_command.new_record? && !option.alias.blank? %>
 	<% description_is_visible = !@user_command.new_record? && !option.description.blank? %>
-	<% option_fields_disabled = !@user_command.new_record? && !@user_command.command_owned_by?(current_user)%>
+	<%# disable if subscriber is editing or if user is copying %>
+	<% option_fields_disabled = !@user_command.new_record? && !@user_command.command_owned_by?(current_user) ||
+		@user_command.new_record? && @controller.action_name == 'copy' %>
 	<div style="border: 1px dotted #427f0b; padding: 5px">
 	<% fields_for "user_command[url_options][]", option, :index=>i do |f1| %>
 		<div style="text-align: left; padding: 0px; margin: 0px">

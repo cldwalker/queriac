@@ -63,7 +63,7 @@ module ApplicationHelper
       crumbs << ['queries', queries_path]
       add_tags_to_crumbs(crumbs)
     elsif params[:controller] == 'static'
-      crumbs << params[:action]
+      crumbs << params[:static_page]
     end
     crumbs
   rescue
@@ -85,8 +85,8 @@ module ApplicationHelper
     items = []
     items << "logged in as " + link_to(current_user.login, user_home_path(current_user), :class => "underlined") if logged_in?
     items << link_to_unless_current("settings", settings_path) if logged_in?
-    items << link_to_unless_current("help", help_path)
-    items << link_to_unless_current("tutorial", tutorial_path)
+    items << link_to_unless_current("help", static_page_path('help'))
+    items << link_to_unless_current("tutorial", static_page_path('tutorial'))
     items << link_to("logout", session_path(session), :confirm => "Are you sure you want to log out?", :method => :delete) if logged_in?
     items << link_to("sign up", new_user_path) unless logged_in?
     items << link_to("log in", new_session_path) unless logged_in?

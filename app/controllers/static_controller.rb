@@ -13,4 +13,8 @@ class StaticController < ApplicationController
     @user_commands = UserCommand.public.non_bootstrap.find(:all, :limit=>4, :order=>'user_commands.created_at DESC')
   end
   
+  def render_page
+    render :action=>params[:static_page]
+  end
+  
 end

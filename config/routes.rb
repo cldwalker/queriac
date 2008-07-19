@@ -21,9 +21,8 @@ ActionController::Routing::Routes.draw do |map|
     
   map.activate_user  '/activate/:activation_code',     :controller => 'users', :action => 'activate'
   map.settings    'settings',                     :controller => 'users', :action => 'edit'
-  map.setup       'setup',                        :controller => 'static', :action => 'setup'
-  map.tutorial    'tutorial',                     :controller => 'static', :action => 'tutorial'
-  map.help        'help',                         :controller => 'static', :action => 'help'
+  #static_page values should be in USER_STOPWORDS
+  map.static_page    ':static_page',              :controller=>'static', :action=>'render_page', :static_page=>/tutorial|setup|help|options_tutorial/
   map.home        '',                             :controller => "static", :action => "home"
   map.queries     'queries',                      :controller => 'queries', :action => 'index'
  

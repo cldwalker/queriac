@@ -283,3 +283,7 @@ div.msg p {
 #command_description_box p, #user_command_description_box p {
 	font-size: 1.1em;
 }
+
+#primary .indent {
+	margin-left: 20px;
+}

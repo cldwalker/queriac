@@ -74,7 +74,7 @@ Time::DATE_FORMATS[:long] = "%A, %B %d at %l:%M%p"
 Time::DATE_FORMATS[:ymdhms] = Time::DATE_FORMATS[:batch] = "%Y%m%d%H%M%S"
 
 DEFAULT_PARAM = "(q)"
-#option is a word with an optional metadata delimited by '=' ie [:type=normal]
+#option is a word with a optional metadata delimited by '=' ie [:type=normal]
 OPTION_PARAM_REGEX = /\[:(\w+)(=[^\[\]]+)?\]/    
 
 ExceptionNotifier.exception_recipients = %w(zeke@queri.ac gabriel.horner@gmail.com)
@@ -88,5 +88,5 @@ require 'hpricot'
 # STOPWORDS = %w(default_to delete tags help home tutorial settings queries commands opensearch users search_form user_commands)
 common_stopwords = %w(user_commands commands tags queries users opensearch)
 COMMAND_STOPWORDS = %w(default_to delete search_form search_all execute update) + common_stopwords
-USER_STOPWORDS = %w(help home tutorial setup settings) + common_stopwords
+USER_STOPWORDS = %w(help home tutorial setup settings options_tutorial) + common_stopwords
 HOST = 'localhost:3000' unless Object.const_defined?('HOST')

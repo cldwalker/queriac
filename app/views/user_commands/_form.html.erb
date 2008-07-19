@@ -26,11 +26,15 @@
   <%= f.text_field :url, {:size => 90, :disabled=>@disabled_fields.include?(:url)} %>
 </div>
 
-<% if @user_command.new_record? || @user_command.command_owned_by?(current_user)%>
 <div style="margin: 0px; padding: 0px; font-size: 11px; color: #666">
-	To create an option, you need to specify it in the url with format [:option_name].<br/>For example, an option named type is defined in this url: http://awesomeexample.com?type=[:type]&q=(q)
+	<% if @user_command.new_record? || @user_command.command_owned_by?(current_user)%>
+		To create an option, you need to specify it in the url with format [:option_name].<br/>
+		For example, an option named type is defined in this url: http://cowpie.com?type=[:type]&q=(q). 
+		<%= link_to "Learn more ...", static_page_path('options_tutorial') %>
+	<% else %>
+		<%= link_to "Learn more about options ...", static_page_path('options_tutorial') %>
+	<% end %>
 </div>
-<% end %>
 <h3 style="margin-top: 5px">Url options:
 	<%= collapser_for "url_options", :autohide => true, :label => "Hide" %>
 	<%= expander_for "url_options", :autohide => false, :label => "Show" %>
@@ -42,12 +46,12 @@
 
 	<% if @user_command.new_record? || @user_command.command_owned_by?(current_user)%>
 		<% sync_params = @user_command.new_record? ? {} : {:user_command=>@user_command.id} %>
-		<%= link_to_remote "Synchronize options with url", 
+		<%= link_to_remote "SYNCHRONIZE OPTIONS WITH URL", 
 			{:url=>sync_url_options_user_commands_path(sync_params), :before=>"$('processing').show()", 
 				:complete=>"$('processing').hide()",
-				:with => %['user_command_url=' + escape($('user_command_url').value)]}
+				:with => %['user_command_url=' + escape($('user_command_url').value)]}, :style=>'font-size: 12px'
 		%>
-		 - do this if you have modified the url. NOTE: any new input you have entered in the options will be erased.<br/>
+		 - Do this if you have modified the url. NOTE: any new input you have entered in the options will be erased.<br/>
 		<div id="processing" style="display:none"><%= image_tag "spinner.gif" %></div>
 	<% end %>
 		

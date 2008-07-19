@@ -88,7 +88,7 @@ class UsersController < ApplicationController
     else
       flash[:warning] = "Sorry, you are either already activated or have an invalid activation key."
     end
-    redirect_to setup_path
+    redirect_to static_page_path('setup')
   end
   
   def destroy

@@ -1,0 +1,148 @@
+<div id="primary">
+<h1>Options</h1>
+<div id="option_basics">
+	<h2>Basics</h2>
+	<p/>
+	<p>
+		Before reading this, it would help to know how to <%= link_to "create a command", static_page_path('help') + '#create_quicksearch' %>.<br/>
+		Options allow you to give additional arguments to a command and to place them at different points in a url. Take for example
+		a more complex version of our <%= link_to "google command", command_path('g') %>
+	</p>
+	<p class="indent"><code>http://www.google.com/search?q=(q)&num=10&as_qdr=m3</code></p>
+	<p>
+		We know from creating commands that '(q)' is a placeholder for arguments we pass to the command.
+	 The num and as_qdr parameters respectively specify number of results per page and recency of results (m3 is 3 months).
+     To specify any value for these parameters from the address bar, we need to convert them into options. We do this by replacing the
+ 	 parameter values (ie 10 and m3) with option definitions
+	</p>
+	<p class="indent"><code>http://www.google.com/search?q=(q)&num=[:num]&as_qdr=[:date]</code></p>
+	<p>
+		From this example, you can see an option is described in a url with '[:option_name]' where option_name is the option's name.
+		In our above url, we've defined options num and date. Now that we have options defined, let's use 'em. 
+	</p>
+	<p class="indent"><code>g -date m3 -num 10 so gnarly man</code>
+	creates the query<br/>
+	<p class="indent"><code>http://www.google.com/search?q=so+gnarly+man&num=10&as_qdr=m3</code></p>
+	<p>
+		From the command example above, you can see the format for a command with options is
+	</p>
+	<p class="indent"><code>[command] [options] [arguments]</code></p>
+	<p>
+		Here are some basic guidelines for using options:
+		<div class="indent">
+		<ul class="normal">
+			<li>
+				Options should begin with '-' and should be separated from their values with space(s).
+			</li>
+			<li>
+				If you want to specify an option value with spaces you can wrap the values in quotes<br/>
+				<code>g -date 'four months' example</code>
+			</li>
+			<li>If you want to turn off options at any point in a command, you can do this with -off. For example:<br/>
+				<code>g -off -date m3 example</code> creates the query<br/>
+				<code>http://www.google.com/search?q=-date m3 example</code>
+			</li>
+			<li>
+				You can place an option in a url more than once ie <br/>
+				<code>http://google.com?q=(q)&num=[:num]&start=[:num]</code>.<br/>
+				 Of course it will only show up once under a command's list of options.
+			</li>
+			<li>
+				Options can have aliases, descriptions, default values, allowed values ...
+				Read <%= link_to "Tweaking Options", static_page_path('options_tutorial') + "#tweaking_options" %> for more.
+			</li>
+		</ul>
+		</div>
+	</p>
+</div>
+	<h2>Options as Arguments</h2>
+	<p>
+		Options can also be used to parse arguments and place them at different points in the url.
+		For example, suppose we wanted to make a command which searches different sections of google.
+		If we search google books for 'cool' we get 
+	</p>
+	<p class="indent"><code>http://books.google.com/books?q=cool&btnG=Search+Books</code></p>
+	<p>	
+		If we search google images for 'cool' we get
+	</p>
+	<p class="indent"><code>http://images.google.com/images?q=cool&sa=N&tab=pi</code></p>
+	<p>
+		Do you see the trend? A search has the format:
+	</p>
+	<p><code class="indent">http://[:section].google.com/[:section]?q=cool</code>.</p>
+	<p>
+		(We're not including the other parameters but they don't make a difference for a basic search.)
+		Since we want to always specify a google section, we make the section the first argument and
+		have the remaining arguments go to the query
+	</p>
+	<p class="indent"><code>http://[:1].google.com/[:1]?q=(q)</code></p>
+	<p>
+		As you can see, an argument option definition has the same format as an option definition but it's
+		name is a number. Numbers correspond to their position in the arguments ie 1 is the first argument, 2 the second ...
+		Valid numbers are from 1-9. So assuming we call our above url command, sg, the command
+	</p>
+	<p class="indent"><code>sg books plato's republic</code> yields the url<br/><br/>
+		<code>http://books.google.com/books?q=plato%27s+republic</code>
+	</p>
+	<p>
+		Notice that arguments are delimited by white space.<br/>
+		Can we mix normal options with argument options? Sure. If we change the url to
+	</p>
+	<p class="indent"><code>http://[:1].google.com/[:1]?q=(q)&num=[:num]</code></p>
+	<p>
+		we can do the command
+	</p>
+	<p class="indent"><code>sg -num 20 books plato's republic</code> which yields the url<br/><br/>
+		<code>http://books.google.com/books?q=plato%27s+republic&num=20</code></p>
+	</p>
+	
+<div id="tweaking_options">	
+	<h2>Tweaking Options</h2>
+	<p>
+		So after you have become familiar with options, you may wonder if there's anything else you can do with 'em.
+		Naturally. To tweak 'em you'll need to click on the 'Show' link for the url options sections of a user command.
+		This will bring up a list of options in your url. You'll see fields such as name, option type and default.
+		Fields will vary depending on the option type you use. When you modify your url to alter your options,
+		make sure to click the synchronize link to update your option list. Now, with the latest option list, tweak
+		some fields (you'll need to toggle the view of alias and description fields to see them):
+		<div class="indent">
+		<ul class="normal">
+			<li>
+				Default: Provides a default value for an option if it isn't used in the command. Handy for parts of a url
+				that should always have a value.
+			</li>
+			<li>
+				Alias: Provides your own alias for an option name. Handy for doing commands quickly and in your language.
+			</li>
+			<li>
+				Description: This can be used for documentation and/or personal notes. Although you could put all option descriptions
+				in the description box, placing them here allows us to do handy things like display them nicely on a command's page.
+			</li>
+		</ul>
+		</div>
+	</p>
+</div>	
+<div id="option_types">
+	<h2>Option Types</h2>
+	<p>
+		If you read the section 'Tweaking Options', you understand what normal options provide. But there are some additional
+		option types which you should know about:
+		<ul class="normal">
+			<li>
+				Enumerated: Allows an option to only have certain values. You provide the allowed values in a comma delimited form
+					ie <code>d, m, m3, m6, y</code>.<br/>You can also put a brief description after each value in parentheses ie<br/> 
+					<code>d(day), m(month), m3(3 months), m6(6 months), y(year)</code>.<br/>
+				 If you specify a value that isn't allowed then the option defaults to the default value.
+			</li>
+			<li>
+				Boolean: Serves as a flag that is set to true if you put it in the command. Instead of a default field it has true 
+				and false value fields. <br/>Take for example the command 'yahoo' with url
+				<code>http://[:m].yahoo.com</code>.
+				We'll define option m to have a true value of movies and a false value of www.<br/>
+				If we do the command <code>yahoo -m</code> , we have set the option to true and are redirected yahoo's movie subdomain.<br/>
+				If we do the command <code>yahoo</code> , we have set the option to false and are redirected to yahoo's main site.
+			</li>
+		</ul>
+	</p>
+</div>
+</div>

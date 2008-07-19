@@ -275,6 +275,10 @@ ul.users li {
 	line-height: .9em;
 }
 
+#option_types ul.normal li, #option_basics ul.normal li {
+	line-height: 170%;
+}
+
 
 ol.normal {
 	margin-left: 5px;
@@ -291,7 +295,6 @@ ol.normal li {
 	line-height: 1.7em;
 	border-bottom: thin solid #CCC;
 }
-
 
 /* OPTIONS
 *********************************************************************************/

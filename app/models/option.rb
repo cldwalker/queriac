@@ -20,7 +20,11 @@ class Option < OpenStruct
     values_to_split.gsub(/\(.*?\)/, '').split(/\s*,\s*/)
   end
   
-  def has_metadata?
-    (VALID_FIELDS - [:name, :option_type]).any? {|e| ! send(e).blank? }
-  end  
+  # def argument?(name_value=self.name)
+  #   name =~ /^\d$/ ? true :false
+  # end
+  # 
+  # def has_metadata?
+  #   (VALID_FIELDS - [:name, :option_type]).any? {|e| ! send(e).blank? }
+  # end  
 end
