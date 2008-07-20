@@ -31,7 +31,8 @@ module CommandHelper
            value = query_options[name] || option.default
          end
        end
-       
+       value = option.alias_value(value)
+       value = option.prefix_value(value)
        #TODO: give user option to error out for parameters without value or default
        value ? url_encode_string(value) : ''
     end

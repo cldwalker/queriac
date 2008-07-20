@@ -2,16 +2,22 @@
  No options detected.
 <% else %>
 <% options.each_with_index do |option, i| %>
-	<% alias_is_visible = !@user_command.new_record? && !option.alias.blank? %>
-	<% description_is_visible = !@user_command.new_record? && !option.description.blank? %>
+	<% toggled_columns = [:alias, :description, :value_aliases, :value_prefix]
+		is_visible = {}
+		toggled_columns.each do |e|
+			is_visible[e] = !@user_command.new_record? && !option.send(e).blank?
+		end
+	%>
 	<%# disable if subscriber is editing or if user is copying %>
 	<% option_fields_disabled = (!@user_command.new_record? && !@user_command.command_owned_by?(current_user)) ||
 		(@user_command.new_record? && @controller.action_name == 'copy') || params[:is_copy] %>
 	<div class="option_box">
 	<% fields_for "user_command[url_options][]", option, :index=>i do |f1| %>
 		<div class="option_toggle_links">
-		<%= link_to_function 'Toggle alias', "$('option_box_alias_#{i}').toggle()"%> |
-		<%= link_to_function 'Toggle description', "$('option_box_description_#{i}').toggle()"%>
+			<%= link_to_function 'Toggle alias', "$('option_box_alias_#{i}').toggle()"%> |
+			<%= link_to_function 'Toggle description', "$('option_box_description_#{i}').toggle()"%> |
+			<%= link_to_function 'Toggle value aliases', "$('option_box_value_aliases_#{i}').toggle()"%> |
+			<%= link_to_function 'Toggle value prefix', "$('option_box_value_prefix_#{i}').toggle()"%>
 		</div>
 		<div class="floater">
 			<%= f1.label :name %><br/>
@@ -30,14 +36,22 @@
 			<%= f1.hidden_field :option_type if option_fields_disabled %>
 			<%= ajax_spinner "option_type_#{i}" %>
 		</div>
-		<div id="option_box_alias_<%= i %>" style="<%= 'display:none' unless alias_is_visible %>" class="floater">
+		<div id="option_box_alias_<%= i %>" style="<%= 'display:none' unless is_visible[:alias] %>" class="floater">
 			<%= f1.label :alias %><br/>
 			<%= f1.text_field :alias, :size=>10 %>
 		</div>
 		<span id="option_type_specific_fields_<%= i%>">
 		<%= option_type_specific_fields option.option_type, f1, :index=>i, :option_obj=>option %>
 		</span>
-		<div id="option_box_description_<%= i %>" style="<%= 'display:none' unless description_is_visible %>" class="floater">
+		<div id="option_box_value_prefix_<%= i %>" style="<%= 'display:none' unless is_visible[:value_prefix] %>" class="floater">
+			<%= f1.label :value_prefix %><br/>
+			<%= f1.text_field :value_prefix, :size=>10 %>
+		</div>
+		<div id="option_box_value_aliases_<%= i %>" style="<%= 'display:none' unless is_visible[:value_aliases] %>" class="floater">
+			<%= f1.label :value_aliases %><br/>
+			<%= f1.text_field :value_aliases, :size=>40%>
+		</div>
+		<div id="option_box_description_<%= i %>" style="<%= 'display:none' unless is_visible[:description] %>" class="floater">
 			<%= f1.label :description %><br/>
 			<%= f1.text_field :description, :size=>40%>
 		</div>

@@ -20,4 +20,27 @@ describe Option do
     Option.new.values_list("man, oh,man").should == %w{man oh man}
     Option.new.values_list("man (Man), oh (O),man(Man)").should == %w{man oh man}
   end
+  
+  it 'prefix_value: prefixes if defined' do
+    opt = Option.new(:value_prefix=>'okdok')
+    opt.prefix_value('test').should == 'okdoktest'
+  end
+  
+  it "prefix_value: doesn't prefix if undefined" do
+    Option.new.prefix_value('test').should == 'test'
+  end
+  
+  it "alias_value: doesn't alias if undefined" do
+    Option.new.alias_value('hey').should == 'hey'
+  end
+  
+  it 'alias_value: alias value if found' do
+    opt = Option.new(:value_aliases=>'ls=longstring, cool=dude')
+    opt.alias_value('ls').should == 'longstring'
+  end
+  
+  it "alias_value: return original value if not found" do
+    opt = Option.new(:value_aliases=>'ls=longstring, cool=dude')
+    opt.alias_value('lsa').should == 'lsa'
+  end
 end

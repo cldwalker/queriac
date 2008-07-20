@@ -280,7 +280,7 @@ ul.users li {
 	list-style-position: inside;
  	margin-bottom: 10px
 }
-#option_types ul.normal li, #option_basics ul.normal li {
+#option_types ul.normal li, #option_basics ul.normal li, #tweaking_options ul.normal li {
 	line-height: 170%;
 }
 
