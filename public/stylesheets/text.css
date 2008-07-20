@@ -438,3 +438,8 @@ hr {
 	padding: 0px; 
 	margin: 0px
 }
+
+.spinner {
+	background: url(../images/spinner.gif) no-repeat 0 center;
+	vertical-align: middle;	
+}

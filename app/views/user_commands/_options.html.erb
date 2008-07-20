@@ -17,15 +17,18 @@
 			<%= f1.label :name %><br/>
 		  	<%= f1.text_field :name, :size=>10, :disabled=>option_fields_disabled %>
 			<%# needed to identify options %>
-			<%= f1.hidden_field :name %>
+			<%= f1.hidden_field :name if option_fields_disabled %>
 		</div>
 		<div class="floater">
 			<%= f1.label :option_type %><br/>
 			<%= f1.select :option_type, Option::OPTION_TYPES, {}, :disabled=>option_fields_disabled,
 			 	:index=>i, :onchange=>remote_function(:url=>change_option_type_fields_user_commands_path(:index=>i),
-				:with => %['option_type=' + this.value]
+				:with => %['option_type=' + this.value], :before=>"$('option_type_#{i}_spinner').show()",
+				:complete=>"$('option_type_#{i}_spinner').hide()"
 			)
 			%>
+			<%= f1.hidden_field :option_type if option_fields_disabled %>
+			<%= ajax_spinner "option_type_#{i}" %>
 		</div>
 		<div id="option_box_alias_<%= i %>" style="<%= 'display:none' unless alias_is_visible %>" class="floater">
 			<%= f1.label :alias %><br/>

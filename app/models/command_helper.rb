@@ -8,9 +8,10 @@ module CommandHelper
   #option parsing can be turned off by specifying -off
   
   def url_for(query_string, manual_url_encode=nil)
+    query = query_string.dup #avoid modifying original string
     #no warning is given for options that aren't valid for a command
-    query_options = parse_query_options(query_string)
-    query_string.strip!
+    query_options = parse_query_options(query)
+    query.strip!
     
     redirect_url = self.url.gsub(OPTION_PARAM_REGEX) do
       name = $1
@@ -18,7 +19,7 @@ module CommandHelper
        
        #argument
        if name =~ /^\d$/
-         value = query_array_value(query_string, name.to_i) || option.default
+         value = query_array_value(query, name.to_i) || option.default
       #option
        else
          case option.option_type
@@ -35,7 +36,7 @@ module CommandHelper
        value ? url_encode_string(value) : ''
     end
     
-    modified_query_string = @query_array ? (@query_array[@biggest_query_array_index .. -1] || []).join(" ") : query_string
+    modified_query_string = @query_array ? (@query_array[@biggest_query_array_index .. -1] || []).join(" ") : query
     redirect_url.gsub(DEFAULT_PARAM, url_encode_string(modified_query_string))
   end
   

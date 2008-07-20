@@ -229,6 +229,10 @@ module ApplicationHelper
     default_title
   end
   
+  def ajax_spinner(id='processing')
+    %[<div id="#{id}_spinner" class="spinner" style="display:none"> &nbsp;</div>]
+  end
+  
   #command or user command methods
   def command_description(command)
     simple_format command.description.blank? ? 'No description yet.' : command.description

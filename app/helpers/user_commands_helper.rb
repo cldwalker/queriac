@@ -35,9 +35,10 @@ module UserCommandsHelper
       fields += content_tag(:div, :class=>'floater') do
         text_field_id = "user_command_url_options_#{options[:index]}_values"
         update_link = link_to_remote("Update Default", :url=>update_default_picker_user_commands_path(:index=>options[:index]),
-          :with=>"'values=' + $('#{text_field_id}').value")
-        label_tag(text_field_id, "Values (comma delimited) #{update_link}") +
-          "<br/>" + form.text_field(:values)
+          :with=>"'values=' + $('#{text_field_id}').value", :before=>"$('enumerated_#{options[:index]}_spinner').show()",
+          :complete=>"$('enumerated_#{options[:index]}_spinner').hide()")
+        label_tag(text_field_id, %[Values (comma delimited) #{update_link}]) +
+          "<br/>" + form.text_field(:values) + ajax_spinner("enumerated_#{options[:index]}")
       end 
       fields += content_tag(:div, :class=>'floater') do
         values_array = options[:option_obj] ? options[:option_obj].values_list : []
@@ -64,7 +65,9 @@ module UserCommandsHelper
 		  if user_command.command_url_changed?
 		    %[Not up to date.<br/>
 		      The command's url has changed to: #{h user_command.command.url}<br/>] +
-		      link_to_remote('Click to update url and options', :url=>update_url_user_command_path(user_command))
+		      link_to_remote('Click to update url and options', :url=>update_url_user_command_path(user_command),
+		      :before=>"$('url_status_spinner').show()", :complete=>"$('url_status_spinner').hide()")  + ajax_spinner('url_status')
+		      
 		  else
 			  "Up to date"
 		  end
