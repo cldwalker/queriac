@@ -26,13 +26,14 @@ module CommandHelper
          when 'boolean'
            value = query_options[name] ? option.true_value : option.false_value
          when 'enumerated'
-           value = option.alias_value(query_options[name])
-           value = option.values_list.include?(value) ? value : option.default
+           unaliased_value = option.alias_value(query_options[name])
+           value = option.values_list.include?(unaliased_value) ? query_options[name] : option.default
          else
            value = query_options[name] ? option.alias_value(query_options[name]) : option.default
          end
        end
-       value = option.prefix_value(value)
+       value = option.alias_value(value)
+       value = option.prefix_value(value) unless value.blank?
        #TODO: give user option to error out for parameters without value or default
        value ? url_encode_string(value) : ''
     end
@@ -73,7 +74,8 @@ module CommandHelper
   def parse_query_options(query)
     options = {}
     #placeholder_for_dollar_1 shouldn't be set, just there to keep $1 constant
-    boolean_regex_string =  url_options_booleans.empty? ? "-(placeholder_for_dollar_1)|" : "-(#{url_options_booleans.join('|')})|"
+    #\b is important otherwise one letter booleans swallow up options starting with same letter
+    boolean_regex_string =  url_options_booleans.empty? ? "-(placeholder_for_dollar_1)|" : "-(#{url_options_booleans.join('|')})" + '\b|'
     option_regex_string = boolean_regex_string + %q{-(\w+)(\s*=\s*|\s+)?(\w+|'[^'-]+')}
     #-(\w+)             option is a word, should match option regex in OPTION_PARAM_REGEX
     #(?:\s*=\s*|\s+)    space(s) or '=' delimits option from value
@@ -157,7 +159,7 @@ module CommandHelper
     
     #field lengths must not exceed field_length_max
     #might need longer length for values and description fields
-    field_length_max = 350
+    field_length_max = 500
     options_with_long_fields = url_options.select {|e| e.values.any?{|f| f.length > field_length_max} }.map {|e| e[:name]}
     unless options_with_long_fields.empty?
       errors.add(:url_options, "has the following options with fields longer than #{field_length_max} characters: #{options_with_long_fields.join(", ")}") 
@@ -281,7 +283,3 @@ __END__
 #     uoptions   
 #   end
 #   
-# def alias_option_value(option_value, alias_definition='')
-#   alias_definition.include?(":") && (alias_definition.split(":")[0] == option_value) ? alias_definition.split(":")[1] : option_value
-# end
-

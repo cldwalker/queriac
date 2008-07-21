@@ -44,11 +44,18 @@ describe 'url_for: ' do
     @command.url_for('-t normal yep').should == expected_url
   end
   
-  it 'enumerated option using alias' do
+  it 'enumerated option using value aliases' do
     @command.url_options = [{:name=>'type', :option_type=>'enumerated', :values=>'stupid, smart, smartass', :value_aliases=>"st=stupid"}]
     @command.url = "http://google.com/search?q=(q)&type=[:type]"
     expected_url = "http://google.com/search?q=yep&type=stupid"
     @command.url_for('-type st yep').should == expected_url
+  end
+  
+  it 'argument using value aliases' do
+    @command.url_options = [{:name=>'1', :option_type=>'normal', :value_aliases=>"st=stupid"}]
+    @command.url = "http://google.com/search?q=(q)&type=[:1]"
+    expected_url = "http://google.com/search?q=yep&type=stupid"
+    @command.url_for('st yep').should == expected_url
   end
   
   it 'boolean option set true' do

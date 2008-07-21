@@ -11,6 +11,8 @@ class Option < OpenStruct
       e = e.symbolize_keys
       #ensures url_options input only has allowed fields
       e.slice!(*VALID_FIELDS)
+      optional_columns = [:value_prefix, :value_aliases, :default, :description, :alias]
+      optional_columns.each {|c| e.delete(c) if e[c].blank? }
       e[:option_type] ||= 'normal'
       e
     }

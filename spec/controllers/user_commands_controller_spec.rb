@@ -144,7 +144,7 @@ describe 'user_commands/create:' do
       }.should change(Command, :count).by(1)
     }.should change(UserCommand, :count).by(1)
     basic_expectations
-    UserCommand.find_last.url_options[0].should == option_attributes.symbolize_keys
+    UserCommand.find_last.url_options[0].should == option_attributes.symbolize_keys.slice(:name, :option_type)
   end
   
   it 'creates new public option command with options not in sync' do
