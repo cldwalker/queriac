@@ -44,6 +44,13 @@ describe 'url_for: ' do
     @command.url_for('-t normal yep').should == expected_url
   end
   
+  it 'enumerated option using alias' do
+    @command.url_options = [{:name=>'type', :option_type=>'enumerated', :values=>'stupid, smart, smartass', :value_aliases=>"st=stupid"}]
+    @command.url = "http://google.com/search?q=(q)&type=[:type]"
+    expected_url = "http://google.com/search?q=yep&type=stupid"
+    @command.url_for('-type st yep').should == expected_url
+  end
+  
   it 'boolean option set true' do
     @command.url_options = [{:name=>'type', :option_type=>'boolean', :true_value=>'whoop', :false_value=>'ok'}]
     @command.url = "http://google.com/search?q=(q)&type=[:type]"
@@ -185,5 +192,16 @@ describe 'misc actions' do
   
   it 'validate_url_options: option names and aliases need to be unique'
   it 'validate_url_options: option field lengths have a maximum length'
-  it 'ordered_url_options: returns order of options based on url'
+  
+  it 'ordered_url_options: when explicit url and url_options' do
+    url_options = [{:name=>'page'}, {:name=>'section'}]
+    url = "http://example.com/[:section]/[:page]"
+    create_command.ordered_url_options(url_options, url).map(&:name).should == ['section', 'page']
+  end
+  
+  it "ordered_url_options: when implicit url and url_options" do
+    @command.url_options = [{:name=>'page'}, {:name=>'section'}]
+    @command.url = "http://example.com/[:section]/[:page]"
+    @command.ordered_url_options.map(&:name).should == ['section', 'page']
+  end
 end

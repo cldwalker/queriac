@@ -16,6 +16,10 @@ class Option < OpenStruct
     }
   end
   
+  def self.find_and_create_by_name(options_array, name)
+    (option = options_array.find {|e| e[:name] == name }) ? Option.new(option) : nil
+  end
+  
   def values_list(values_to_split=self.values)
     values_to_split.gsub(/\(.*?\)/, '').split(/\s*,\s*/)
   end

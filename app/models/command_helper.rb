@@ -26,12 +26,12 @@ module CommandHelper
          when 'boolean'
            value = query_options[name] ? option.true_value : option.false_value
          when 'enumerated'
-           value = option.values_list.include?(query_options[name]) ? query_options[name] : option.default
+           value = option.alias_value(query_options[name])
+           value = option.values_list.include?(value) ? value : option.default
          else
-           value = query_options[name] || option.default
+           value = query_options[name] ? option.alias_value(query_options[name]) : option.default
          end
        end
-       value = option.alias_value(value)
        value = option.prefix_value(value)
        #TODO: give user option to error out for parameters without value or default
        value ? url_encode_string(value) : ''
@@ -45,12 +45,7 @@ module CommandHelper
     option_name = option_name.to_s
     @url_options_hash ||= {}
     return @url_options_hash[option_name] if @url_options_hash[option_name]
-    if (option = url_options.find {|e| e[:name] == option_name })
-      @url_options_hash[option_name] = Option.new(option)
-      @url_options_hash[option_name]
-    else
-      nil
-    end
+    (option = Option.find_and_create_by_name(self.url_options, option_name)) ? @url_options_hash[option_name] = option : nil
   end
   
   def options_from_url(url_value=self.url)
@@ -75,7 +70,7 @@ module CommandHelper
     url_options.select {|e| e[:option_type] == 'boolean' }.map {|e| [ e[:name], e[:alias]]}.flatten.select {|e| ! e.blank?}
   end
     
-  def parse_query_options(query_string)
+  def parse_query_options(query)
     options = {}
     #placeholder_for_dollar_1 shouldn't be set, just there to keep $1 constant
     boolean_regex_string =  url_options_booleans.empty? ? "-(placeholder_for_dollar_1)|" : "-(#{url_options_booleans.join('|')})|"
@@ -86,8 +81,8 @@ module CommandHelper
     option_regex = Regexp.new option_regex_string
     
     #option parsing starts with '-' unless it's -off
-    if query_string.sub!(/^\s*-off/, '').nil? && query_string =~ /^\s*-/
-      query_string.gsub!(option_regex) do
+    if query.sub!(/^\s*-off/, '').nil? && query =~ /^\s*-/
+      query.gsub!(option_regex) do
         #boolean option set
         if $1
           options[$1] = true
@@ -121,7 +116,7 @@ module CommandHelper
     ordered_option_names = options_from_url(ordered_url)
     ordered_options = []
     ordered_option_names.each do |e|
-      if (option = fetch_url_option(e))
+      if (option = Option.find_and_create_by_name(unordered_options, e))
         ordered_options << option
       end
     end
@@ -187,11 +182,19 @@ module CommandHelper
   
   def get_domain
     # Found the regex at http://yubnub.org/kernel/man?args=extractdomainname
-    u = url
+    u = url.dup
     if bookmarklet?
       return nil if url.split("http").size == 1
       u = "http" + url.split("http").last
     end
+    
+    #if has options
+    u.gsub!(OPTION_PARAM_REGEX) do
+      name = $1
+      next unless (option = fetch_url_option(name))
+      option.default || ''
+    end
+    
     u=~(/^(?:\w+:\/\/)?([^\/?]+)(?:\/|\?|$)/) ? $1 : nil
   end
   
