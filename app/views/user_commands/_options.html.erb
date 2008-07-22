@@ -2,7 +2,7 @@
  No options detected.
 <% else %>
 <% options.each_with_index do |option, i| %>
-	<% toggled_columns = [:alias, :description, :value_aliases, :value_prefix]
+	<% toggled_columns = [:alias, :description, :value_aliases, :value_prefix, :param]
 		is_visible = {}
 		toggled_columns.each do |e|
 			is_visible[e] = !@user_command.new_record? && !option.send(e).blank?
@@ -14,6 +14,7 @@
 	<div class="option_box">
 	<% fields_for "user_command[url_options][]", option, :index=>i do |f1| %>
 		<div class="option_toggle_links">
+			<%= link_to_function 'Toggle param', "$('option_box_param_#{i}').toggle()"%> |
 			<%= link_to_function 'Toggle alias', "$('option_box_alias_#{i}').toggle()"%> |
 			<%= link_to_function 'Toggle description', "$('option_box_description_#{i}').toggle()"%> |
 			<%= link_to_function 'Toggle value aliases', "$('option_box_value_aliases_#{i}').toggle()"%> |
@@ -35,6 +36,10 @@
 			%>
 			<%= f1.hidden_field :option_type if option_fields_disabled %>
 			<%= ajax_spinner "option_type_#{i}" %>
+		</div>
+		<div id="option_box_param_<%= i %>" style="<%= 'display:none' unless is_visible[:param] %>" class="floater">
+			<%= f1.label :param %><br/>
+			<%= f1.text_field :param, :size=>10 %>
 		</div>
 		<div id="option_box_alias_<%= i %>" style="<%= 'display:none' unless is_visible[:alias] %>" class="floater">
 			<%= f1.label :alias %><br/>

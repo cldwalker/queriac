@@ -17,11 +17,11 @@ module CommandHelper
       name = $1
       next unless (option = fetch_url_option(name))
        
-       #argument
-       if name =~ /^\d$/
+      #argument
+      if name =~ /^\d$/
          value = query_array_value(query, name.to_i) || option.default
       #option
-       else
+      else
          case option.option_type
          when 'boolean'
            value = query_options[name] ? option.true_value : option.false_value
@@ -29,13 +29,21 @@ module CommandHelper
            unaliased_value = option.alias_value(query_options[name])
            value = option.values_list.include?(unaliased_value) ? query_options[name] : option.default
          else
-           value = query_options[name] ? option.alias_value(query_options[name]) : option.default
+           value = query_options[name] || option.default
          end
        end
        value = option.alias_value(value)
        value = option.prefix_value(value) unless value.blank?
        #TODO: give user option to error out for parameters without value or default
-       value ? url_encode_string(value) : ''
+       value = value ? url_encode_string(value) : ''
+       !option.param.blank? && !value.blank? ? option.param + "=" + value : value
+    end
+    
+    #delete unused '&' leftover from unused
+    unless self.bookmarklet? || !has_options?
+      redirect_url.gsub!(/&+/,'&')
+      redirect_url.sub!(/&$/, '')
+      redirect_url.sub!('?&','?')
     end
     
     modified_query_string = @query_array ? (@query_array[@biggest_query_array_index .. -1] || []).join(" ") : query

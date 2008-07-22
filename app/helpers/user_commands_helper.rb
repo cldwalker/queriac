@@ -47,10 +47,10 @@ module UserCommandsHelper
       fields += content_tag(:div, nil, :class=>'floatkiller')
     when 'boolean'
       fields << content_tag(:div, :class=>'floater') do
-        form.label(:true_value) + "<br/>" + form.text_field(:true_value)
+        form.label(:true_value) + "<br/>" + form.text_field(:true_value, :size=>20)
       end
       fields << content_tag(:div, :class=>'floater') do
-        form.label(:false_value) + "<br/>" + form.text_field(:false_value)
+        form.label(:false_value) + "<br/>" + form.text_field(:false_value, :size=>20)
       end
     else
       fields += content_tag(:div, :class=>'floater') do

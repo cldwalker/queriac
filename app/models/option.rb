@@ -3,7 +3,7 @@ require 'ostruct'
 #Option objects mainly used in helpers and in url_for()
 class Option < OpenStruct
   OPTION_TYPES = ['normal', 'boolean', 'enumerated']
-  VALID_FIELDS = [:name, :option_type, :description, :alias, :true_value, :false_value, :default, :values, :value_aliases, :value_prefix]
+  VALID_FIELDS = [:name, :option_type, :description, :alias, :true_value, :false_value, :default, :values, :value_aliases, :value_prefix, :param]
   
   def self.sanitize_input(array_of_hashes)
     array_of_hashes.map {|e| 
@@ -11,7 +11,7 @@ class Option < OpenStruct
       e = e.symbolize_keys
       #ensures url_options input only has allowed fields
       e.slice!(*VALID_FIELDS)
-      optional_columns = [:value_prefix, :value_aliases, :default, :description, :alias]
+      optional_columns = [:value_prefix, :value_aliases, :default, :description, :alias, :param]
       optional_columns.each {|c| e.delete(c) if e[c].blank? }
       e[:option_type] ||= 'normal'
       e

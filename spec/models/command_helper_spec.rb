@@ -86,6 +86,9 @@ describe 'url_for: ' do
     @command.url_for('-type retarded yep').should == expected_url
   end
   
+  it 'option with param adds param'
+  it 'option with param cleans up ampersands'
+  
   it "command doesn't use its option" do
     @command.url_options = [{:name=>'type'}]
     @command.url = "http://google.com/search?q=(q)&type=[:type]"
@@ -120,6 +123,8 @@ describe 'url_for: ' do
     expected_url = "http://google.com/search?q=dodo&view=normal&type=cool"
     @command.url_for('-type cool normal dodo').should == expected_url
   end
+  
+  it 'argument with (q)'
   
 end
 
