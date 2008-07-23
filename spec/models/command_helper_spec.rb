@@ -204,6 +204,8 @@ describe 'misc actions' do
   
   it 'validate_url_options: option names and aliases need to be unique'
   it 'validate_url_options: option field lengths have a maximum length'
+  it "validate_url_options: option data fields of quicksearches can't have ampersands"
+  it 'validate_url_options: enforce maximum number of options'
   
   it 'ordered_url_options: when explicit url and url_options' do
     url_options = [{:name=>'page'}, {:name=>'section'}]

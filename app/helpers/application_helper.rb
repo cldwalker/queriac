@@ -240,10 +240,18 @@ module ApplicationHelper
   
   def option_metadata(option)
     metadata = ''
+    # metadata = "<ul style='list-style-type: none'><li>cool: value</li><li>another: value</li></ul>"
+    metadata << "- param: #{h option.param}<br/>" unless option.param.blank?
     metadata << "- description: #{h option.description}<br/>" unless option.description.blank?
 		metadata << "- allowed values: #{h option.values}<br/>" unless option.values.blank?
-		metadata << "- default: #{h option.default}<br/>" unless option.default.blank?
+		if option.option_type == 'boolean'
+  		metadata << "- true value: #{h option.true_value}<br/>" unless option.true_value.blank?
+  		metadata << "- false value: #{h option.false_value}<br/>" unless option.false_value.blank?
+  	else
+  		metadata << "- default: #{h option.default}<br/>" unless option.default.blank?
+  	end
 		metadata << "- alias: #{h option.alias}<br/>" unless option.alias.blank?
+		metadata << "- value prefix: #{h option.value_prefix}<br/>" unless option.value_prefix.blank?
 		metadata
   end
   

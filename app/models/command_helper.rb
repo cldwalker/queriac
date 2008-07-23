@@ -172,6 +172,34 @@ module CommandHelper
     unless options_with_long_fields.empty?
       errors.add(:url_options, "has the following options with fields longer than #{field_length_max} characters: #{options_with_long_fields.join(", ")}") 
     end
+    
+    #quicksearches shouldn't contain illegal characters ie '&' in their data fields
+    if ! bookmarklet?
+      options_with_illegal_characters = url_options.select {|e| e.except(:name, :description, :option_type).values.any?{|f| f.include?('&')} }.map {|e| e[:name]}
+      unless options_with_illegal_characters.empty?
+        errors.add(:url_options, "has the following options with illegal characters('&') in data fields: #{options_with_illegal_characters.join(', ')}") 
+      end
+    end
+    
+    #max number of allowed options
+    max_number_of_options = 25
+    if url_options.size > max_number_of_options 
+      errors.add(:url_options, "has exceeded the number of allowed options (#{max_number_of_options}).")
+    end
+    
+    #reserved names for global options
+    global_option_names = options_from_url_options & Option::GLOBAL_OPTIONS
+    unless global_option_names.empty?
+      errors.add(:url_options, "has the following option(s) with names that are reserved for internal use: #{global_option_names.join(', ')}")
+    end
+    
+    # name_regex = '\w+'
+    # invalid_option_names = url_options.select {|e| e[:name] =~ /#{name_regex}/ &&  e[:alias] =~ /#{name_regex}/}.map(&:name)
+    # unless invalid_option_names.empty?
+    #   errors.add(:url_options, "has invalid option names. Names should only contain alphanumeric characters." +
+    #     "The following option(s) are invalid: #{invalid_option_names.join(', ')}.")
+    # end
+    
   end
   
   def duplicates_in_array(array)

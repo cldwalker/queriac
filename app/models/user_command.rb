@@ -6,8 +6,13 @@ class UserCommand < ActiveRecord::Base
   
   acts_as_taggable
   validates_presence_of :user_id, :keyword, :name, :url
+  validates_each :url_options do |record, attr, value|
+    record.validate_url_options if record.has_options?
+  end
+  #command validation needs to be after the above validations which effect command creation
   validates_presence_of :command_id, :message=>"couldn't be created. Our support team has been notified and should contact you promptly.",
     :unless=>Proc.new {|uc| uc.errors.size > 0}
+    
   validates_uniqueness_of :keyword, :scope => :user_id
   validates_uniqueness_of :command_id, :scope=>:user_id, :message=>'is already created for this user.'
   validates_uniqueness_of :name, :scope=>:user_id
@@ -36,7 +41,6 @@ class UserCommand < ActiveRecord::Base
     if self.keyword && COMMAND_STOPWORDS.include?(self.keyword.downcase)
       errors.add_to_base "Sorry, the keyword you've chosen (#{self.keyword}) is reserved by the system. Please use something else." 
     end
-    validate_url_options if has_options? 
   end
   
   def before_validation_on_create

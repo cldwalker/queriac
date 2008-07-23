@@ -43,13 +43,18 @@
 				<code>http://www.google.com/search?q=-date m3 example</code>
 			</li>
 			<li>
-				You can place an option in a url more than once ie <br/>
-				<code>http://google.com?q=(q)&num=[:num]&start=[:num]</code>.<br/>
+				You can place an option in a url more than once. All instances of that options will be replaced with the value you give
+				it or that it defaults to. For example,<br/>
+				<code>http://google.com?q=(q)&num=[:num]&start=[:num]</code> when num is 20 yields<br/>
+				<code>http://google.com?q=(q)&num=20&start=20</code>.<br/>
 				 Of course it will only show up once under a command's list of options.
 			</li>
 			<li>
-				Options can have aliases, descriptions, default values, allowed values ...
-				Read <%= link_to "Tweaking Options", static_page_path('options_tutorial') + "#tweaking_options" %> for more.
+				For quicksearches, it is recommended you use the param field. This changes the above
+				<code>http://www.google.com/search?q=(q)&num=[:num]&as_qdr=[:date]</code><br/>
+				to <code>http://www.google.com/search?q=(q)&[:num]&[:date]</code><br/>
+				The param field and several other fields such as aliases and descriptions are described in the 
+				section <%= link_to "Tweaking Options", static_page_path('options_tutorial') + "#tweaking_options" %>.
 			</li>
 		</ul>
 		</div>
@@ -58,42 +63,42 @@
 	<h2>Options as Arguments</h2>
 	<p>
 		Options can also be used to parse arguments and place them at different points in the url.
-		For example, suppose we wanted to make a command which searches different sections of google.
+		For example, suppose we wanted to make a command which does multiple types of google searches?
 		If we search google books for 'cool' we get 
 	</p>
-	<p class="indent"><code>http://books.google.com/books?q=cool&btnG=Search+Books</code></p>
+	<p class="indent"><code>http://www.google.com/books?q=cool&btnG=Search+Books</code></p>
 	<p>	
 		If we search google images for 'cool' we get
 	</p>
-	<p class="indent"><code>http://images.google.com/images?q=cool&sa=N&tab=pi</code></p>
+	<p class="indent"><code>http://www.google.com/images?q=cool&sa=N&tab=pi</code></p>
 	<p>
 		Do you see the trend? A search has the format:
 	</p>
-	<p><code class="indent">http://[:section].google.com/[:section]?q=cool</code>.</p>
+	<p><code class="indent">http://www.google.com/[:type]?q=cool</code>.</p>
 	<p>
 		(We're not including the other parameters but they don't make a difference for a basic search.)
-		Since we want to always specify a google section, we make the section the first argument and
+		Since we want to always specify a search type, we make it the first argument and
 		have the remaining arguments go to the query
 	</p>
-	<p class="indent"><code>http://[:1].google.com/[:1]?q=(q)</code></p>
+	<p class="indent"><code>http://www.google.com/[:1]?q=(q)</code></p>
 	<p>
 		As you can see, an argument option definition has the same format as an option definition but it's
 		name is a number. Numbers correspond to their position in the arguments ie 1 is the first argument, 2 the second ...
 		Valid numbers are from 1-9. So assuming we call our above url command, sg, the command
 	</p>
 	<p class="indent"><code>sg books plato's republic</code> yields the url<br/><br/>
-		<code>http://books.google.com/books?q=plato%27s+republic</code>
+		<code>http://www.google.com/books?q=plato%27s+republic</code>
 	</p>
 	<p>
 		Notice that arguments are delimited by white space.<br/>
 		Can we mix normal options with argument options? Sure. If we change the url to
 	</p>
-	<p class="indent"><code>http://[:1].google.com/[:1]?q=(q)&num=[:num]</code></p>
+	<p class="indent"><code>http://www.google.com/[:1]?q=(q)&num=[:num]</code></p>
 	<p>
 		we can do the command
 	</p>
 	<p class="indent"><code>sg -num 20 books plato's republic</code> which yields the url<br/><br/>
-		<code>http://books.google.com/books?q=plato%27s+republic&num=20</code></p>
+		<code>http://www.google.com/books?q=plato%27s+republic&num=20</code></p>
 	</p>
 	
 <div id="tweaking_options">	
@@ -101,12 +106,27 @@
 	<p>
 		So after you have become familiar with options, you may wonder if there's anything else you can do with 'em.
 		Naturally. To tweak 'em you'll need to click on the 'Show' link for the url options sections of a user command.
-		This will bring up a list of options in your url. You'll see fields such as name, option type and default.
+		This will bring up a list of options in your url. You'll see fields such as name, option type and default 
+		(you'll need to toggle the view of some fields to see them).
 		Fields will vary depending on the option type you use. When you modify your url to alter your options,
 		make sure to click the synchronize link to update your option list. Now, with the latest option list, tweak
-		some fields (you'll need to toggle the view of alias and description fields to see them):
+		some fields (you can see most of these fields in action in our <%= link_to "super google command", command_path('sg') %>):
 		<div class="indent">
 		<ul class="normal">
+			<li>Name: Name of the option.</li>
+			<li>Option Type: Adds additional behavior and fields depending on the option type. Explained in the next section.</li>
+			<li>
+				Param: This is recommended when creating quicksearches. This describes the url parameter associated
+				with an option. Take for example the above google command
+				<code class="indent">http://www.google.com/search?q=(q)&num=[:num]&as_qdr=[:date]</code><br/>
+				If we convert the num and date options to use param fields then the url changes to
+				<code class="indent">http://www.google.com/search?q=(q)&[:num]&[:date]</code><br/>
+				We would put 'num' and 'as_qdr' in the param fields for the options num and date respectively.<br/><br/>
+				If you noticed, the differences in the above urls are that the param names and equal signs have disappeared.
+				That is because	they are automatically filled in when an option has a value. If an option doesn't have a value
+				(including no default), then the param, equal sign and even the previous ampersand aren't included in the final url.
+				For the above url, no num and date option values would yield:
+				<code>http://www.google.com/search?q=(q)</code>.
 			<li>
 				Default: Provides a default value for an option if it isn't used in the command. Handy for parts of a url
 				that should always have a value.
@@ -123,6 +143,11 @@
 				separated by commas. An alias and value are separated by '='. If an option had the value aliases:
 				<code>ror=rubyonrails.org, w=wikipedia.org</code> ,<br/>
 				ror would be an alias for rubyonrails.org and w an alias for wikipedia.org.
+			</li>
+			<li>
+				Value Prefix: Prefixes a value when there is an option value. For example if you have an option value 'de'
+				and a prefix 'lang_', the resulting value is 'lang_de'. Handy for avoiding typing the same common prefix 
+				for a url parameter value.
 			</li>
 		</ul>
 		</div>
