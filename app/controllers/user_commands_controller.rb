@@ -126,8 +126,6 @@ class UserCommandsController < ApplicationController
         File.open(new_file, "wb") { |f| f.write(params['bookmarks_file'].read) }
         valid_commands, invalid_commands = Command.create_commands_for_user_from_bookmark_file(current_user, new_file)
         @user_commands = valid_commands
-        # valid_commands, invalid_commands = [[1],[]]
-        #@user_commands = UserCommand.find(:all, :limit=>8)
         flash[:notice] = "Imported #{valid_commands.size} of #{(valid_commands + invalid_commands).size} commands from your uploaded bookmarks file."
         
       end

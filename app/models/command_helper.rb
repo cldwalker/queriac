@@ -84,8 +84,8 @@ module CommandHelper
     #placeholder_for_dollar_1 shouldn't be set, just there to keep $1 constant
     #\b is important otherwise one letter booleans swallow up options starting with same letter
     boolean_regex_string =  url_options_booleans.empty? ? "-(placeholder_for_dollar_1)|" : "-(#{url_options_booleans.join('|')})" + '\b|'
-    option_regex_string = boolean_regex_string + %q{-(\w+)(\s*=\s*|\s+)?(\w+|'[^'-]+')}
-    #-(\w+)             option is a word, should match option regex in OPTION_PARAM_REGEX
+    option_regex_string = boolean_regex_string + "-(#{OPTION_NAME_REGEX})" + %q{(\s*=\s*|\s+)?(\w+|'[^'-]+')}
+    #-(OPTION_NAME_REGEX)   option is a word
     #(?:\s*=\s*|\s+)    space(s) or '=' delimits option from value
     #(\w+|'[^'-]+')   value can be a word or anything between quotes
     option_regex = Regexp.new option_regex_string
@@ -150,6 +150,14 @@ module CommandHelper
   end
   
   def validate_url_options
+    #should go before url + url options sync
+    name_regex = "^#{OPTION_NAME_REGEX}$"
+    invalid_option_names = url_options.reject {|e| e[:name] =~ /#{name_regex}/ && (e[:alias] ? e[:alias] =~ /#{name_regex}/ : true)}.map {|e| e[:name]}
+    unless invalid_option_names.empty?
+      errors.add(:url_options, "has invalid option names. Names should only contain alphanumeric characters." +
+        "The following option(s) are invalid: #{invalid_option_names.join(', ')}.")
+    end
+    
     #options from url + url_options column match
     if options_from_url.sort != options_from_url_options.sort
       missing = options_from_url - options_from_url_options
@@ -174,7 +182,7 @@ module CommandHelper
     end
     
     #quicksearches shouldn't contain illegal characters ie '&' in their data fields
-    if ! bookmarklet?
+    if url_is_bookmarklet?(self.url)
       options_with_illegal_characters = url_options.select {|e| e.except(:name, :description, :option_type).values.any?{|f| f.include?('&')} }.map {|e| e[:name]}
       unless options_with_illegal_characters.empty?
         errors.add(:url_options, "has the following options with illegal characters('&') in data fields: #{options_with_illegal_characters.join(', ')}") 
@@ -188,17 +196,10 @@ module CommandHelper
     end
     
     #reserved names for global options
-    global_option_names = options_from_url_options & Option::GLOBAL_OPTIONS
+    global_option_names = (options_from_url_options + url_options.map {|e| e[:alias]}) & Option::GLOBAL_OPTIONS
     unless global_option_names.empty?
-      errors.add(:url_options, "has the following option(s) with names that are reserved for internal use: #{global_option_names.join(', ')}")
+      errors.add(:url_options, "has the following option(s) with names/aliases that are reserved for internal use: #{global_option_names.join(', ')}")
     end
-    
-    # name_regex = '\w+'
-    # invalid_option_names = url_options.select {|e| e[:name] =~ /#{name_regex}/ &&  e[:alias] =~ /#{name_regex}/}.map(&:name)
-    # unless invalid_option_names.empty?
-    #   errors.add(:url_options, "has invalid option names. Names should only contain alphanumeric characters." +
-    #     "The following option(s) are invalid: #{invalid_option_names.join(', ')}.")
-    # end
     
   end
   
@@ -210,6 +211,10 @@ module CommandHelper
     }
     count.delete_if {|k,v| v<=1}
     count.keys
+  end
+  
+  def url_is_bookmarklet?(url_value)
+    url_value.downcase.starts_with?('javascript') ? true : false
   end
   
   #domain value should be the same for command + its usercommand

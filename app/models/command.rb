@@ -55,7 +55,7 @@ class Command < ActiveRecord::Base
   
   def after_validation
     self.kind = (self.url.include?(DEFAULT_PARAM) || self.url =~ OPTION_PARAM_REGEX) ? "parametric" : "shortcut"
-    self.bookmarklet = self.url.downcase.starts_with?('javascript') ? true : false
+    self.bookmarklet = url_is_bookmarklet?(self.url)
   end
   
   def to_param; self.keyword || self.id; end

@@ -202,6 +202,13 @@ describe 'misc actions' do
     @command.errors.full_messages[0].include?("don't match").should be_true
   end
   
+  it 'validate_url_options: option name needs to be alphanumeric' do
+    @command.url_options = [{:name=>'ok-dok'}]
+    @command.url = "http://google.com/[:ok-dok]"
+    @command.validate_url_options
+    @command.errors.full_messages[0].include?('alphanumeric').should be_true
+  end
+  
   it 'validate_url_options: option names and aliases need to be unique'
   it 'validate_url_options: option field lengths have a maximum length'
   it "validate_url_options: option data fields of quicksearches can't have ampersands"

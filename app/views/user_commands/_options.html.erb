@@ -5,7 +5,7 @@
 	<% toggled_columns = [:alias, :description, :value_aliases, :value_prefix, :param]
 		is_visible = {}
 		toggled_columns.each do |e|
-			is_visible[e] = @user_command.new_record? && !option.send(e).blank?
+			is_visible[e] = !option.send(e).blank?
 		end
 	%>
 	<%# disable if subscriber is editing or if user is copying %>
