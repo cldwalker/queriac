@@ -7,10 +7,10 @@ module CommandHelper
   #options must start at beginning of query
   #option parsing can be turned off by specifying -off
   
-  def url_for(query_string, manual_url_encode=nil)
+  def url_for(query_string, manual_url_encode=nil,options={})
     query = query_string.dup #avoid modifying original string
     #no warning is given for options that aren't valid for a command
-    query_options = parse_query_options(query)
+    query_options = parse_query_options(query, options)
     query.strip!
     
     redirect_url = self.url.gsub(OPTION_PARAM_REGEX) do
@@ -79,7 +79,7 @@ module CommandHelper
     url_options.select {|e| e[:option_type] == 'boolean' }.map {|e| [ e[:name], e[:alias]]}.flatten.select {|e| ! e.blank?}
   end
     
-  def parse_query_options(query)
+  def parse_query_options(query, command_options={})
     options = {}
     #placeholder_for_dollar_1 shouldn't be set, just there to keep $1 constant
     #\b is important otherwise one letter booleans swallow up options starting with same letter
@@ -105,6 +105,22 @@ module CommandHelper
         ''
       end
     end
+    
+    #auto alias options: match first option from alphabetized options that starts with given name
+    if command_options[:auto_aliasing]
+      sorted_option_names = url_options.map {|e| e[:name]}.sort
+      options.delete_if {|name, value|
+        if (option = url_options.find {|e| e[:alias] == name})
+          options[option[:name]] = value
+          true
+        elsif !options_from_url_options.include?(name) && (option_name = sorted_option_names.find {|e| e.starts_with?(name) })
+          options[option_name] = value
+          true
+        else
+          false
+        end
+      }
+    else
     #convert aliased names to normal option names
     options.delete_if {|name, value|
       #merge with fetch_url_option if this is done again
@@ -115,6 +131,7 @@ module CommandHelper
         false
       end
     }
+    end
     options
   end
   

@@ -94,12 +94,13 @@ class CommandsController < ApplicationController
     
     # Needs to be constructed if commands takes arguments
     @result = if @user_command.parametric?
+      url_for_options = {:auto_aliasing=>admin?}
       #manually set url encode
       if (url_encode = params.delete(:_encode))
         is_url_encoded = url_encode == '1'
-        @user_command.url_for(query_string, is_url_encoded)
+        @user_command.url_for(query_string, is_url_encoded, url_for_options)
       else
-        @user_command.url_for(query_string)
+        @user_command.url_for(query_string, nil, url_for_options)
       end
     else
       @user_command.url

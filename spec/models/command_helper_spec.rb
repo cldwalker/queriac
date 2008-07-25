@@ -151,6 +151,13 @@ describe 'parse_query_options: ' do
     @command.parse_query_options(query_string).should == {}
     query_string.should == query_string
   end
+  
+  it 'auto alias options' do
+    query_string = "-below 1 -ar 2 -a 3"
+    expected_options = {'below'=>'1', 'around'=>'2', 'above'=>'3'}
+    @command.url_options = [{:name=>'above'},{:name=>'below'}, {:name=>'around'}]
+    @command.parse_query_options(query_string, :auto_aliasing=>true).should == expected_options
+  end
 end
 
 describe 'misc actions' do
