@@ -1,0 +1,20 @@
+ <h1>Execute Command via POST</h1>
+ <p style="font-size: 20px">Submitting your command <%= link_to @user_command.name, user_command_url(@user_command) %> ...</p>
+ <p>If you continue to see this message you most likely have Javascript
+    disabled, you will need to enable it to post a command.
+ </p>
+<form action="<%= @form_action %>" method="post" name="form">
+	<% for input in @form_inputs %>
+	<input name="<%= input[0] %>" value="<%= input[1] %>" type="hidden">
+	<% end %>
+	<input name="submit2" value="Submit" type="hidden">
+</form>
+<script type="text/javascript">
+   if (document.location.href.indexOf('#') == -1) {
+     document.location.href += '#';
+     document.form.submit();
+	// document.getElementById("myForm").submit();
+   } else {
+     history.go(-1);
+   }
+</script>

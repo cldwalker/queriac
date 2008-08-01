@@ -1,0 +1,40 @@
+<%# collapser_for "upload", :autohide => true, :label => "Hide Uploader" %>
+<h1>Scrape Form</h1>
+
+<div id="scrape_form">
+	<p/>
+	<%= form_tag(scrape_form_user_commands_path, :method=>:post) %>
+		<%= label_tag 'url' %><br/>
+		<%= text_field_tag :url, nil, :class=>'text', :size=>50 %><br/>
+		OR<br/>
+		<%= label_tag 'text' %><br/>
+		<%= text_area_tag :text, nil, :class=>'text', :cols=>50, :rows=>5 %><br/>
+		<%= submit_tag 'Scrape', :class=>'submit'%>
+	</form>
+</div>
+
+<% if @options %>
+	<%# hide "upload" %>
+	<%# expander_for "upload", :autohide => false, :label => "More Commands? Upload them!" %>
+
+	<h2>Scrape Results for
+		<%= if !params[:url].blank?
+			 'url: ' + h(params[:url])
+			elsif !params[:text].blank?
+				'text'
+			end
+		%>
+	</h2>
+
+	<% if ! @form['action'].blank? %>
+	<h3>Action Url : <%= URI.parse(params[:url]).merge(@form['action']).to_s rescue @form['action']%></h3> 
+	<% end %>
+	<% if ! @form['method'].blank? %>
+	<h3>Method: <%= @form['method']%></h3>
+	<% end %>
+
+	<%= active_record_table @options, :columns=>[:param, :option_type, :input_type, :others], 
+		:headers=>[["Param", {:width=>30}], ["Option Type", {:width=>10}], ["Input Type", {:width=>10}], "Others"],
+		:table=>{:style=>'margin-top: 10px'} %>
+
+<% end %>

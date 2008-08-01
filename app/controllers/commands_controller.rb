@@ -131,7 +131,10 @@ class CommandsController < ApplicationController
       render :text=> result
       
     elsif @user_command.http_post?
-      redirect_to "http://zeke.sikelianos.com/projects/queriac/postaget.php?__action=" + @result
+      @form_action, form_query = @result.split("?")
+      @form_inputs = form_query.split("&").map {|e| e.split("=")} rescue []
+      @no_js = true
+      render :action=>"execute_post"
     else
       # Command is a simple URL to which we redirect
       redirect_to @result

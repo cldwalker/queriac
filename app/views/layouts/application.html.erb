@@ -10,7 +10,7 @@
 		<% end %>
 		
 		<%= stylesheet_link_tag 'base' %>
-		<%= javascript_include_tag :defaults %>
+		<%= javascript_include_tag :defaults unless @no_js %>
 		<%- unless @feed_icons.blank? -%>
 		  <%- @feed_icons.each do |feed| -%>
 		  <%= auto_discovery_link_tag :rss, feed[:url], :title => "#{feed[:title] || h(@title)}" %>

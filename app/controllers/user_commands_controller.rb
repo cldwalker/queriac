@@ -293,7 +293,6 @@ class UserCommandsController < ApplicationController
   end
 
   def scrape_form
-    #params[:url] ||= "http://www.rhymezone.com/r/rhyme.cgi?Word=fart&typeofrhyme=perfect&org1=syl&org2=l"
     unless params[:url].blank? && params[:text].blank?
       if !params[:url].blank?
         text = open(params[:url])

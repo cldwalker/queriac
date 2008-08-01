@@ -25,7 +25,7 @@ class Option < OpenStruct
   
   def self.find_label_for_hpricot_element(hpricot_form, hpricot_element)
     if hpricot_element[:id] && (label_tag = hpricot_form.at("label[@for=#{hpricot_element[:id]}]"))
-      label_tag.inner_html
+      label_tag.inner_text
     else
       nil
     end
