@@ -43,9 +43,10 @@ module TableHelper
   
   def active_record_table(ar_collection, options={})
     options[:table] ||= {}
+    options[:headers] ||= options[:columns].map {|c| c.to_s.humanize }
     content_tag(:table, options[:table]) do
       headers = content_tag(:tr) do
-        options[:headers].map {|e| content_tag(:th, e)}.join("\n")
+        options[:headers].map {|e| content_tag(:th, *e)}.join("\n")
       end
       
       body = ar_collection.map do |uc|
@@ -57,6 +58,32 @@ module TableHelper
       end.join("\n")
       
       headers + "\n" + body
+    end
+  end
+  
+  def option_column_value(option, column)
+    if column  == :others
+      others = []
+      case option.option_type
+      when 'boolean'
+        others << "True Value: #{option.true_value}" unless option.true_value.blank?
+      when 'enumerated'
+        if option.values_hash
+          others << truncate_with_more("Values: #{option.values_hash.keys.join(', ')}", nil, :tag_type=>'span') unless option.values_hash.blank?
+          others << truncate_with_more("Values with labels: #{option.values_hash.map {|k,v| k + (v ? "(#{v})" : '')}.join(', ')}", nil,:tag_type=>'span') unless option.values_hash.blank?
+        else
+          others << truncate_with_more("Values: #{option.values_array.join(', ')}",nil, :tag_type=>'span') unless option.values_array.blank?
+        end
+        others << "Default: #{option.default}" unless option.default.blank?
+      else
+        others << "Value: #{option.value}" unless option.value.blank?
+      end
+      others << "Label: #{option.label}" unless option.label.blank?
+      content_tag(:ul, :style=>"list-style-type: disc; list-style-position: inside") do
+        others.map {|e| content_tag(:li, e)}
+      end
+    else
+      option.send(column)
     end
   end
   

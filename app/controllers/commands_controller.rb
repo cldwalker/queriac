@@ -111,10 +111,24 @@ class CommandsController < ApplicationController
       # we simply render it so the script that called it can use it as its source.
       render :text => @result
       
-    # elsif params[:js]
+    #work in progress
+    elsif false #params[:js]
       # Command is not Javascript, but is being executed in a Javascript context,
       # so convert the URL into Javascript that will redirect to the URL.
       # render :text => "document.window.location='http://shit.com';"
+      # @result = CGI::unescape @result
+      prefix_string = "javascript:window.location="
+      @result = @result.gsub(/(.*?)(:url|:domain)/) do
+        js_term = case $2
+        when ':url'
+          "encodeURIComponent(location.href)"
+        when ':domain'
+          "encodeURIComponent(location.hostname)"
+        end
+        %['#{$1}'+#{js_term}+]
+      end
+      result = prefix_string + @result.gsub(/\+$/,'') +";"
+      render :text=> result
       
     elsif @user_command.http_post?
       redirect_to "http://zeke.sikelianos.com/projects/queriac/postaget.php?__action=" + @result

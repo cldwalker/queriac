@@ -1,6 +1,6 @@
 <div id="primary">
 	
-	<h1>Latest Public Queries <span style="font-size: 14px">(by logged-in users) <span></h1>
+	<h1>Latest Public Queries <span style="font-size: 14px">(by logged-in users) </span></h1>
 	
 	<%= query_table @queries, :columns=>[:user, :user_command, :query_string]%>
 	<%= table_link_to "View all queries", queries_path %>

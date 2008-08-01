@@ -233,6 +233,19 @@ module ApplicationHelper
     %[<div id="#{id}_spinner" class="spinner" style="display:none"> &nbsp;</div>]
   end
   
+  def truncate_with_more(text, length=nil, options={})
+    tag_type = options[:tag_type] || 'div'
+    length ||= 300
+    return text if text.length <= length
+    options.reverse_merge!(:more => "more &gt;", :less => "&lt; less", :link_options => {}, :truncate_string => "...")
+    if text
+      morelink = link_to_function(options[:more], "$(this).up('#{tag_type}').next().show(); $(this).up('#{tag_type}').hide()", options[:link_options])
+      starter = truncate(text, length, "#{options[:truncate_string]} #{morelink}")
+      lesslink = link_to_function(options[:less], "$(this).up('#{tag_type}').previous().show(); $(this).up('#{tag_type}').hide()", options[:link_options])
+      all_text = content_tag(tag_type, "#{starter}")+content_tag('span', "#{text} #{lesslink}", :style => 'display:none;')
+    end
+  end
+  
   #command or user command methods
   def command_description(command)
     simple_format command.description.blank? ? 'No description yet.' : command.description
@@ -253,7 +266,7 @@ module ApplicationHelper
 		metadata << "value prefix: #{h option.value_prefix}" unless option.value_prefix.blank?
 		
 		return '' if metadata.empty?
-		content_tag(:ul, :style=>'line-height:') do
+		content_tag(:ul) do
 		  metadata.map {|e| content_tag(:li, e, :style=>'margin: 0px 0px 2px 0px')}.join("\n")
 		end
   end
