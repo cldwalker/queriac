@@ -292,6 +292,7 @@ class UserCommandsController < ApplicationController
     redirect_back_or_default user_home_path(current_user)
   end
 
+  #js example at http://ostermiller.org/bookmarklets/form.html- Extract Forms
   def scrape_form
     unless params[:url].blank? && params[:text].blank?
       if !params[:url].blank?
@@ -299,9 +300,12 @@ class UserCommandsController < ApplicationController
       elsif !params[:text].blank?
         text = params[:text]
       end
-      @form = (Hpricot(text)/"form")[0]
-      form_text = @form.to_html
-      @options = Option.scrape_options_from_form(form_text)
+      if (@form = (Hpricot(text)/"form")[0])
+        form_text = @form.to_html 
+        @options = Option.scrape_options_from_form(form_text)
+      else
+        flash[:notice] = 'No form found.'
+      end
     end
   rescue Errno::ENOENT
     flash[:warning] = "Invalid url. Perhaps you misspelled it?"

@@ -48,6 +48,16 @@ class Command < ActiveRecord::Base
     end
   end
   
+  #to be called from vicarious updates ie @user_command.update_all_attributes
+  def update_attributes_safely(*args)
+    self.update_attributes(*args)
+    if self.errors['keyword'] && self.errors['keyword'].include?('has already')
+      self.errors.instance_eval "@errors.delete('keyword')"
+      self.keyword = self.keyword_was
+      self.save if self.valid?
+    end
+  end
+  
   def before_validation_on_create
     self.keyword.downcase! if self.keyword
     self.url.sub!('%s', DEFAULT_PARAM )

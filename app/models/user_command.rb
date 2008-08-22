@@ -100,7 +100,7 @@ class UserCommand < ActiveRecord::Base
       if self.command_owned_by?(current_user)
         command_fields = COMMAND_FIELDS
         command_fields += COMMAND_CREATE_FIELDS if current_user.is_admin?
-        self.command.update_attributes(hash.slice(*command_fields))
+        self.command.update_attributes_safely(hash.slice(*command_fields))
       end
       return true
     else
