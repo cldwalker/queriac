@@ -1,5 +1,5 @@
 <h1 class="inline">
-	<%= @command.name %>
+	<%= h @command.name %>
 </h1>
 <% if logged_in? %>
 	<ul class="options header">
@@ -14,7 +14,7 @@
 
 <hr />
 <p class="small-url">
-	<%= @command.url.ellipsize(:max => 150, :delimiter => " . . . . . ") %>
+	<%= h @command.url.ellipsize(:max => 150, :delimiter => " . . . . . ") %>
 </p>
 
 <div id="primary">

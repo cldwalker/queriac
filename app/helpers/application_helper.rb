@@ -164,9 +164,9 @@ module ApplicationHelper
   end
   
   def link_to_query(query)
-    label = query.query_string.empty? ? "(Command run with no parameters)" : query.query_string.ellipsize
+    label = query.query_string.empty? ? "(Command run with no parameters)" : h(query.query_string.ellipsize)
     klass = query.query_string.empty? ? "faded" : ""
-    link_to(label, query.user_command.url_for(query.query_string), :class => klass, :title=>"Date: #{query.created_at.to_s(:long)}")
+    link_to(label, h(query.user_command.url_for(query.query_string)), :class => klass, :title=>"Date: #{query.created_at.to_s(:long)}")
   end
   
   def query_user(query)
@@ -242,7 +242,7 @@ module ApplicationHelper
       morelink = link_to_function(options[:more], "$(this).up('#{tag_type}').next().show(); $(this).up('#{tag_type}').hide()", options[:link_options])
       starter = truncate(text, length, "#{options[:truncate_string]} #{morelink}")
       lesslink = link_to_function(options[:less], "$(this).up('#{tag_type}').previous().show(); $(this).up('#{tag_type}').hide()", options[:link_options])
-      all_text = content_tag(tag_type, "#{starter}")+content_tag('span', "#{text} #{lesslink}", :style => 'display:none;')
+      all_text = content_tag(tag_type, starter)+content_tag(tag_type, "#{text} #{lesslink}", :style => 'display:none;')
     end
   end
   

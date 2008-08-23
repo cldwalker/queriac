@@ -1,5 +1,5 @@
 <h1 class="inline">
-	<%= @user_command.name %>
+	<%= h @user_command.name %>
 </h1>
 
 <% if logged_in? %>
@@ -15,7 +15,7 @@
 
 <hr />
 <p class="small-url">
-	<%= @user_command.url.ellipsize(:max => 150, :delimiter => " . . . . . ") %>
+	<%= h @user_command.url.ellipsize(:max => 150, :delimiter => " . . . . . ") %>
 </p>
 
 <div id="primary">
@@ -52,7 +52,7 @@
 	</h2>
 	<p>Created by <%= link_to @user_command.user.login, user_home_path(@user_command.user) %> on <%= @user_command.created_at.to_s(:medium) %>.
 	</p>
-	<p><b>Command:</b> <%= link_to @user_command.command.name, command_path(@user_command.command) %></p>
+	<p><b>Command:</b> <%= link_to h(@user_command.command.name), command_path(@user_command.command) %></p>
 	
 	<% if user_command_owner? %>
 	<p><b>Url Status:</b>
