@@ -110,8 +110,8 @@ class UserCommand < ActiveRecord::Base
   
   def get_disabled_update_fields(current_user)
     disabled_fields = [:public, :url]
-    disabled_fields.delete(:url) if self.command_owned_by?(current_user)
-	  disabled_fields.delete(:public) if self.command_owned_by?(current_user) && self.command_editable?
+    disabled_fields.delete(:url) if self.command_owned_by?(current_user) || current_user.is_admin?
+	  disabled_fields.delete(:public) if self.command_editable? && (self.command_owned_by?(current_user) || current_user.is_admin?)
 	  disabled_fields
   end
   

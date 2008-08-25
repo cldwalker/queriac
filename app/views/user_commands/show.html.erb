@@ -54,11 +54,9 @@
 	</p>
 	<p><b>Command:</b> <%= link_to h(@user_command.command.name), command_path(@user_command.command) %></p>
 	
-	<% if user_command_owner? %>
 	<p><b>Url Status:</b>
-		<%= url_status @user_command %>
+		<%= url_status(@user_command) %>
 	</p>
-	<% end %>
 	
 	<p><b>Original Keyword:</b> <%=h command.keyword %></p>	
 	

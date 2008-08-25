@@ -84,7 +84,7 @@ module CommandHelper
     #placeholder_for_dollar_1 shouldn't be set, just there to keep $1 constant
     #\b is important otherwise one letter booleans swallow up options starting with same letter
     boolean_regex_string =  url_options_booleans.empty? ? "-(placeholder_for_dollar_1)|" : "-(#{url_options_booleans.join('|')})" + '\b|'
-    option_regex_string = boolean_regex_string + "-(#{OPTION_NAME_REGEX})" + %q{(\s*=\s*|\s+)?(\S+|'[^'-]+')}
+    option_regex_string = boolean_regex_string + "-(#{OPTION_NAME_REGEX})" + %q{(\s*=\s*|\s+)?('[^'-]+'|\S+)}
     #-(OPTION_NAME_REGEX)   option is a word
     #(?:\s*=\s*|\s+)    space(s) or '=' delimits option from value
     #(\w+|'[^'-]+')   value can be a word or anything between quotes

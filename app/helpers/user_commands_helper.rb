@@ -63,11 +63,14 @@ module UserCommandsHelper
   def url_status(user_command, html_options={})
     content_tag(:span, {:id=>'url_status'}.update(html_options)) do
 		  if user_command.command_url_changed?
-		    %[Not up to date.<br/>
-		      The command's url has changed to: #{h user_command.command.url}<br/>] +
-		      link_to_remote('Click to update url and options', :url=>update_url_user_command_path(user_command),
-		      :before=>"$('url_status_spinner').show()", :complete=>"$('url_status_spinner').hide()")  + ajax_spinner('url_status')
-		      
+		    if user_command_owner?
+  		    %[Not up to date.<br/>
+  		      The command's url has changed to: #{h user_command.command.url}<br/>] +
+  		      link_to_remote('Click to update url and options', :url=>update_url_user_command_path(user_command),
+  		      :before=>"$('url_status_spinner').show()", :complete=>"$('url_status_spinner').hide()")  + ajax_spinner('url_status')
+		    else
+		      "Not up to date"
+		    end
 		  else
 			  "Up to date"
 		  end

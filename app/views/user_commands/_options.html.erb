@@ -9,8 +9,8 @@
 		end
 	%>
 	<%# disable if subscriber is editing or if user is copying %>
-	<% option_fields_disabled = (!@user_command.new_record? && !@user_command.command_owned_by?(current_user)) ||
-		(@user_command.new_record? && @controller.action_name == 'copy') || params[:is_copy] %>
+	<% option_fields_disabled = (!@user_command.new_record? && !@user_command.command_owned_by?(current_user) &&
+	 !current_user.is_admin?) || (@user_command.new_record? && @controller.action_name == 'copy') || params[:is_copy] %>
 	<div class="option_box">
 	<% fields_for "user_command[url_options][]", option, :index=>i do |f1| %>
 		<div class="option_toggle_links">

@@ -44,7 +44,7 @@
 </h3>
 <div id="url_options" style="<%= 'display:none;' if is_hidden %> margin-left: 20px">
 
-	<% if @user_command.new_record? || @user_command.command_owned_by?(current_user)%>
+	<% if @user_command.new_record? || @user_command.command_owned_by?(current_user) || current_user.is_admin? %>
 		<% sync_params = @user_command.new_record? ? {} : {:user_command=>@user_command.id} %>
 		<%= link_to_remote "SYNCHRONIZE OPTIONS WITH URL", 
 			{:url=>sync_url_options_user_commands_path(sync_params), :before=>"$('sync_spinner').show()", 
