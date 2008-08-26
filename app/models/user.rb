@@ -186,8 +186,8 @@ class User < ActiveRecord::Base
         :name => "Google Quicksearch", 
         :keyword => "g",
         :command_id=> 1,
-        :url => "http://www.google.com/search?q=(q)",
-        :description => "Performs a basic Google search.",
+        # :url => "http://www.google.com/search?q=(q)",
+        :description => "Perform google searches for most search types ie books, maps, etc. The default is the standard google search.\r\nThe list of available searches is listed under the type option.\r\nWhile most of the options apply to all search types, a few options such as date and key only work for advanced standard google searches.\r\n\r\nGoogle search references:\r\nhttp://www.google.com/help/operators.html\r\nhttp://www.google.com/advanced_search\r\nhttp://www.googleguide.com/advanced_operators_reference.html",
         :tags=>'google'
       },
       {
