@@ -48,7 +48,7 @@ class UserCommand < ActiveRecord::Base
   end
   
   def initialize(*args)
-    # p args[0]
+    logger.debug args[0].inspect
     if args[0].is_a?(Hash)
       args[0].stringify_keys! #in case it's not an insensitive hash
       command_fields = COMMAND_FIELDS + COMMAND_CREATE_FIELDS
@@ -56,12 +56,13 @@ class UserCommand < ActiveRecord::Base
       args[0].except!(*COMMAND_ONLY_FIELDS)
     end
     super(*args)
-    # p command_hash
-    # p args[0]
+    logger.debug command_hash.inspect
+    logger.debug args[0].inspect
     if self.command_id.nil? && self.command.nil?
       create_command_from_hash(command_hash) 
     else
       self.url = self.command.url
+      self.url_options = self.command.url_options if self.command[:url_options]
     end
     return self
   end
@@ -130,7 +131,7 @@ class UserCommand < ActiveRecord::Base
   end
   
   def update_url_and_options
-    new_url_options = self.merge_url_options_with_options_in_url(self.command.url)
+    new_url_options = Option.merge_option_arrays(self.command.url_options, self.url_options)
     new_values = {:url=>self.command.url, :url_options=>new_url_options}
     self.update_attributes new_values
   end

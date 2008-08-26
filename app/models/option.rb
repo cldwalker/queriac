@@ -4,7 +4,7 @@ require 'ostruct'
 class Option < OpenStruct
   OPTION_TYPES = ['normal', 'boolean', 'enumerated']
   VALID_FIELDS = [:name, :option_type, :description, :alias, :true_value, :false_value, :default, :values, :value_aliases, :value_prefix, :param]
-  GLOBAL_OPTIONS = ['off']
+  GLOBAL_OPTIONS = ['off', 'help', 'h', 'print']
   
   def self.sanitize_input(array_of_hashes)
     array_of_hashes.map {|e| 
@@ -85,6 +85,30 @@ class Option < OpenStruct
     options.values.map {|e| Option.new(e) }
   end
   
+  #TODO: ensure value_aliases only have valid values
+  #first array defines allowed options
+  #second array overrides nonessential fields for a common option
+  def self.merge_option_arrays(first, second)
+    merged_option_array = first.dup
+    merged_option_array.each {|e|
+      exception_keys = [:option_type, :values, :param, :name]
+      if (option = second.find {|f| f[:name] == e[:name]})
+        #ensure default is an allowed value
+        if e[:values] && !option[:default].nil? && ! Option.new(:values=>e[:values]).values_list.include?(option[:default])
+          exception_keys << :default
+        end
+        e.merge!(option.except(*exception_keys))
+      end
+    }
+    merged_option_array
+  end
+  
+  # Console helper: Lists all currently used option names and aliases
+  def self.all_options
+    Command.find(:all, :conditions=>"url_options IS NOT NULL").map {|e| e.user_commands.map {|f| f.url_options.map {|o| [o[:name], o[:alias]] } }}.flatten.compact.uniq.sort
+  end
+  
+  #should return array
   def values_list(values_to_split=self.values)
     values_to_split.gsub(/\(.*?\)/, '').split(/\s*,\s*/)
   end

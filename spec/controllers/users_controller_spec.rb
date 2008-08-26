@@ -167,6 +167,8 @@ describe 'users/activate:' do
   before(:each) { @user = create_user; @user.send(:make_activation_code); @user.save}
   
   it 'activates user and redirects' do
+    #stubbing done since command ids are hardcoded
+    Command.stub!(:find).and_return(create_command)
     lambda {
       get :activate, :activation_code=>@user.activation_code
     }.should change(UserCommand, :count).by_at_least(8)

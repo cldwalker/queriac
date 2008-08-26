@@ -60,16 +60,21 @@ describe User do
   end
   
   it "create_default_user_commands() should generate some starter commands" do
+    
     @user.attributes = valid_user_attributes
     @user.save!
+    #stubbing done since command ids are hardcoded
+    Command.stub!(:find).and_return(create_command)
     @user.create_default_user_commands
-    @user.should have(8).commands
-    @user.commands.map(&:keyword).join(" ").should eql("g gms w word q show edit new")
+    @user.should have(9).user_commands
+    @user.user_commands.map(&:keyword).join(" ").should eql("g gms w word q show edit new search")
   end
   
   it "should set default command" do
     @user.attributes = valid_user_attributes
     @user.save!
+    #stubbing done since command ids are hardcoded
+    Command.stub!(:find).and_return(create_command)
     @user.create_default_user_commands
     @command = @user.user_commands.first
     @command.keyword.should eql("g")

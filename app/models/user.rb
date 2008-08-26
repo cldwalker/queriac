@@ -97,7 +97,7 @@ class User < ActiveRecord::Base
   def create_default_user_commands
     set_default_url_options
     default_commands_config.each do |e|
-      ucommand = self.user_commands.create!(e.slice(:name, :keyword, :url, :description))
+      ucommand = self.user_commands.create!(e.slice(:name, :keyword, :command_id, :description))
       ucommand.update_tags(e[:tags]) if e[:tags]
     end
   end
@@ -179,11 +179,13 @@ class User < ActiveRecord::Base
   end
 
   protected
+    #command_id is used instead of url for user command creation
     def default_commands_config
       [
       {
         :name => "Google Quicksearch", 
         :keyword => "g",
+        :command_id=> 1,
         :url => "http://www.google.com/search?q=(q)",
         :description => "Performs a basic Google search.",
         :tags=>'google'
@@ -191,6 +193,7 @@ class User < ActiveRecord::Base
       {
         :name => "Gmail Search", 
         :keyword => "gms",
+        :command_id=> 2,
         :url => "http://mail.google.com/mail/?search=query&view=tl&start=0&init=1&fs=1&q=(q)",
         :description => "Search your Gmail. If you're not logged in you'll be directed to the Gmail login page.\n\nExamples\ngms dog\ngms is:starred mom\ngms label:todo",
         :tags=>'google gmail mail'
@@ -198,6 +201,7 @@ class User < ActiveRecord::Base
       {
         :name => "Google \"I'm Feeling Lucky\" Wikipedia (en) search",
         :keyword => "w",
+        :command_id=> 3,
         :url => "http://www.google.com/search?btnI=I'm%20Feeling%20Lucky&q=site:en.wikipedia.org%20(q)",
         :description => "Jumps to Google's first search result for the query you've entered + site:en.wikipedia.org\n\nExample: w colonel sanders",
         :tags=>'google wikipedia'
@@ -205,6 +209,7 @@ class User < ActiveRecord::Base
       {
         :name => "Dictionary Lookup at Reference.com",
         :keyword => "word",
+        :command_id=> 4,
         :url => "http://www.reference.com/browse/all/(q)",
         :description => "Look up word definitions\n\nExample: word peripatetic",
         :tags=>"dictionary reference language english"
@@ -212,6 +217,7 @@ class User < ActiveRecord::Base
       {
         :name => "My Queriac Page",
         :keyword => "q",
+        :command_id=> 5,
         :url=>current_user_home_url,
         :description => "A shortcut to my queriac account page.",
         :tags=>"queriac bootstrap"
@@ -219,6 +225,7 @@ class User < ActiveRecord::Base
       {
         :name => "Show a Queriac user command",
         :keyword => "show",
+        :command_id=> 6,
         :url=>user_command_url('(q)'),
         :description => "Show info on a user command.\n\nExample: show g",
         :tags=>"queriac bootstrap"
@@ -226,6 +233,7 @@ class User < ActiveRecord::Base
       {
         :name => "Edit a Queriac user command",
         :keyword => "edit",
+        :command_id=> 7,
         :url=>edit_user_command_url('(q)'),
         :description => "Edit a user command.\n\nExample: edit g",
         :tags=>"queriac bootstrap"
@@ -233,10 +241,18 @@ class User < ActiveRecord::Base
       {
         :name => "Create a new Queriac user command",
         :keyword => "new",
+        :command_id=> 8,
         :url=>new_user_command_url,
         :description => "Create a new user command.",
         :tags=>"queriac bootstrap"
       },
+      {
+        :name=> "Search my Queriac user commands",
+        :keyword=> "search",
+        :command_id=> 645,
+        :description=>"Searches my commands by url or keyword using regular expressions.\r\n\r\nExamples:\r\n#returns commands that have web in url or keyword\r\nsearch web\r\n\r\n#returns commands that have url or keyword starting with dw\r\nsearch ^dw\r\n\r\n#returns commands that have url or keyword ending with ed\r\nsearch ed$",
+        :tags=>"queriac bootstrap"
+      }
       ]
     end
     # before filter 
