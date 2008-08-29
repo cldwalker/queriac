@@ -19,6 +19,7 @@ class UserCommandsController < ApplicationController
     publicity = (current_user? || admin?) ? "any" : "public"
 
     if @tags
+      clear_rss_feed #disabled feed because tag paths with a dot are blocked by current feed which also uses a dot
       if @user
         @user_commands = @user.user_commands.send(publicity).find_tagged_with(@tags.join(", "), :match_all => true, :order=>'user_commands.queries_count DESC').paginate(index_pagination_params)
       else

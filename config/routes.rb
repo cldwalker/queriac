@@ -8,7 +8,7 @@ ActionController::Routing::Routes.draw do |map|
   map.with_options(:controller=>'user_commands') do |c|
     c.command_user_commands  'commands/:id/user_commands', :action=>'command_user_commands'
     c.formatted_command_user_commands  'commands/:id/user_commands.:format', :action=>'command_user_commands', :format=>'rss'
-    c.formatted_tagged_user_commands   ':login/user_commands/tag/*tag.:format',   :action=>'index', :format=>'rss'
+    # c.formatted_tagged_user_commands   ':login/user_commands/tag/*tag.:format',   :action=>'index', :format=>'rss'
     c.tagged_user_commands   ':login/user_commands/tag/*tag',   :action=>'index'
     c.formatted_all_tagged_user_commands   'user_commands/tag/*tag.:format',   :action=>'index', :format=>'rss'
     c.all_tagged_user_commands   'user_commands/tag/*tag',   :action=>'index'

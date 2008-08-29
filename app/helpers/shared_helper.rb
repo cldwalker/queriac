@@ -36,6 +36,10 @@ module SharedHelper
     link_to image_tag('icons/feed.png', :size => '14x14', :alt => "Subscribe to #{title}", :style => 'margin-left:12px;'), url
   end
   
+  def clear_rss_feed
+    @feed_icons = []
+  end
+  
   def add_rss_feed(rss_url=nil,title=nil)
     #correct way since it's compatible with route definitions
     # rss_url ||= {}.merge(:format=>'rss')
