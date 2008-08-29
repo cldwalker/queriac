@@ -9,8 +9,12 @@
 </div>
 
 <div class="floatkiller">
+ <% url_disabled =  @command.has_options? %>
+  <% if url_disabled %>
+    <i>Url editing here has been disabled because it has options. You can edit the url and options from your user command of this command.</i><br/>
+  <% end %>
   <%= f.label :url, "URL or Javascript Command. (Don't forget to include the protocol: http, https, javascript, etc..)" %><br />
-  <%= f.text_field :url, :size => 90 %>
+  <%= f.text_field :url, :size => 90, :disabled=>url_disabled %>
 </div>
 
 <div>

@@ -44,6 +44,7 @@ module CommandHelper
       redirect_url.gsub!(/&+/,'&')
       redirect_url.sub!(/&$/, '')
       redirect_url.sub!('?&','?')
+      redirect_url.sub!(/\?$/, '')
     end
     
     modified_query_string = @query_array ? (@query_array[@biggest_query_array_index .. -1] || []).join(" ") : query

@@ -105,7 +105,7 @@ class Option < OpenStruct
   
   # Console helper: Lists all currently used option names and aliases
   def self.all_options
-    Command.find(:all, :conditions=>"url_options IS NOT NULL").map {|e| e.user_commands.map {|f| f.url_options.map {|o| [o[:name], o[:alias]] } }}.flatten.compact.uniq.sort
+    Command.with_options.map {|e| e.user_commands.map {|f| f.url_options.map {|o| [o[:name], o[:alias]] } }}.flatten.compact.uniq.sort
   end
   
   #should return array

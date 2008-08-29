@@ -167,8 +167,11 @@ describe 'users/activate:' do
   before(:each) { @user = create_user; @user.send(:make_activation_code); @user.save}
   
   it 'activates user and redirects' do
+    command_keywords = ["g", "gms", "w", "word", "q", "show", "edit", "new", "search"]
+    commands = command_keywords.map {|e| create_command(:keyword=>e) }
     #stubbing done since command ids are hardcoded
-    Command.stub!(:find).and_return(create_command)
+    Command.should_receive(:find).and_return(*commands)
+    
     lambda {
       get :activate, :activation_code=>@user.activation_code
     }.should change(UserCommand, :count).by_at_least(8)

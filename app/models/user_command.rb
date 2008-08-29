@@ -61,6 +61,9 @@ class UserCommand < ActiveRecord::Base
     if self.command_id.nil? && self.command.nil?
       create_command_from_hash(command_hash) 
     else
+      self.keyword ||= self.command.keyword
+      self.name ||= self.command.name 
+      self.description ||= self.command.description
       self.url = self.command.url
       self.url_options = self.command.url_options if self.command[:url_options]
     end

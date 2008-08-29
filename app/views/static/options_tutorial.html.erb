@@ -6,7 +6,7 @@
 	<p>
 		Before reading this, it would help to know how to <%= link_to "create a command", static_page_path('help') + '#create_quicksearch' %>.<br/>
 		Options allow you to give additional arguments to a command and to place them at different points in a url. Take for example
-		a more complex version of our <%= link_to "google command", command_path('g') %>
+		a more complex version of a basic google search:
 	</p>
 	<p class="indent"><code>http://www.google.com/search?q=(q)&num=10&as_qdr=m3</code></p>
 	<p>
@@ -110,7 +110,7 @@
 		(you'll need to toggle the view of some fields to see them).
 		Fields will vary depending on the option type you use. When you modify your url to alter your options,
 		make sure to click the synchronize link to update your option list. Now, with the latest option list, tweak
-		some fields (you can see most of these fields in action in our <%= link_to "super google command", command_path('sg') %>):
+		some fields (you can see most of these fields in action with the latest <%= link_to "google command", command_path('g') %>):
 		<div class="indent">
 		<ul class="normal">
 			<li>Name: Name of the option.</li>

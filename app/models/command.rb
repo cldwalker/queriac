@@ -10,6 +10,7 @@ class Command < ActiveRecord::Base
   named_scope :any
   named_scope :unique, :select=>'*, count(url)', :group=>"url HAVING count(url)>=1"
   named_scope :search, lambda {|v| {:conditions=>["commands.keyword REGEXP ? OR commands.url REGEXP ?", v, v]} }
+  named_scope :with_options, :conditions=>"url_options IS NOT NULL"
   
   validates_presence_of :name, :url
   validates_uniqueness_of :name

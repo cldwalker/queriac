@@ -10,17 +10,6 @@ require File.dirname(__FILE__) + '/../spec_helper'
   # validates_uniqueness_of   :login, :email, :case_sensitive => false
   
 describe User do
-  # You can declare fixtures for each behaviour like this:
-  #   describe "...." do
-  #     fixtures :table_a, :table_b
-  #
-  # Alternatively, if you prefer to declare them only once, you can
-  # do so here, like so ...
-  #
-  #   config.global_fixtures = :table_a, :table_b
-  #
-  # If you declare global fixtures, be aware that they will be declared
-  # for all of your examples, even those that don't use them.
   def valid_user_attributes
     {
       :login => "bozo",
@@ -59,23 +48,26 @@ describe User do
     end
   end
   
-  it "create_default_user_commands() should generate some starter commands" do
-    
-    @user.attributes = valid_user_attributes
-    @user.save!
+end
+  
+describe "user with default commands:" do
+  before(:all) do
+    @user = create_user
+    Command.destroy_all
+    command_keywords = ["g", "gms", "w", "word", "q", "show", "edit", "new", "search"]
+    commands = command_keywords.map {|e| create_command(:keyword=>e) }
     #stubbing done since command ids are hardcoded
-    Command.stub!(:find).and_return(create_command)
+    Command.should_receive(:find).and_return(*commands)
     @user.create_default_user_commands
+  end
+  
+  it "create_default_user_commands() should generate some starter commands" do
+    command_keywords = ["g", "gms", "w", "word", "q", "show", "edit", "new", "search"]
     @user.should have(9).user_commands
-    @user.user_commands.map(&:keyword).join(" ").should eql("g gms w word q show edit new search")
+    @user.user_commands.map(&:keyword).sort.should == command_keywords.sort
   end
   
   it "should set default command" do
-    @user.attributes = valid_user_attributes
-    @user.save!
-    #stubbing done since command ids are hardcoded
-    Command.stub!(:find).and_return(create_command)
-    @user.create_default_user_commands
     @command = @user.user_commands.first
     @command.keyword.should eql("g")
     @user.default_command_id = @command.id
