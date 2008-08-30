@@ -8,6 +8,14 @@
 			<ul class="options toolbar">
 				<li class="edit"><%= link_to("Pick a default command and direct orphan queries to it.", settings_path) %></li>
 				<li class="add"><%= link_to("Create a new command with keyword '#{keyword}'", new_user_command_path(:keyword => keyword)) %></li>
+				<li class="search">
+					<% form_tag user_command_execute_path(@user, 'search_form'), :method=>:get  do %>
+						<label for="search_command">Typo? Try again:</label>
+						<%= text_field_tag 'search_command', params[:bad_command], :size=>30 %>
+						<%= submit_tag 'Search' %>
+					<% end %>
+					
+				</li>
 			</ul>
 			<% else %>
 				<p>The command you entered (<%= keyword %>) does not exist.</p>

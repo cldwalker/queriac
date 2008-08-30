@@ -4,7 +4,7 @@ require 'ostruct'
 class Option < OpenStruct
   OPTION_TYPES = ['normal', 'boolean', 'enumerated']
   VALID_FIELDS = [:name, :option_type, :description, :alias, :true_value, :false_value, :default, :values, :value_aliases, :value_prefix, :param]
-  GLOBAL_OPTIONS = ['off', 'help', 'h', 'print']
+  GLOBAL_OPTIONS = ['off', 'help', 'h', 'pretend', 'pr']
   
   def self.sanitize_input(array_of_hashes)
     array_of_hashes.map {|e| 

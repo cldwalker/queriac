@@ -1,6 +1,6 @@
-<%# collapser_for "upload", :autohide => true, :label => "Hide Uploader" %>
 <h1>Scrape Form</h1>
 
+<%= collapser_for "scrape_form", :autohide => true, :label => "Hide Scrape Form" %>
 <div id="scrape_form">
 	<p/>
 	<%= form_tag(scrape_form_user_commands_path, :method=>:post) %>
@@ -14,8 +14,8 @@
 </div>
 
 <% if @options %>
-	<%# hide "upload" %>
-	<%# expander_for "upload", :autohide => false, :label => "More Commands? Upload them!" %>
+	<%= hide "scrape_form" %>
+	<%= expander_for "scrape_form", :autohide => false, :label => "Have something else to scrape?" %>
 
 	<h2>Scrape Results for
 		<%= if !params[:url].blank?

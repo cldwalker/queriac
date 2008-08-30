@@ -8,8 +8,7 @@ class UserCommandsController < ApplicationController
   before_filter :allow_breadcrumbs, :only=>[:search, :index, :command_user_commands, :show, :edit]
   before_filter :set_disabled_fields, :only=>[:copy, :edit]
   before_filter :load_tags_if_specified, :only=>:index
-  before_filter :add_rss_feed, :only=>[:index, :command_user_commands]
-  
+  before_filter :add_rss_feed, :only=>[:index, :command_user_commands]  
   # Possiblities..
   # /user_commands                   => public commands
   # /user_commands/tag/google        => public commands for a tag or tags
@@ -295,17 +294,19 @@ class UserCommandsController < ApplicationController
 
   #js example at http://ostermiller.org/bookmarklets/form.html- Extract Forms
   def scrape_form
-    unless params[:url].blank? && params[:text].blank?
-      if !params[:url].blank?
-        text = open(params[:url])
-      elsif !params[:text].blank?
-        text = params[:text]
-      end
-      if (@form = (Hpricot(text)/"form")[0])
-        form_text = @form.to_html 
-        @options = Option.scrape_options_from_form(form_text)
-      else
-        flash[:notice] = 'No form found.'
+    if request.post?
+      unless params[:url].blank? && params[:text].blank?
+        if !params[:url].blank?
+          text = open(params[:url])
+        elsif !params[:text].blank?
+          text = params[:text]
+        end
+        if (@form = (Hpricot(text)/"form")[0])
+          form_text = @form.to_html 
+          @options = Option.scrape_options_from_form(form_text)
+        else
+          flash[:notice] = 'No form found.'
+        end
       end
     end
   rescue Errno::ENOENT
