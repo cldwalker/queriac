@@ -10,7 +10,8 @@ module CommandHelper
   def url_for(query_string, manual_url_encode=nil,command_options={})
     query = query_string.dup #avoid modifying original string
     #no warning is given for options that aren't valid for a command
-    query_options = parse_query_options(query, command_options)
+    
+    query_options = has_options? ? parse_query_options(query, command_options) : {}
     query.strip!
     
     redirect_url = self.url.gsub(OPTION_PARAM_REGEX) do
@@ -138,7 +139,7 @@ module CommandHelper
   end
   
   def has_options?
-    self.url =~ OPTION_PARAM_REGEX ? true : false
+    (self.url =~ OPTION_PARAM_REGEX ? true : false) && !url_options.blank?
   end
   
   def ordered_url_options(unordered_options=self.url_options, ordered_url=self.url)

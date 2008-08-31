@@ -10,6 +10,7 @@ class Command < ActiveRecord::Base
   named_scope :any
   named_scope :unique, :select=>'*, count(url)', :group=>"url HAVING count(url)>=1"
   named_scope :search, lambda {|v| {:conditions=>["commands.keyword REGEXP ? OR commands.url REGEXP ?", v, v]} }
+  named_scope :advanced_search, lambda {|v| parse_advanced_search(v) }
   named_scope :with_options, :conditions=>"url_options IS NOT NULL"
   
   validates_presence_of :name, :url
@@ -105,6 +106,33 @@ class Command < ActiveRecord::Base
   
   def update_query_counts
     self.update_attribute(:queries_count_all, self.queries_count_all + 1)
+  end
+  
+  def self.parse_advanced_search(query)
+    allowed_columns = %w{name description url keyword}
+    if query[/-[^c]/]
+      query_array = query.split(/\s*-\s*/).map {|e| e.split(/\s+/) }.flatten
+      query_hash = Hash[*query_array]
+      query_hash.each {|k,v| 
+        if (col = allowed_columns.find {|e| e.starts_with?(k)})
+          query_hash.delete(k)
+          query_hash[col] = v
+        end
+      }
+    else
+      if query[/-c/]
+        option, columns, query = query.split(/\s+/, 3)
+        query_columns = columns.split(/\s*,\s*/).map {|e| allowed_columns.find {|f| f.starts_with?(e)}}.compact
+      else
+        query_columns = ['url', 'keyword']
+      end
+        
+      query_array = query_columns.zip(Array.new(query_columns.size, query)).flatten
+      query_hash = Hash[*query_array]
+    end
+    query_hash.delete_if {|k,v| !allowed_columns.include?(k)}
+    query_string = query_hash.keys.map {|k| "commands.#{k} REGEXP :#{k}"}.join(" OR ")
+    {:conditions=>[query_string, query_hash.symbolize_keys] }
   end
   
   def self.create_commands_for_user_from_bookmark_file(user, file)

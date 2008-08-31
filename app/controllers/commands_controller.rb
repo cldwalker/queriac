@@ -49,8 +49,11 @@ class CommandsController < ApplicationController
       flash[:warning] = "Your search is empty. Try again."
       @commands = [].paginate
     else
-      publicity = admin? ? 'any' : 'public'
-      @commands = Command.send(publicity).search(params[:q]).paginate(index_pagination_params.merge(:order=>sort_param_value('commands.queries_count_all DESC')))
+      if admin?
+        @commands = Command.any.advanced_search(params[:q]).paginate(index_pagination_params.merge(:order=>sort_param_value('commands.queries_count_all DESC')))
+      else
+        @commands = Command.public.search(params[:q]).paginate(index_pagination_params.merge(:order=>sort_param_value('commands.queries_count_all DESC')))
+      end
     end
     render :action => 'index'
   end
