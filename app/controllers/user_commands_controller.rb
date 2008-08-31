@@ -1,5 +1,5 @@
 class UserCommandsController < ApplicationController
-  before_filter :login_required, :except => [:index, :show, :command_user_commands]
+  before_filter :login_required, :except => [:index, :show, :command_user_commands, :scrape_form]
   before_filter :load_valid_user_if_specified, :only=>[:index, :show]
   before_filter :set_user_command, :only=>[:show, :edit, :update, :destroy, :update_url]
   before_filter :set_command, :only=>[:command_user_commands]

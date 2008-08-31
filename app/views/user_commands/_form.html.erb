@@ -77,7 +77,11 @@
 		end
 	%>
 	
-  <%= text_field_tag :tags, tag_list, {:size => 90} %>
+  <%= text_field_tag :tags, tag_list, {:size => 90} %><br/>
+  <p>
+  Your tags: <span style="font-style:italic">
+  <%= truncate_with_more current_user.tags.map(&:name).uniq.sort.join(", "), 100, :tag_type=>'span' %></span>
+  </p>
 </div>
 
 	

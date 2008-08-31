@@ -240,7 +240,7 @@ module ApplicationHelper
     options.reverse_merge!(:more => "more &gt;", :less => "&lt; less", :link_options => {}, :truncate_string => "...")
     if text
       morelink = link_to_function(options[:more], "$(this).up('#{tag_type}').next().show(); $(this).up('#{tag_type}').hide()", options[:link_options])
-      starter = truncate(text, length, "#{options[:truncate_string]} #{morelink}")
+      starter = truncate(text, length, options[:truncate_string]) +  " #{morelink}"
       lesslink = link_to_function(options[:less], "$(this).up('#{tag_type}').previous().show(); $(this).up('#{tag_type}').hide()", options[:link_options])
       all_text = content_tag(tag_type, starter)+content_tag(tag_type, "#{text} #{lesslink}", :style => 'display:none;')
     end
