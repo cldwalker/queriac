@@ -1,0 +1,32 @@
+<h1 class="inline">
+	<%= link_to h(@user_command.name), public_user_command_path(@user_command) %> Help
+</h1>
+<hr/>
+<p class="small-url">
+	<%= h @user_command.url.ellipsize(:max => 150, :delimiter => " . . . . . ") %>
+</p>
+
+<div id="primary">
+	<%= render :partial=>'show_left_column' %>
+	<%= javascript_tag "$('options_description_box').toggle()"%>
+</div>
+
+<div id="secondary">
+	<h2>Global Options</h2>
+	<div style="margin-left: 10px">
+		<ul id="url_options_descriptions">
+			<% for opt in Option.global_options %>
+			<li>
+				<b style="font-size: 12px"><%= opt.name %></b>
+				<%= " (#{opt.option_type})" if opt.option_type != 'normal' %>
+				<% if (metadata = option_metadata(opt)) && ! metadata.blank? %>
+				<div style="margin-left: 10px" class="description_box">
+					<%= metadata %>
+				</div>
+				<% end %>
+			</li>
+			<% end %>
+		</ul>
+	</div>
+</div>
+

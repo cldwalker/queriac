@@ -20,6 +20,10 @@ module PathHelper
     args[0].is_a?(UserCommand) ? super(args[0].user, args[0]) : super(*args)
   end
   
+  def help_public_user_command_path(*args)
+    args[0].is_a?(UserCommand) ? super(args[0].user, args[0]) : super(*args)
+  end
+  
   def copy_user_command_path(*args)
     args[0].is_a?(UserCommand) ? super(:id=>args[0].id) : super(*args)
   end

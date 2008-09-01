@@ -22,6 +22,13 @@ class Option < OpenStruct
     }
   end
   
+  #should be in sync with global options constants
+  def self.global_options
+    global_opt = [{:name=>'help', :option_type=>'boolean', :alias=>'h', :description=>'Displays help page for user command.'}, 
+      {:name=>'test', :alias=>'T', :description=>'Tests a user command and its arguments by displaying its result.', :option_type=>'boolean'}]
+    global_opt.map {|e| Option.new(e) }
+  end
+  
   def self.find_and_create_by_name(options_array, name)
     (option = options_array.find {|e| e[:name] == name }) ? Option.new(option) : nil
   end

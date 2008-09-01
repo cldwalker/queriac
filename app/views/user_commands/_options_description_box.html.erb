@@ -1,6 +1,6 @@
 <% if command.has_options? %>
-<h2>Options</h2>
-<div style="margin-left: 20px">
+<h2 style="text-decoration: underline"><%= link_to_function 'Options', "$('options_description_box').toggle()" %></h2>
+<div id="options_description_box" style="margin-left: 20px">
 	<ul id="url_options_descriptions">
 		<% for opt in command.ordered_url_options %>
 		<li>

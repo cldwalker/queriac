@@ -427,6 +427,7 @@ describe 'user_command actions:' do
   it 'sync_url_options'
   it 'change_option_type_fields'
   it 'update_default_picker'
+  it 'help page'
 end
 
 describe 'user_commands/tag_set:' do

@@ -1,11 +1,11 @@
 class UserCommandsController < ApplicationController
-  before_filter :login_required, :except => [:index, :show, :command_user_commands, :scrape_form]
-  before_filter :load_valid_user_if_specified, :only=>[:index, :show]
-  before_filter :set_user_command, :only=>[:show, :edit, :update, :destroy, :update_url]
+  before_filter :login_required, :except => [:index, :show, :command_user_commands, :scrape_form, :help]
+  before_filter :load_valid_user_if_specified, :only=>[:index, :show, :help]
+  before_filter :set_user_command, :only=>[:show, :edit, :update, :destroy, :update_url, :help]
   before_filter :set_command, :only=>[:command_user_commands]
   before_filter :permission_required, :only=>[:edit, :update, :destroy, :update_url]
   before_filter :store_location, :only=>[:index, :show, :command_user_commands]
-  before_filter :allow_breadcrumbs, :only=>[:search, :index, :command_user_commands, :show, :edit]
+  before_filter :allow_breadcrumbs, :only=>[:search, :index, :command_user_commands, :show, :edit, :help]
   before_filter :set_disabled_fields, :only=>[:copy, :edit]
   before_filter :load_tags_if_specified, :only=>:index
   before_filter :add_rss_feed, :only=>[:index, :command_user_commands]  
@@ -67,6 +67,19 @@ class UserCommandsController < ApplicationController
     respond_to do |format|
       format.html
       #format.xml  { render :xml => @command.to_xml }
+    end
+  end
+  
+  def help
+    if @user_command.private? && ! user_command_owner_or_admin?
+      flash[:warning] = "Sorry, the command '#{@user_command.name}' is private."
+      redirect_to user_home_path(current_user)
+      return
+    end
+    if can_view_queries?
+      @queries =  @user_command.queries.find(:all, :limit=>30, :order=>'queries.created_at DESC', :include=>:user_command)
+    else
+      @queries = []
     end
   end
   

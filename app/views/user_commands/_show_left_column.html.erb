@@ -1,0 +1,22 @@
+<div style="margin: 20px 0px">		
+	<h2>Description</h2>
+	<div id="user_command_description_box">
+		<%= command_description(@user_command) %>
+	</div>
+</div>
+
+<%= render :partial=>'options_description_box', :locals=>{:command=>@user_command}%>
+	
+<% if can_view_queries? %>
+	<h2>
+		<%= "Queries (Last #{@queries.size})" %>
+	</h2>
+	<%= query_table(@queries, :columns=>[:query_string, :created_at])%>
+	
+	<% unless @user_command.queries_count.zero? %>
+		<%= table_link_to "View all queries", user_command_queries_path(@user_command) %>
+	<% end %>
+<% else %>
+	<h2>Queries for this user command are private.</h2>
+<% end %>
+

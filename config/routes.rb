@@ -16,6 +16,7 @@ ActionController::Routing::Routes.draw do |map|
     c.formatted_specific_user_commands   ':login/user_commands.:format', :action=>'index', :format=>/atom|rss|xml/
     #perhaps remove /show at end once other routes are stable + in right order
     c.public_user_command     ':login/:id/show', :action=>'show'
+    c.help_public_user_command     ':login/:id/help', :action=>'help'
   end
   map.resources :users, :member => { :opensearch => :get }
     

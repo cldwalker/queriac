@@ -142,6 +142,8 @@ class CommandsController < ApplicationController
       @no_js = true
       @query_string = query_string
       render :action=>'test_command'
+    elsif @user_command.query_options['help']
+      redirect_to help_public_user_command_path(@user_command)
     else
       # Command is a simple URL to which we redirect
       redirect_to @result
