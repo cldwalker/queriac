@@ -1,5 +1,5 @@
  <h1>Execute Command via POST</h1>
- <p style="font-size: 20px">Submitting your command <%= link_to @user_command.name, user_command_url(@user_command) %> ...</p>
+ <p style="font-size: 20px">Submitting the command <%= link_to h(@user_command.name), public_user_command_path(@user_command) %> ...</p>
  <p>If you continue to see this message you most likely have Javascript
     disabled, you will need to enable it to post a command.
  </p>

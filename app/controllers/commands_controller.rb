@@ -138,6 +138,10 @@ class CommandsController < ApplicationController
       @form_inputs = form_query.split("&").map {|e| e.split("=")} rescue []
       @no_js = true
       render :action=>"execute_post"
+    elsif @user_command.query_options['test']
+      @no_js = true
+      @query_string = query_string
+      render :action=>'test_command'
     else
       # Command is a simple URL to which we redirect
       redirect_to @result

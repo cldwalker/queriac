@@ -136,7 +136,7 @@ describe 'parse_query_options: ' do
     expected_options = {'L'=>true, 'view'=>'normal', 'type'=>'cool', 'r'=>'one two', 'q'=>'three'}
     @command.url_options = [{:name=>'L', :option_type=>'boolean'}]
     @command.parse_query_options(query_string).should == expected_options
-    query_string.should =~ /^\s*still here$/
+    query_string.should =~ /\s*still here/
   end
   
   it 'no option parsing when query starts with option -off' do
@@ -158,6 +158,9 @@ describe 'parse_query_options: ' do
     @command.url_options = [{:name=>'above'},{:name=>'below'}, {:name=>'around'}]
     @command.parse_query_options(query_string, :auto_aliasing=>true).should == expected_options
   end
+  it "query string not altered for some cases ie optionless commands"
+  it "auto alias options don't conflict with global options"
+  it "global options are aliased"
 end
 
 describe 'misc actions' do

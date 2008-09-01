@@ -137,8 +137,9 @@ describe 'commands/execute:' do
   end
   
   it 'executes bookmarklet'
-  
   it 'executes default_to via search_form'
+  it 'executes post'
+  it 'test command'
   it 'handles search_form with no command'
   
   #this happens when querying other ppl's commands from browser

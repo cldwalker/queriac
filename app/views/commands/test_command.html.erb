@@ -1,0 +1,4 @@
+<h1>Test Command</h1>
+<h3>The <%= link_to h(@user_command.name), public_user_command_path(@user_command)%> command with arguments '<%= @query_string%>'
+resulted in: <%= link_to truncate(h(@result), 150), @result, :nofollow=>true %>
+</h3>

@@ -1,5 +1,8 @@
 #contains common code used between commands and user_commands: options and domain related methods
 module CommandHelper
+  def self.included(base)
+    base.class_eval %[attr_accessor :query_options]
+  end
   
   #url supports argument and/or option variables
   #option:   google.com?q=(q)&v=[:v]
@@ -11,7 +14,7 @@ module CommandHelper
     query = query_string.dup #avoid modifying original string
     #no warning is given for options that aren't valid for a command
     
-    query_options = has_options? ? parse_query_options(query, command_options) : {}
+    @query_options = parse_query_options(query, command_options)
     query.strip!
     
     redirect_url = self.url.gsub(OPTION_PARAM_REGEX) do
@@ -25,12 +28,12 @@ module CommandHelper
       else
          case option.option_type
          when 'boolean'
-           value = query_options[name] ? option.true_value : option.false_value
+           value = @query_options[name] ? option.true_value : option.false_value
          when 'enumerated'
-           unaliased_value = option.alias_value(query_options[name])
-           value = option.values_list.include?(unaliased_value) ? query_options[name] : option.default
+           unaliased_value = option.alias_value(@query_options[name])
+           value = option.values_list.include?(unaliased_value) ? @query_options[name] : option.default
          else
-           value = query_options[name] || option.default
+           value = @query_options[name] || option.default
          end
        end
        value = option.alias_value(value)
@@ -80,12 +83,20 @@ module CommandHelper
   def url_options_booleans
     url_options.select {|e| e[:option_type] == 'boolean' }.map {|e| [ e[:name], e[:alias]]}.flatten.select {|e| ! e.blank?}
   end
+  
+  def all_booleans
+    url_options_booleans + Option::GLOBAL_BOOLEAN_OPTIONS
+  end
+  
+  def all_options
+    options_from_url_options + Option::GLOBAL_OPTIONS
+  end
     
   def parse_query_options(query, command_options={})
     options = {}
     #placeholder_for_dollar_1 shouldn't be set, just there to keep $1 constant
     #\b is important otherwise one letter booleans swallow up options starting with same letter
-    boolean_regex_string =  url_options_booleans.empty? ? "-(placeholder_for_dollar_1)|" : "-(#{url_options_booleans.join('|')})" + '\b|'
+    boolean_regex_string =  all_booleans.empty? ? "-(placeholder_for_dollar_1)|" : "-(#{all_booleans.join('|')})" + '\b|'
     option_regex_string = boolean_regex_string + "-(#{OPTION_NAME_REGEX})" + %q{(\s*=\s*|\s+)?('[^'-]+'|\S+)}
     #-(OPTION_NAME_REGEX)   option is a word
     #(?:\s*=\s*|\s+)    space(s) or '=' delimits option from value
@@ -97,14 +108,16 @@ module CommandHelper
       query.gsub!(option_regex) do
         #boolean option set
         if $1
-          options[$1] = true
+          name = $1
+          options[name] = true
         else
           name, value = $2, $4
           #$1 refers to new regexp
           value = $1 if value && value[/^'(.*)'$/]
           options[name] = value
         end
-        ''
+        #delete options from query if a global option or an option command
+        (has_options? || Option::GLOBAL_OPTIONS.include?(name)) ? '' : $~.to_s
       end
     end
     
@@ -116,25 +129,29 @@ module CommandHelper
         if (option = url_options.find {|e| e[:alias] == name})
           options[option[:name]] = value
           true
-        elsif !options_from_url_options.include?(name) && (option_name = sorted_option_names.find {|e| e.starts_with?(name) })
+        elsif !all_options.include?(name) && (option_name = sorted_option_names.find {|e| e.starts_with?(name) })
           options[option_name] = value
           true
         else
           false
         end
       }
-    else
-    #convert aliased names to normal option names
+    end
+      
+    #construct hash mapping option aliases to names for both url options and global options
+    temp_array = url_options.map {|e| e[:alias] ? [e[:alias], e[:name] ] : []}.flatten
+    alias_hash = (Hash[*temp_array]).merge(Option::GLOBAL_OPTION_ALIASES.invert)
+    
+    #convert aliased name keys to normal option name keys
     options.delete_if {|name, value|
-      #merge with fetch_url_option if this is done again
-      if (option = url_options.find {|e| e[:alias] == name})
-        options[option[:name]] = value
+      if (full_name = alias_hash[name])
+        options[full_name] = value
         true
       else
         false
       end
     }
-    end
+    
     options
   end
   
