@@ -97,7 +97,7 @@ class CommandsController < ApplicationController
     
     # Needs to be constructed if commands takes arguments
     @result = @user_command.parametric? ? @user_command.url_for(query_string, :auto_aliasing=>admin?) : @user_command.url
-      
+    
     if @user_command.bookmarklet?
       # Command is a Javascript bookmarklet, so rather than redirect to it,
       # we simply render it so the script that called it can use it as its source.

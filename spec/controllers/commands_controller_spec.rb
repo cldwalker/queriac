@@ -85,9 +85,19 @@ describe 'commands/execute:' do
     login_user(@command.user)
     lambda { get_request}.should change(Query, :count).by(1)
     basic_expectations
+    response.should redirect_to("#{@command.url.gsub('(q)', 'blues')}")
     query = Query.find_last
     query.user_command.should == @command
     query.user_id.should eql(@command.user_id)
+  end
+  
+  it 'executes shortcut as logged-in user' do
+    pending "can't get url to be parametric to fail on query_options in commands/execute"
+    login_user(@command.user)
+    @command.update_attributes :url=> "http://google.com"
+    # @command.command.update_attributes :kind=>'shortcut'
+    lambda { get_request(:command=>[@command.keyword])}.should change(Query, :count).by(1)
+    basic_expectations
   end
   
   it 'executes as anonymous user' do
@@ -140,7 +150,11 @@ describe 'commands/execute:' do
   it 'executes default_to via search_form'
   it 'executes post'
   it 'tests command'
-  it 'displays help for command'
+  it 'displays help for command' do
+    get_request(:command=>["#{@command.keyword} -help"])
+    basic_expectations
+    response.should redirect_to(help_public_user_command_path(assigns[:user_command]))
+  end
   it 'handles search_form with no command'
   
   #this happens when querying other ppl's commands from browser

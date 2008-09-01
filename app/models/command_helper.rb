@@ -1,7 +1,7 @@
 #contains common code used between commands and user_commands: options and domain related methods
 module CommandHelper
   def self.included(base)
-    base.class_eval %[attr_accessor :query_options]
+    base.class_eval %[attr_accessor :query_options; def query_options; @query_options || {} ; end]
   end
   
   #url supports argument and/or option variables
@@ -120,7 +120,6 @@ module CommandHelper
         (has_options? || Option::GLOBAL_OPTIONS.include?(name)) ? '' : $~.to_s
       end
     end
-    
     #auto alias options: match first option from alphabetized options that starts with given name
     #boolean options can't use this
     if command_options[:auto_aliasing]
@@ -151,7 +150,6 @@ module CommandHelper
         false
       end
     }
-    
     options
   end
   
