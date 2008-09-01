@@ -10,7 +10,7 @@ module CommandHelper
   #options must start at beginning of query
   #option parsing can be turned off by specifying -off
   
-  def url_for(query_string, manual_url_encode=nil,command_options={})
+  def url_for(query_string, command_options={})
     query = query_string.dup #avoid modifying original string
     #no warning is given for options that aren't valid for a command
     
@@ -39,7 +39,7 @@ module CommandHelper
        value = option.alias_value(value)
        value = option.prefix_value(value) unless value.blank?
        #TODO: give user option to error out for parameters without value or default
-       value = value ? url_encode_string(value) : ''
+       value = value ? url_encode_string(value, @query_options['url_encode']) : ''
        !option.param.blank? && !value.blank? ? option.param + "=" + value : value
     end
     
@@ -52,7 +52,7 @@ module CommandHelper
     end
     
     modified_query_string = @query_array ? (@query_array[@biggest_query_array_index .. -1] || []).join(" ") : query
-    redirect_url.gsub(DEFAULT_PARAM, url_encode_string(modified_query_string))
+    redirect_url.gsub(DEFAULT_PARAM, url_encode_string(modified_query_string, @query_options['url_encode']))
   end
   
   def fetch_url_option(option_name)
@@ -171,7 +171,7 @@ module CommandHelper
   end
   
   def url_encode_string(string, manual_url_encode=nil)
-    is_url_encoded = !manual_url_encode.nil? ? manual_url_encode : url_encode?
+    is_url_encoded = !manual_url_encode.nil? ? manual_url_encode == '1': url_encode?
     is_url_encoded ? CGI.escape(string) : string
   end
   

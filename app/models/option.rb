@@ -5,7 +5,7 @@ class Option < OpenStruct
   OPTION_TYPES = ['normal', 'boolean', 'enumerated']
   VALID_FIELDS = [:name, :option_type, :description, :alias, :true_value, :false_value, :default, :values, :value_aliases, :value_prefix, :param]
   #maps names to aliases
-  GLOBAL_OPTION_ALIASES = {'help'=>'h', 'test'=>'T'} 
+  GLOBAL_OPTION_ALIASES = {'help'=>'h', 'test'=>'T', 'url_encode'=>'ue'} 
   GLOBAL_OPTIONS = ['off'] + GLOBAL_OPTION_ALIASES.to_a.flatten
   GLOBAL_BOOLEAN_OPTIONS = GLOBAL_OPTION_ALIASES.slice('help', 'test').to_a.flatten
   
@@ -25,7 +25,8 @@ class Option < OpenStruct
   #should be in sync with global options constants
   def self.global_options
     global_opt = [{:name=>'help', :option_type=>'boolean', :alias=>'h', :description=>'Displays help page for user command.'}, 
-      {:name=>'test', :alias=>'T', :description=>'Tests a user command and its arguments by displaying its result.', :option_type=>'boolean'}]
+      {:name=>'test', :alias=>'T', :description=>'Tests a user command and its arguments by displaying its result.', :option_type=>'boolean'},
+      {:name=>'url_encode', :alias=>'ue', :option_type=>'normal', :description=>"Override default url encode. 1 toggles it on and 0 toggles it off."}]
     global_opt.map {|e| Option.new(e) }
   end
   

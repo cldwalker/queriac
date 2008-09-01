@@ -16,6 +16,18 @@ describe 'url_for: ' do
     @url.should eql("http://google.com/search?q=this%2Fis%2Ffucked%3B+and+crazy%21")
   end
   
+  it "url_encode option toggles on encode" do
+    @command.url_encode = false
+    @command.url = "http://google.com/search?q=(q)"
+    @command.url_for('-url_encode 1 test oh test').should eql("http://google.com/search?q=test+oh+test")
+  end
+  
+  it "url_encode option toggles off encode" do
+    @command.url_encode = true
+    @command.url = "http://google.com/search?q=(q)"
+    @command.url_for('-url_encode 0 test oh test').should eql("http://google.com/search?q=test oh test")
+  end
+  
   it 'basic option' do
     @command.url_options = [{:name=>'type'}]
     @command.url = "http://google.com/search?q=(q)&type=[:type]"

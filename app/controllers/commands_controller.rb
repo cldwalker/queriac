@@ -96,18 +96,7 @@ class CommandsController < ApplicationController
     ) unless options[:dont_save_query]
     
     # Needs to be constructed if commands takes arguments
-    @result = if @user_command.parametric?
-      url_for_options = {:auto_aliasing=>admin?}
-      #manually set url encode
-      if (url_encode = params.delete(:_encode))
-        is_url_encoded = url_encode == '1'
-        @user_command.url_for(query_string, is_url_encoded, url_for_options)
-      else
-        @user_command.url_for(query_string, nil, url_for_options)
-      end
-    else
-      @user_command.url
-    end
+    @result = @user_command.parametric? ? @user_command.url_for(query_string, :auto_aliasing=>admin?) : @user_command.url
       
     if @user_command.bookmarklet?
       # Command is a Javascript bookmarklet, so rather than redirect to it,
