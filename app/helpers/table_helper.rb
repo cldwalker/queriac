@@ -69,6 +69,7 @@ module TableHelper
         others << "True Value: #{option.true_value}" unless option.true_value.blank?
       when 'enumerated'
         if option.values_hash
+          option.values_hash.delete(nil) #for sites like web.archive.org (arch command)
           others << truncate_with_more("Values: #{option.values_hash.keys.join(', ')}", nil, :tag_type=>'span') unless option.values_hash.blank?
           others << truncate_with_more("Values with labels: #{option.values_hash.map {|k,v| k + (v ? "(#{v})" : '')}.join(', ')}", nil,:tag_type=>'span') unless option.values_hash.blank?
         else

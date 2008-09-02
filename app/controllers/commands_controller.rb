@@ -95,33 +95,27 @@ class CommandsController < ApplicationController
       :referrer => request.env["HTTP_REFERER"]
     ) unless options[:dont_save_query]
     
-    # Needs to be constructed if commands takes arguments
-    @result = @user_command.parametric? ? @user_command.url_for(query_string, :auto_aliasing=>admin?) : @user_command.url
+    #parse alias js symbols before query parsing since js symbols do appear in some urls
+    if params[:js] && !@user_command.bookmarklet?
+      query_string.gsub!(/(#{Command::JAVASCRIPT_SYMBOLS.to_a.flatten.join('|')})/) do
+        Command::JAVASCRIPT_SYMBOLS.invert[$1] || $1
+      end
+    end
     
+    # Needs to be constructed if commands takes arguments
+    url_for_options = {:auto_aliasing=>admin?} #, :url_unencode=>(params[:js] && !@user_command.bookmarklet?)}
+    @result = @user_command.parametric? ? @user_command.url_for(query_string, url_for_options) : @user_command.url
+    
+    # Command is a Javascript bookmarklet, so rather than redirect to it,
+    # we simply render it so the script that called it can use it as its source.
     if @user_command.bookmarklet?
-      # Command is a Javascript bookmarklet, so rather than redirect to it,
-      # we simply render it so the script that called it can use it as its source.
       render :text => @result
       
     #work in progress
-    elsif false #params[:js]
-      # Command is not Javascript, but is being executed in a Javascript context,
-      # so convert the URL into Javascript that will redirect to the URL.
-      # render :text => "document.window.location='http://shit.com';"
-      # @result = CGI::unescape @result
-      prefix_string = "javascript:window.location="
-      @result = @result.gsub(/(.*?)(:url|:domain)/) do
-        js_term = case $2
-        when ':url'
-          "encodeURIComponent(location.href)"
-        when ':domain'
-          "encodeURIComponent(location.hostname)"
-        end
-        %['#{$1}'+#{js_term}+]
-      end
-      result = prefix_string + @result.gsub(/\+$/,'') +";"
-      render :text=> result
-      
+    #convert non-js command to js that redirects to url
+    elsif params[:js] #&& @user_command.parametric?
+      result = Command.convert_to_javascript(@result)
+      render :text=>result
     elsif @user_command.http_post?
       @form_action, form_query = @result.split("?")
       @form_inputs = form_query.split("&").map {|e| e.split("=")} rescue []

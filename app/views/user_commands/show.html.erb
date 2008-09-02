@@ -45,6 +45,8 @@
 	
 	<p><b>Visible to Public:</b> <%= @user_command.public? ? "Yes" : "No" %></p>
 	
+	<p><b>Url Encoded: <%= @user_command.url_encode? ? "Yes" : "No"%></b></p>
+	
 	<p><b>Queries visible to Public:</b> <%= @user_command.public_queries? ? "Yes" : "No" %></p>
 
 	<p><b>Owner queries:</b>

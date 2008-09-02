@@ -247,4 +247,6 @@ describe 'misc actions' do
     @command.url = "http://example.com/[:section]/[:page]"
     @command.ordered_url_options.map(&:name).should == ['section', 'page']
   end
+  
+  it "convert_to_javascript"
 end

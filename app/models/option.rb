@@ -26,7 +26,8 @@ class Option < OpenStruct
   def self.global_options
     global_opt = [{:name=>'help', :option_type=>'boolean', :alias=>'h', :description=>'Displays help page for user command.'}, 
       {:name=>'test', :alias=>'T', :description=>'Tests a user command and its arguments by displaying its result.', :option_type=>'boolean'},
-      {:name=>'url_encode', :alias=>'ue', :option_type=>'normal', :description=>"Override default url encode. 1 toggles it on and 0 toggles it off."}]
+      {:name=>'url_encode', :alias=>'ue', :option_type=>'normal', :description=>"Override default url encode. 1 toggles it on and 0 toggles it off."},
+      {:name=>'off', :option_type=>'boolean', :description=>"Turns off option parsing for remainder of command"}]
     global_opt.map {|e| Option.new(e) }
   end
   

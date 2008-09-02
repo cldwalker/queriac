@@ -192,4 +192,32 @@ class Command < ActiveRecord::Base
     
     return keyword, query_string, options
   end
+  
+  JAVASCRIPT_SYMBOLS = {":url"=>":u", ":host"=>":h", ":fullhost"=>":H", ":selection"=>":s", ":title"=>":t"}
+  def self.convert_to_javascript(query)
+    prefix_string = "javascript:var new_location="
+    query = CGI::unescape(query)
+    js_result = query.gsub(/(.*?)(#{JAVASCRIPT_SYMBOLS.keys.join('|')})/) do
+      js_term = case $2
+      when ':url'
+        "encodeURIComponent(location.href)"
+      when ':host'
+        "encodeURIComponent(location.host)"
+      when ':fullhost'
+        "encodeURIComponent(location.protocol + '//') + encodeURIComponent(location.host)"
+      when ':selection'
+        "encodeURIComponent(window.getSelection())"
+      when ':title'
+        "encodeURIComponent(document.title)"
+      end
+      #NOTE: may need to escape() $1 for commands with quotes such as lucky and commands that need encoding
+      #results with '"' won't work
+      %["#{$1}"+#{js_term}+]
+    end
+    js_result = '"' + query + '"' if js_result == query
+    result = prefix_string + js_result.gsub(/\+\s*$/,'').gsub(/\s*"$/,'"')
+    result += ";window.location=new_location"
+    result
+  end
+  
 end

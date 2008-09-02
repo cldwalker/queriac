@@ -106,6 +106,7 @@ module CommandHelper
     #option parsing starts with '-' unless it's -off
     if query.sub!(/^\s*-off/, '').nil? && query =~ /^\s*-/
       query.gsub!(option_regex) do
+        original_string = $~.to_s.dup
         #boolean option set
         if $1
           name = $1
@@ -116,8 +117,9 @@ module CommandHelper
           value = $1 if value && value[/^'(.*)'$/]
           options[name] = value
         end
+        bool = has_options? || Option::GLOBAL_OPTIONS.include?(name)
         #delete options from query if a global option or an option command
-        (has_options? || Option::GLOBAL_OPTIONS.include?(name)) ? '' : $~.to_s
+        (has_options? || Option::GLOBAL_OPTIONS.include?(name)) ? '' : original_string
       end
     end
     #auto alias options: match first option from alphabetized options that starts with given name
