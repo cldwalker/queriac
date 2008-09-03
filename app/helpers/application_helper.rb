@@ -251,7 +251,7 @@ module ApplicationHelper
     simple_format command.description.blank? ? 'No description yet.' : command.description
   end
   
-  def option_metadata(option)
+  def option_metadata(option, options={})
     metadata = []
     metadata << "param: #{h option.param}" unless option.param.blank?
     metadata << "description: #{h option.description}" unless option.description.blank?
@@ -264,6 +264,9 @@ module ApplicationHelper
   	end
 		metadata << "alias: #{h option.alias}" unless option.alias.blank?
 		metadata << "value prefix: #{h option.value_prefix}" unless option.value_prefix.blank?
+	  if options[:show_all]
+		  metadata << "value aliases: #{h option.value_aliases}" unless option.value_aliases.blank?
+		end
 		
 		return '' if metadata.empty?
 		content_tag(:ul) do

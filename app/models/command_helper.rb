@@ -1,7 +1,13 @@
 #contains common code used between commands and user_commands: options and domain related methods
 module CommandHelper
   def self.included(base)
-    base.class_eval %[attr_accessor :query_options; def query_options; @query_options || {} ; end]
+    base.class_eval %[
+      attr_accessor :query_options; def query_options; @query_options || {} ; end
+      def self.url_is_bookmarklet?(url_value)
+        url_value.downcase.starts_with?('javascript') ? true : false
+      end
+      
+    ]
   end
   
   #url supports argument and/or option variables
@@ -253,7 +259,7 @@ module CommandHelper
   end
   
   def url_is_bookmarklet?(url_value)
-    url_value.downcase.starts_with?('javascript') ? true : false
+    self.class.url_is_bookmarklet?(url_value)
   end
   
   #domain value should be the same for command + its usercommand

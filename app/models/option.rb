@@ -31,6 +31,17 @@ class Option < OpenStruct
     global_opt.map {|e| Option.new(e) }
   end
   
+  #assumes that an option is intended to be a param if after a '?' and isn't preceeded by '=' or ' '
+  #doesn't handle edge case like google's advanced search ie a '#' instead of '?'
+  def self.detect_and_add_params_to_options(options, url)
+    unless Command.url_is_bookmarklet?(url)
+      options.each do |opt|
+        #note: option format is hardcoded here
+        opt.param = opt.name if opt.param.nil? && (url =~ /\?.*\[:#{opt.name}\]/) && (url !~ /[= ]\[:#{opt.name}\]/)
+      end
+    end
+  end
+  
   def self.find_and_create_by_name(options_array, name)
     (option = options_array.find {|e| e[:name] == name }) ? Option.new(option) : nil
   end

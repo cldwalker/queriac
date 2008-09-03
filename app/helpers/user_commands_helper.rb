@@ -38,7 +38,7 @@ module UserCommandsHelper
           :with=>"'values=' + escape($('#{text_field_id}').value)", :before=>"$('enumerated_#{options[:index]}_spinner').show()",
           :complete=>"$('enumerated_#{options[:index]}_spinner').hide()")
         label_tag(text_field_id, %[Values (comma delimited) #{update_link}]) +
-          "<br/>" + form.text_area(:values, :cols=>30, :rows=>2) + ajax_spinner("enumerated_#{options[:index]}")
+          "<br/>" + form.text_area(:values, :cols=>30, :rows=>2, :wrap=>'virtual') + ajax_spinner("enumerated_#{options[:index]}")
       end 
       fields += content_tag(:div, :class=>'floater') do
         values_array = options[:option_obj] ? options[:option_obj].values_list : []

@@ -2,11 +2,12 @@
 <h2 style="text-decoration: underline"><%= link_to_function 'Options', "$('options_description_box').toggle()" %></h2>
 <div id="options_description_box" style="margin-left: 20px">
 	<ul id="url_options_descriptions">
+		<% option_metadata_options = {:show_all=>admin? || (logged_in? && command.user == current_user)}%>
 		<% for opt in command.ordered_url_options %>
 		<li>
 			<b style="font-size: 12px"><%= opt.name %></b>
 			<%= " (#{opt.option_type})" if opt.option_type != 'normal' %>
-			<% if (metadata = option_metadata(opt)) && ! metadata.blank? %>
+			<% if (metadata = option_metadata(opt, option_metadata_options)) && ! metadata.blank? %>
 			<div style="margin-left: 10px" class="description_box">
 				<%= metadata %>
 			</div>

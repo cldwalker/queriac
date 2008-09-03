@@ -183,6 +183,8 @@ class UserCommandsController < ApplicationController
       @user_command = UserCommand.new
       options = UserCommand.new.options_from_url(params[:user_command_url]).map {|e| Option.new(:name=>e)}
     end
+    Option.detect_and_add_params_to_options(options, params[:user_command_url])
+    
     render :update do |page|
       page.replace_html :user_command_options, :partial=>'options', :locals=>{:options=>options}
   	end
