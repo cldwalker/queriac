@@ -35,10 +35,10 @@ module UserCommandsHelper
       fields += content_tag(:div, :class=>'floater') do
         text_field_id = "user_command_url_options_#{options[:index]}_values"
         update_link = link_to_remote("Update Default", :url=>update_default_picker_user_commands_path(:index=>options[:index]),
-          :with=>"'values=' + $('#{text_field_id}').value", :before=>"$('enumerated_#{options[:index]}_spinner').show()",
+          :with=>"'values=' + escape($('#{text_field_id}').value)", :before=>"$('enumerated_#{options[:index]}_spinner').show()",
           :complete=>"$('enumerated_#{options[:index]}_spinner').hide()")
         label_tag(text_field_id, %[Values (comma delimited) #{update_link}]) +
-          "<br/>" + form.text_field(:values) + ajax_spinner("enumerated_#{options[:index]}")
+          "<br/>" + form.text_area(:values, :cols=>30, :rows=>2) + ajax_spinner("enumerated_#{options[:index]}")
       end 
       fields += content_tag(:div, :class=>'floater') do
         values_array = options[:option_obj] ? options[:option_obj].values_list : []

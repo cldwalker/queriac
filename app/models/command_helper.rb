@@ -210,12 +210,14 @@ module CommandHelper
     duplicates = duplicates_in_array(option_names)
     errors.add(:url_options, "has the following duplicate option names/aliases: #{duplicates.join(", ")}.") unless duplicates.empty?
     
-    #field lengths must not exceed field_length_max
-    #might need longer length for values and description fields
-    field_length_max = 500
-    options_with_long_fields = url_options.select {|e| e.values.any?{|f| f.length > field_length_max} }.map {|e| e[:name]}
-    unless options_with_long_fields.empty?
-      errors.add(:url_options, "has the following options with fields longer than #{field_length_max} characters: #{options_with_long_fields.join(", ")}") 
+    unless self.user && self.user.is_admin?
+      #field lengths must not exceed field_length_max
+      #might need longer length for values and description fields
+      field_length_max = 500
+      options_with_long_fields = url_options.select {|e| e.values.any?{|f| f.length > field_length_max} }.map {|e| e[:name]}
+      unless options_with_long_fields.empty?
+        errors.add(:url_options, "has the following options with fields longer than #{field_length_max} characters: #{options_with_long_fields.join(", ")}") 
+      end
     end
     
     #quicksearches shouldn't contain illegal characters ie '&' in their data fields

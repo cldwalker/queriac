@@ -55,7 +55,7 @@
 		</div>
 		<div id="option_box_value_aliases_<%= i %>" style="<%= 'display:none' unless is_visible[:value_aliases] %>" class="floater">
 			<%= f1.label :value_aliases %><br/>
-			<%= f1.text_field :value_aliases, :size=>40%>
+			<%= f1.text_area :value_aliases, :cols=>40, :rows=>1%>
 		</div>
 		<div id="option_box_description_<%= i %>" style="<%= 'display:none' unless is_visible[:description] %>" class="floater">
 			<%= f1.label :description %><br/>

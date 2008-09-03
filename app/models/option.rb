@@ -125,6 +125,10 @@ class Option < OpenStruct
     values_to_split.gsub(/\(.*?\)/, '').split(/\s*,\s*/)
   end
   
+  def sorted_values(values_to_split=self.values)
+    values_to_split.split(/\s*,\s*/).sort.join(", ")
+  end
+  
   def prefix_value(value)
     self.value_prefix.blank? ? value : self.value_prefix + value
   end

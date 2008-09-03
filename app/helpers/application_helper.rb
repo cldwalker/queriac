@@ -255,7 +255,7 @@ module ApplicationHelper
     metadata = []
     metadata << "param: #{h option.param}" unless option.param.blank?
     metadata << "description: #{h option.description}" unless option.description.blank?
-		metadata << "allowed values: #{h option.values}" unless option.values.blank?
+		metadata << "allowed values: #{h option.sorted_values}" unless option.values.blank?
 		if option.option_type == 'boolean'
   		metadata << "true value: #{h option.true_value}" unless option.true_value.blank?
   		metadata << "false value: #{h option.false_value}" unless option.false_value.blank?
