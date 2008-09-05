@@ -68,20 +68,25 @@ module TableHelper
       when 'boolean'
         others << "True Value: #{option.true_value}" unless option.true_value.blank?
       when 'enumerated'
-        if option.values_hash
-          option.values_hash.delete(nil) #for sites like web.archive.org (arch command)
-          others << truncate_with_more("Values: #{option.values_hash.keys.join(', ')}", nil, :tag_type=>'span') unless option.values_hash.blank?
-          others << truncate_with_more("Values with labels: #{option.values_hash.map {|k,v| k + (v ? "(#{v})" : '')}.join(', ')}", nil,:tag_type=>'span') unless option.values_hash.blank?
+        if option.values.blank?
+          others << "No valid values"
         else
-          others << truncate_with_more("Values: #{option.values_array.join(', ')}",nil, :tag_type=>'span') unless option.values_array.blank?
+          others << truncate_with_more("Values: #{option.values}",nil, :tag_type=>'span')
+          if option.values_hash
+            others << truncate_with_more("Values with labels: #{option.annotated_values}", nil,:tag_type=>'span') unless option.values_hash.blank?
+          end
         end
+        others << [truncate_with_more("Note: #{option.note}",nil,:tag_type=>'span'), {:style=>'padding-left: 20px; font-style: italic'}] unless option.note.blank?
         others << "Default: #{option.default}" unless option.default.blank?
       else
         others << "Value: #{option.value}" unless option.value.blank?
       end
-      others << "Label: #{option.label}" unless option.label.blank?
+      others << "Description: #{option.description}" unless option.description.blank?
       content_tag(:ul, :style=>"list-style-type: disc; list-style-position: inside") do
-        others.map {|e| content_tag(:li, e)}
+        others.map {|e| 
+          e.gsub!("\n",'') unless e.is_a?(Array) #otherwise the * will fail by dividing on '\n'
+          content_tag(:li, *e)
+        }
       end
     else
       option.send(column)

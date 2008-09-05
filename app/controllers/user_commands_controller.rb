@@ -173,38 +173,6 @@ class UserCommandsController < ApplicationController
       
   end
 
-  def sync_url_options
-    if params[:user_command]
-      @user_command = UserCommand.find(params[:user_command])
-      url_options = @user_command.merge_url_options_with_options_in_url(params[:user_command_url])
-      options = @user_command.ordered_url_options(url_options, params[:user_command_url])
-    else
-      #@user_command needed for options template
-      @user_command = UserCommand.new
-      options = UserCommand.new.options_from_url(params[:user_command_url]).map {|e| Option.new(:name=>e)}
-    end
-    Option.detect_and_add_params_to_options(options, params[:user_command_url])
-    
-    render :update do |page|
-      page.replace_html :user_command_options, :partial=>'options', :locals=>{:options=>options}
-  	end
-	end
-	
-	def change_option_type_fields
-    render :update do |page|
-      page.replace_html "option_type_specific_fields_#{params[:index]}", :partial=>'option_type_specific_fields'
-  	end
-	end
-  
-  def update_default_picker
-    @values = Option.new.values_list(params[:values]) + [nil]
-    render :update do |page|
-      page.replace_html "user_command_url_options_#{params[:index]}_default", :inline=>%[
-        <%= options_for_select @values %>
-      ]
-  	end
-  end
-  
   def update
     respond_to do |format|
       if @user_command.update_all_attributes(params[:user_command].merge(:url_options=>get_url_options), current_user)
@@ -307,18 +275,71 @@ class UserCommandsController < ApplicationController
     redirect_back_or_default user_home_path(current_user)
   end
 
+  def sync_url_options
+    if params[:user_command]
+      @user_command = UserCommand.find(params[:user_command])
+      url_options = @user_command.merge_url_options_with_options_in_url(params[:user_command_url])
+      options = @user_command.ordered_url_options(url_options, params[:user_command_url])
+    else
+      #@user_command needed for options template
+      @user_command = UserCommand.new
+      options = UserCommand.new.options_from_url(params[:user_command_url]).map {|e| Option.new(:name=>e)}
+    end
+    Option.detect_and_add_params_to_options(options, params[:user_command_url])
+    
+    render :update do |page|
+      page.replace_html :user_command_options, :partial=>'options', :locals=>{:options=>options}
+  	end
+	end
+	
+	def change_option_type_fields
+    render :update do |page|
+      page.replace_html "option_type_specific_fields_#{params[:index]}", :partial=>'option_type_specific_fields'
+  	end
+	end
+  
+  def update_default_picker
+    @values = Option.new.values_list(params[:values]) + [nil]
+    render :update do |page|
+      page.replace_html "user_command_url_options_#{params[:index]}_default", :inline=>%[
+        <%= options_for_select @values %>
+      ]
+  	end
+  end
+  
+  def scrape_and_sync_url_options
+    @user_command = UserCommand.new
+    action_url, options, hpricot_form = FormParser.scrape_form(params[:user_command_url], :text=>params[:text])
+    http_post = hpricot_form['method'].to_s.downcase == 'post'
+    #clean up options
+    options.reject! {|e| e.name == 'submit'}
+    
+    #generate command url
+    hardcoded_options, dynamic_options = options.partition {|e| e.option_type == 'normal' && !e.value.blank? }
+    url_options_array = hardcoded_options.map {|e| "#{e.name}=#{e.value}"} + dynamic_options.map {|e| "[:#{e.name}]"}
+    command_url = action_url + "?" + url_options_array.join("&")
+    
+    render :update do |page|
+      page << "$('user_command_url').value = '#{command_url}'"
+      page.replace_html :user_command_options, :partial=>'options', :locals=>{:options=>options}
+      page << %[Effect.BlindDown('url_options'); Element.show('url_optionsCollapse'); Element.hide('url_optionsExpand');]
+      page << %[$('user_command_http_post').checked = true] if http_post
+    end
+  end
+  
   #js example at http://ostermiller.org/bookmarklets/form.html- Extract Forms
   def scrape_form
     if request.post?
       unless params[:url].blank? && params[:text].blank?
         if !params[:url].blank?
-          text = open(params[:url])
+          text = open(params[:url].strip)
         elsif !params[:text].blank?
           text = params[:text]
         end
         if (@form = (Hpricot(text)/"form")[0])
           form_text = @form.to_html 
           @options = Option.scrape_options_from_form(form_text)
+          flash[:notice] = 'Scrape succeeded.'
         else
           flash[:notice] = 'No form found.'
         end

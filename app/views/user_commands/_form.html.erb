@@ -18,6 +18,15 @@
 </div>
 
 <div class="floatkiller">
+	<% if admin? && @user_command.new_record? %>
+	<%= link_to_remote "SCRAPE URL", 
+		{:url=>scrape_and_sync_url_options_user_commands_path, :before=>"$('scrape_spinner').show()", 
+			:complete=>"$('scrape_spinner').hide()",
+			:with => %['user_command_url=' + escape($('user_command_url').value)]}, :style=>'font-size: 12px'
+	%>
+	<%= ajax_spinner 'scrape' %><br/>
+	
+	<% end %>
 	<% if ! @user_command.new_record? %>
 		Url status: <%= url_status @user_command %>
 		<br/>

@@ -3,7 +3,9 @@ require 'ostruct'
 #Option objects mainly used in helpers and in url_for()
 class Option < OpenStruct
   OPTION_TYPES = ['normal', 'boolean', 'enumerated']
-  VALID_FIELDS = [:name, :option_type, :description, :alias, :true_value, :false_value, :default, :values, :value_aliases, :value_prefix, :param]
+  #note and values_hash used by formparser
+  VALID_FIELDS = [:name, :option_type, :description, :alias, :true_value, :false_value, :default, :values, :value_aliases, 
+    :value_prefix, :param, :note, :values_hash]
   #maps names to aliases
   GLOBAL_OPTION_ALIASES = {'help'=>'h', 'test'=>'T', 'url_encode'=>'ue'} 
   GLOBAL_OPTIONS = ['off'] + GLOBAL_OPTION_ALIASES.to_a.flatten
@@ -46,68 +48,6 @@ class Option < OpenStruct
     (option = options_array.find {|e| e[:name] == name }) ? Option.new(option) : nil
   end
   
-  def self.find_label_for_hpricot_element(hpricot_form, hpricot_element)
-    if hpricot_element[:id] && (label_tag = hpricot_form.at("label[@for=#{hpricot_element[:id]}]"))
-      label_tag.inner_text
-    else
-      nil
-    end
-  end
-  
-  def self.scrape_options_from_form(form_text)
-    form = Hpricot(form_text).at("form")
-    options = {}
-    (form /"input").each do |e|
-      case e[:type]
-      #enumerated
-      when 'radio'
-        hash = options.has_key?(e[:name]) ? options[e[:name]] : {:option_type=>'enumerated', :input_type=>'radio',:values_array=>[]}
-        if (label = find_label_for_hpricot_element(form, e))
-          hash[:label] = label
-        end
-        hash[:values_array] << e[:value]
-        hash[:default] = e[:value] if e.attributes.has_key?('checked')
-      #boolean
-      when 'checkbox'
-        hash = {:input_type=>'checkbox', :option_type=>'boolean'}
-        if (label = find_label_for_hpricot_element(form, e))
-          hash[:label] = label
-        end
-        hash[:true_value] = !e[:value].blank? ? e[:value] : 'on'
-        hash[:checked] = e.attributes.has_key?('checked')
-      else
-        hash = {:input_type=>e[:type], :option_type=>'normal'}
-        hash[:value] = e[:value] unless (e[:type] == 'text' or e[:type].nil?)
-        if (label = find_label_for_hpricot_element(form, e))
-          hash[:label] = label
-        end
-      end
-      options[e[:name]] = hash
-    end
-    
-    #enumerated with possible multi
-    (form/"select").each do |s|
-      hash = {:input_type=>'select', :values_hash=>{}, :option_type=>'enumerated'}
-      (s/"option").each do |opt|
-        hash[:values_hash][opt[:value]] = opt.inner_html
-        hash[:default] = opt[:value] if opt.attributes.has_key?('selected')
-      end
-      if (label = find_label_for_hpricot_element(form, s))
-        hash[:label] = label
-      end
-      options[s[:name]] = hash
-    end
-    
-    (form/"textarea").each do |e|
-      options[e[:name]] = {:input_type=>'textarea', :option_type=>'normal'}
-      if (label = find_label_for_hpricot_element(form, e))
-        options[e[:name]][:label] = label
-      end
-    end
-    options.each {|k,v| v[:param] = k}
-    options.values.map {|e| Option.new(e) }
-  end
-  
   #TODO: ensure value_aliases only have valid values
   #first array defines allowed options
   #second array overrides nonessential fields for a common option
@@ -134,6 +74,14 @@ class Option < OpenStruct
   #should return array
   def values_list(values_to_split=self.values)
     values_to_split.gsub(/\(.*?\)/, '').split(/\s*,\s*/)
+  end
+  
+  def values_string(values_array)
+    values_array.join(", ")
+  end
+  
+  def annotated_values
+    values_string(values_hash.map {|k,v| k + (v ? "(#{v})" : '')})
   end
   
   def sorted_values(values_to_split=self.values)
