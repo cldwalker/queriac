@@ -66,22 +66,20 @@ module TableHelper
       others = []
       case option.option_type
       when 'boolean'
-        others << "True Value: #{option.true_value}" unless option.true_value.blank?
+        others << "True Value: #{h option.true_value}" unless option.true_value.blank?
       when 'enumerated'
         if option.values.blank?
           others << "No valid values"
         else
-          others << truncate_with_more("Values: #{option.values}",nil, :tag_type=>'span')
-          if option.values_hash
-            others << truncate_with_more("Values with labels: #{option.annotated_values}", nil,:tag_type=>'span') unless option.values_hash.blank?
-          end
+          others << truncate_with_more("Values: #{h option.values}",nil, :tag_type=>'span')
+          others << truncate_with_more("Values with labels: #{h option.annotated_values}", nil,:tag_type=>'span') unless option.values_hash.blank? || option.annotated_values == option.values
         end
-        others << [truncate_with_more("Note: #{option.note}",nil,:tag_type=>'span'), {:style=>'padding-left: 20px; font-style: italic'}] unless option.note.blank?
-        others << "Default: #{option.default}" unless option.default.blank?
+        others << [truncate_with_more("Note: #{h option.note}",nil,:tag_type=>'span'), {:style=>'padding-left: 20px; font-style: italic'}] unless option.note.blank?
+        others << "Default: #{h option.default}" unless option.default.blank?
       else
-        others << "Value: #{option.value}" unless option.value.blank?
+        others << "Value: #{h option.value}" unless option.value.blank?
       end
-      others << "Description: #{option.description}" unless option.description.blank?
+      others << "Description: #{h option.description}" unless option.description.blank?
       content_tag(:ul, :style=>"list-style-type: disc; list-style-position: inside") do
         others.map {|e| 
           e.gsub!("\n",'') unless e.is_a?(Array) #otherwise the * will fail by dividing on '\n'

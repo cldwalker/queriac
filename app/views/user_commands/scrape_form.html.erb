@@ -25,9 +25,9 @@
 			end
 		%>
 	</h2>
-
-	<% if ! @form['action'].blank? %>
-	<h3>Action Url : <%= URI.parse(params[:url]).merge(@form['action']).to_s rescue @form['action']%></h3> 
+	
+	<% if @action_url %>
+	<h3>Action Url : <%= @action_url %></h3> 
 	<% end %>
 	<% if ! @form['method'].blank? %>
 	<h3>Method: <%= @form['method']%></h3>

@@ -102,6 +102,17 @@ module ApplicationHelper
     flash.keys.collect { |key| content_tag( :div, flash[key], :class => "flash-msg #{key}" ) if flash[key] }.join
   end
   
+  def xhr_flash(type=:notice, message=flash.now[:notice], delay_time=5)
+    page.insert_html :top, :content, <<-HTML
+      <div id='ajax_notice_div' class='flash-msg #{(type == :notice) ? "notice" : "warning"}'>
+        #{message}
+      </div>
+    HTML
+    if delay_time > 0
+      page.delay(delay_time) { page.visual_effect :fade, 'ajax_notice_div' }
+    end
+  end
+  
   def tag_cloud(otags)
     output = count_tags_by_name(otags).sort.collect{ |name, num|
       opacity = (50 + [num, 10].min.to_f/2*10).to_f/100

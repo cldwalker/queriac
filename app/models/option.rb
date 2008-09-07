@@ -3,13 +3,15 @@ require 'ostruct'
 #Option objects mainly used in helpers and in url_for()
 class Option < OpenStruct
   OPTION_TYPES = ['normal', 'boolean', 'enumerated']
-  #note and values_hash used by formparser
+  #note, values_hash, input_type used by formparser
   VALID_FIELDS = [:name, :option_type, :description, :alias, :true_value, :false_value, :default, :values, :value_aliases, 
-    :value_prefix, :param, :note, :values_hash]
+    :value_prefix, :param, :note, :values_hash, :input_type]
   #maps names to aliases
   GLOBAL_OPTION_ALIASES = {'help'=>'h', 'test'=>'T', 'url_encode'=>'ue'} 
   GLOBAL_OPTIONS = ['off'] + GLOBAL_OPTION_ALIASES.to_a.flatten
   GLOBAL_BOOLEAN_OPTIONS = GLOBAL_OPTION_ALIASES.slice('help', 'test').to_a.flatten
+  FIELD_LENGTH_MAX = 500
+  MAX_OPTIONS = 25
   
   def self.sanitize_input(array_of_hashes)
     array_of_hashes.map {|e| 
@@ -76,12 +78,14 @@ class Option < OpenStruct
     values_to_split.gsub(/\(.*?\)/, '').split(/\s*,\s*/)
   end
   
-  def values_string(values_array)
+  def values_string(values_array); self.class.values_string(values_array); end
+  
+  def self.values_string(values_array)
     values_array.join(", ")
   end
   
   def annotated_values
-    values_string(values_hash.map {|k,v| k + (v ? "(#{v})" : '')})
+    values_hash ? values_string(values_hash.map {|k,v| k + (!v.blank? ? "(#{v})" : '')}) : nil
   end
   
   def sorted_values(values_to_split=self.values)

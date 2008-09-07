@@ -219,7 +219,7 @@ module CommandHelper
     unless self.user && self.user.is_admin?
       #field lengths must not exceed field_length_max
       #might need longer length for values and description fields
-      field_length_max = 500
+      field_length_max = Option::FIELD_LENGTH_MAX
       options_with_long_fields = url_options.select {|e| e.values.any?{|f| f.length > field_length_max} }.map {|e| e[:name]}
       unless options_with_long_fields.empty?
         errors.add(:url_options, "has the following options with fields longer than #{field_length_max} characters: #{options_with_long_fields.join(", ")}") 
@@ -235,7 +235,7 @@ module CommandHelper
     end
     
     #max number of allowed options
-    max_number_of_options = 25
+    max_number_of_options = Option::MAX_OPTIONS
     if url_options.size > max_number_of_options 
       errors.add(:url_options, "has exceeded the number of allowed options (#{max_number_of_options}).")
     end

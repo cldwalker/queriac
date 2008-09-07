@@ -11,7 +11,7 @@
 				<li class="search">
 					<% form_tag user_command_execute_path(@user, 'search_form'), :method=>:get  do %>
 						<label for="search_command">Typo? Try again:</label>
-						<%= text_field_tag 'search_command', params[:bad_command], :size=>30 %>
+						<%= text_field_tag 'search_command', "#{params[:bad_command]} #{params[:arguments]}", :size=>30 %>
 						<%= submit_tag 'Search' %>
 					<% end %>
 					

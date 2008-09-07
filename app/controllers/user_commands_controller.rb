@@ -310,47 +310,37 @@ class UserCommandsController < ApplicationController
   def scrape_and_sync_url_options
     @user_command = UserCommand.new
     action_url, options, hpricot_form = FormParser.scrape_form(params[:user_command_url], :text=>params[:text])
-    http_post = hpricot_form['method'].to_s.downcase == 'post'
-    #clean up options
-    options.reject! {|e| e.name == 'submit'}
-    
-    #generate command url
-    hardcoded_options, dynamic_options = options.partition {|e| e.option_type == 'normal' && !e.value.blank? }
-    url_options_array = hardcoded_options.map {|e| "#{e.name}=#{e.value}"} + dynamic_options.map {|e| "[:#{e.name}]"}
-    command_url = action_url + "?" + url_options_array.join("&")
-    
-    render :update do |page|
-      page << "$('user_command_url').value = '#{command_url}'"
-      page.replace_html :user_command_options, :partial=>'options', :locals=>{:options=>options}
-      page << %[Effect.BlindDown('url_options'); Element.show('url_optionsCollapse'); Element.hide('url_optionsExpand');]
-      page << %[$('user_command_http_post').checked = true] if http_post
+    if hpricot_form && action_url
+      http_post = hpricot_form['method'].to_s.downcase == 'post'
+      command_url, options, message = FormParser.create_command_url_and_options_from_scrape(action_url, options, {:is_admin=>admin?})
+      render :update do |page|
+        page << "$('user_command_url').value = '#{command_url}'"
+        page.replace_html :user_command_options, :partial=>'options', :locals=>{:options=>options}
+        page << %[Effect.BlindDown('url_options'); Element.show('url_optionsCollapse'); Element.hide('url_optionsExpand');]
+        page << %[$('user_command_http_post').checked = true] if http_post
+        page.xhr_flash(:notice, message, 10) unless message.blank?
+      end
+    else
+      render :update do |page|
+        page.xhr_flash :warning, "Sorry. No form detected."
+      end
     end
   end
   
-  #js example at http://ostermiller.org/bookmarklets/form.html- Extract Forms
   def scrape_form
     if request.post?
       unless params[:url].blank? && params[:text].blank?
-        if !params[:url].blank?
-          text = open(params[:url].strip)
-        elsif !params[:text].blank?
-          text = params[:text]
-        end
-        if (@form = (Hpricot(text)/"form")[0])
-          form_text = @form.to_html 
-          @options = Option.scrape_options_from_form(form_text)
+        scrape_options = !params[:text].blank? ? {:text=>params[:text]} : {}
+        @action_url, @options, @form = FormParser.scrape_form(params[:url], scrape_options)
+        if @form
+          @action_url ||= @form['action'] rescue nil
           flash[:notice] = 'Scrape succeeded.'
         else
+          @options = nil
           flash[:notice] = 'No form found.'
         end
       end
     end
-  rescue Errno::ENOENT
-    flash[:warning] = "Invalid url. Perhaps you misspelled it?"
-  rescue
-    flash[:warning] = "Scrape failed. Try again later."
-    @options = nil
-    logger.error "Scrape failed with error: #{$!}\n:url #{params[:url]} and/or text:\n#{params[:text]}"
   end
   
   def valid_sort_columns; %w{name queries_count created_at keyword}; end

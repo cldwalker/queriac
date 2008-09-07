@@ -75,7 +75,7 @@ class CommandsController < ApplicationController
       if @user.default_command?
         redirect_to user_default_command_path(@user, command_string)
       else
-        redirect_to user_home_path(@user) + "?bad_command=#{keyword}"
+        redirect_to user_home_path(@user) + "?bad_command=#{keyword}&arguments=#{query_string}"
       end
       return
     end
