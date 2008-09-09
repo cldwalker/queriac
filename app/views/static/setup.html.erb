@@ -43,8 +43,8 @@
 		Copy the following text (including the <i>TEST</i> part): 
 		<%= logged_in? ? "<code>#{user_home_url(current_user)}/TEST</code>" : "<code>#{user_home_url('youraccountname')}/TEST</code>, using your account name of course." %> 
 	</li>
-	<li>Visit Microsoft's <%= link_to "Add Search Providers to Internet Explorer", "http://www.microsoft.com/windows/ie/searchguide/en-en/default.mspx" %> page and paste the URL you just copied into the form.</li>
-	<li>Note: You may get a warning saying that your default search will be "switched away from Google" (Side Note: I wonder how much Google paid Microsoft for that alert.. More on that <%= link_to "here", "http://blogs.zdnet.com/BTL/?p=6715" %>). Anyway, do this:</li>
+	<li>Visit Microsoft's <%= nofollow_link_to "Add Search Providers to Internet Explorer", "http://www.microsoft.com/windows/ie/searchguide/en-en/default.mspx" %> page and paste the URL you just copied into the form.</li>
+	<li>Note: You may get a warning saying that your default search will be "switched away from Google" (Side Note: I wonder how much Google paid Microsoft for that alert.. More on that <%= nofollow_link_to "here", "http://blogs.zdnet.com/BTL/?p=6715" %>). Anyway, do this:</li>
 </ol>
 <%= image_tag "screenshots/ie_opensearch_changed_from_google.png" %>
 
@@ -55,12 +55,12 @@
 -->
 
 <h2 class="browser_header safari">Safari 3+ on Mac OS X</h2>
-<p>Apple is <%= link_to "in bed with Google", "http://blogs.zdnet.com/BTL/?p=5356" %> in terms of the Safari search bar, 
+<p>Apple is <%= nofollow_link_to "in bed with Google", "http://blogs.zdnet.com/BTL/?p=5356" %> in terms of the Safari search bar, 
 	so configuring Safari for Queriac requires a little finagling, but it's still pretty easy. 
-	You'll need to install <%= link_to "Keywurl", "http://purefiction.net/keywurl/" %>, a free <%= link_to "SIMBL", "http://www.culater.net/software/SIMBL/SIMBL.php" %> plugin that lets you customize Safari's address bar.</p>
+	You'll need to install <%= nofollow_link_to "Keywurl", "http://purefiction.net/keywurl/" %>, a free <%= nofollow_link_to "SIMBL", "http://www.culater.net/software/SIMBL/SIMBL.php" %> plugin that lets you customize Safari's address bar.</p>
 
 <ol class="normal">
-	<li><%= link_to "Download and install Keywurl", "http://purefiction.net/keywurl/" %> (you may have to download install <%= link_to "SIMBL", "http://www.culater.net/software/SIMBL/SIMBL.php" %> too).</li>
+	<li><%= nofollow_link_to "Download and install Keywurl", "http://purefiction.net/keywurl/" %> (you may have to download install <%= nofollow_link_to "SIMBL", "http://www.culater.net/software/SIMBL/SIMBL.php" %> too).</li>
 	<li>Once Keywurl is installed open up Safari's preferences and click Keywurl</li>
 	<li>Delete all of Keywurl's pre-installed keywords, except for <code>default</code>. You won't be needing them.</li>
 	<li>

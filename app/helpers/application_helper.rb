@@ -98,6 +98,10 @@ module ApplicationHelper
     content_tag(:ul, output)
   end
   
+  def nofollow_link_to(name, options = {}, html_options = nil, *parameters_for_method_reference)
+    link_to(name, options, (html_options || {}).merge(:rel=>'nofollow'), *parameters_for_method_reference)
+  end
+  
   def flash_div 
     flash.keys.collect { |key| content_tag( :div, flash[key], :class => "flash-msg #{key}" ) if flash[key] }.join
   end
@@ -177,7 +181,7 @@ module ApplicationHelper
   def link_to_query(query)
     label = query.query_string.empty? ? "(Command run with no parameters)" : h(query.query_string.ellipsize)
     klass = query.query_string.empty? ? "faded" : ""
-    link_to(label, h(query.user_command.url_for(query.query_string)), :class => klass, :title=>"Date: #{query.created_at.to_s(:long)}")
+    nofollow_link_to(label, h(query.user_command.url_for(query.query_string)), :class => klass, :title=>"Date: #{query.created_at.to_s(:long)}")
   end
   
   def query_user(query)
@@ -266,7 +270,7 @@ module ApplicationHelper
     metadata = []
     metadata << "param: #{h option.param}" unless option.param.blank?
     metadata << "description: #{h option.description}" unless option.description.blank?
-		metadata << "allowed values: #{h option.sorted_values}" unless option.values.blank?
+		metadata << "allowed values: #{truncate_with_more h(option.sorted_values), 70, :tag_type=>'span'}" unless option.values.blank?
 		if option.option_type == 'boolean'
   		metadata << "true value: #{h option.true_value}" unless option.true_value.blank?
   		metadata << "false value: #{h option.false_value}" unless option.false_value.blank?

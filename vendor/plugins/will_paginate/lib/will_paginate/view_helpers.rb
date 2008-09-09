@@ -335,8 +335,9 @@ module WillPaginate
     end
 
   private
-
-    def rel_value(page)
+    
+    def rel_value(page); 'nofollow'; end
+    def rel_value_old(page)
       case page
       when @collection.previous_page; 'prev' + (page == 1 ? ' start' : '')
       when @collection.next_page; 'next'
