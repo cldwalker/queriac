@@ -309,7 +309,14 @@ class UserCommandsController < ApplicationController
   
   def scrape_and_sync_url_options
     @user_command = UserCommand.new
-    action_url, options, hpricot_form = FormParser.scrape_form(params[:user_command_url], :text=>params[:text])
+    unless FormParser.valid_url_to_scrape?(params[:url])
+      render :update do |page|
+        page.xhr_flash :warning, "Url must start with 'http'. Try again."
+      end
+      return
+    end
+    
+    action_url, options, hpricot_form = FormParser.scrape_form(params[:url], :text=>params[:text], :form_number=>params[:form_number])
     if hpricot_form && action_url
       http_post = hpricot_form['method'].to_s.downcase == 'post'
       command_url, options, message = FormParser.create_command_url_and_options_from_scrape(action_url, options, {:is_admin=>admin?})
@@ -322,15 +329,19 @@ class UserCommandsController < ApplicationController
       end
     else
       render :update do |page|
-        page.xhr_flash :warning, "Sorry. No form detected."
+        page.xhr_flash :warning, "Sorry. No form detected. Please try again."
       end
     end
   end
   
   def scrape_form
     if request.post?
+      unless FormParser.valid_url_to_scrape?(params[:url])
+        flash[:warning] = "Url must start with 'http'. Try again."
+        return
+      end
       unless params[:url].blank? && params[:text].blank?
-        scrape_options = !params[:text].blank? ? {:text=>params[:text]} : {}
+        scrape_options = {:text=>params[:text], :form_number=>params[:form_number]}
         @action_url, @options, @form = FormParser.scrape_form(params[:url], scrape_options)
         if @form
           @action_url ||= @form['action'] rescue nil

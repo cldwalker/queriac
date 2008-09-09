@@ -3,9 +3,8 @@ require 'ostruct'
 #Option objects mainly used in helpers and in url_for()
 class Option < OpenStruct
   OPTION_TYPES = ['normal', 'boolean', 'enumerated']
-  #note, values_hash, input_type used by formparser
-  VALID_FIELDS = [:name, :option_type, :description, :alias, :true_value, :false_value, :default, :values, :value_aliases, 
-    :value_prefix, :param, :note, :values_hash, :input_type]
+  VALID_FIELDS = [:name, :option_type, :description, :alias, :true_value, :false_value, :default, :values, :value_aliases,
+    :value_prefix, :param]
   #maps names to aliases
   GLOBAL_OPTION_ALIASES = {'help'=>'h', 'test'=>'T', 'url_encode'=>'ue'} 
   GLOBAL_OPTIONS = ['off'] + GLOBAL_OPTION_ALIASES.to_a.flatten
@@ -13,12 +12,14 @@ class Option < OpenStruct
   FIELD_LENGTH_MAX = 500
   MAX_OPTIONS = 25
   
-  def self.sanitize_input(array_of_hashes)
+  def self.sanitize_input(array_of_hashes, options = {})
     array_of_hashes.map {|e| 
       #ensure keys are symbols
       e = e.symbolize_keys
+      valid_fields = VALID_FIELDS
+      valid_fields += options[:additional_fields] unless options[:additional_fields].blank?
       #ensures url_options input only has allowed fields
-      e.slice!(*VALID_FIELDS)
+      e.slice!(*valid_fields)
       optional_columns = [:value_prefix, :value_aliases, :default, :description, :alias, :param]
       optional_columns.each {|c| e.delete(c) if e[c].blank? }
       e[:option_type] ||= 'normal'

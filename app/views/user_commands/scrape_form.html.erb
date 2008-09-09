@@ -6,8 +6,11 @@
 	<%= form_tag(scrape_form_user_commands_path, :method=>:post) %>
 		<%= label_tag 'url' %><br/>
 		<%= text_field_tag :url, nil, :class=>'text', :size=>50 %><br/>
+		<h3 style="text-decoration: underline">OPTIONAL FIELDS</h3><br/>
+		<%= label_tag "form_number"%>
+		<%= text_field_tag "form_number", nil, :size=>3 %><br/>
 		OR<br/>
-		<%= label_tag 'text' %><br/>
+		<%= label_tag 'text', 'Form Text' %><br/>
 		<%= text_area_tag :text, nil, :class=>'text', :cols=>50, :rows=>5 %><br/>
 		<%= submit_tag 'Scrape', :class=>'submit'%>
 	</form>
@@ -36,5 +39,12 @@
 	<%= active_record_table @options, :columns=>[:param, :option_type, :input_type, :others], 
 		:headers=>[["Param", {:width=>30}], ["Option Type", {:width=>10}], ["Input Type", {:width=>10}], "Others"],
 		:table=>{:style=>'margin-top: 10px'} %>
+		
+	<% if admin? %>
+		<div style="padding-top: 50px">
+		<h3>Scraped Form Text</h3>
+		<%= text_area_tag "scraped_form", @form.to_html, :cols=>70, :rows=>10%>
+		</div>
+	<% end %>
 
 <% end %>

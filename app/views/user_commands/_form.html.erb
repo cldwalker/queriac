@@ -18,15 +18,6 @@
 </div>
 
 <div class="floatkiller">
-	<% if admin? && @user_command.new_record? %>
-	<%= link_to_remote "SCRAPE URL", 
-		{:url=>scrape_and_sync_url_options_user_commands_path, :before=>"$('scrape_spinner').show()", 
-			:complete=>"$('scrape_spinner').hide()",
-			:with => %['user_command_url=' + escape($('user_command_url').value)]}, :style=>'font-size: 12px'
-	%>
-	<%= ajax_spinner 'scrape' %><br/>
-	
-	<% end %>
 	<% if ! @user_command.new_record? %>
 		Url status: <%= url_status @user_command %>
 		<br/>
@@ -35,6 +26,30 @@
   <%= f.label :url, label_string %><br />
   <%= f.text_field :url, {:size => 90, :disabled=>@disabled_fields.include?(:url)} %>
   <%= f.hidden_field :url if @disabled_fields.include?(:url) %>
+	
+	<% if admin? && controller.action_name != 'copy' && (@user_command.new_record? || @user_command.command_owned_by?(current_user)) %>
+	<br/>
+	<%= link_to_remote "SCRAPE URL", 
+		{:url=>scrape_and_sync_url_options_user_commands_path, :before=>"$('scrape_spinner').show()", 
+			:complete=>"$('scrape_spinner').hide()",
+			:with => %['url=' + escape($('user_command_url').value)+ '&text=' + escape($('form_text').value) + '&form_number=' + escape($('form_number').value)] },
+			 :style=>'font-size: 12px' %>
+		- 
+		<% scrape_description = "What is this? 'SCRAPE URL' scrapes form data off the above url. It then autofills your command fields with the data it scraped. It does NOT sync with existing options." %>
+		<%= truncate_with_more scrape_description , 16, :tag_type=>'span' %>
+	<%= ajax_spinner 'scrape' %><br/>
+	
+	<%= link_to_function "More scrape options", "$('scrape_options').toggle()" %><br/>
+	<div id="scrape_options" style="display:none">
+		<%= label_tag "form_number"%>
+		<%= text_field_tag "form_number", nil, :size=>3 %><br/>
+		OR<br/>
+		<%= label_tag "form_text" %><br/>
+		<%= text_area_tag "form_text", nil, :cols=>50, :rows=>5, :id=>'form_text' %><br/>
+		<%= link_to 'Separate scrape form page', scrape_form_user_commands_path %>
+	</div>
+	<% end %>
+
 </div>
 
 <div id="url_options_instructions">

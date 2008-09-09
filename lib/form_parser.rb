@@ -3,24 +3,30 @@
 class FormParser
   #js example at http://ostermiller.org/bookmarklets/form.html- Extract Forms
   def self.scrape_form(url, options={})
+    if (form = self.get_form(url, options))
+      url_options = scrape_options_from_form(form.to_html)
+      url_options = sanitize_scraped_data(url_options).map {|e| Option.new(e) }
+    end
+    action_url = URI.parse(url).merge(form['action']).to_s rescue nil
+    return action_url, url_options, form
+  end
+  
+  def self.get_form(url, options={})
     text = ''
-    if !url.blank?
+    if !options[:text].blank?
+      text = options[:text]
+      form_num = 0
+    elsif !url.blank?
       url.strip!
       begin
-        text = open(url)
+        text = open(url, "User-Agent" => "Mozilla/5.0 Gecko/2008041004 Firefox/3.0")
       rescue
         logger.error "Scrape failed with error: #{$!}\n:url '#{url}' and options: #{options.inspect}"
         return nil
       end
-    elsif !options[:text].blank?
-      text = options[:text]
+      form_num = (options[:form_number].to_s =~ /^(\d+)$/) ? $1.to_i : 0
     end
-    if (form = (Hpricot(text)/"form")[0])
-      form_text = form.to_html 
-      options = self.scrape_options_from_form(form_text)
-    end
-    action_url = URI.parse(url).merge(form['action']).to_s rescue nil
-    return action_url, options, form
+    (Hpricot(text)/"form")[form_num]    
   end
   
   def self.scrape_options_from_form(form_text)
@@ -74,7 +80,7 @@ class FormParser
       end
     end
     options.each {|k,v| v[:param] = k; v[:name] = k}
-    sanitize_scraped_data(options.values).map {|e| Option.new(e) }
+    options.values
   end
   
   def self.logger; ActiveRecord::Base.logger; end
@@ -114,7 +120,7 @@ class FormParser
       end
       !e[:name].blank?
     }
-    Option.sanitize_input(array_of_hashes)
+    Option.sanitize_input(array_of_hashes, :additional_fields=>[:note, :values_hash, :input_type, :value])
   end
   
   def self.create_command_url_and_options_from_scrape(action_url, url_options, options={})
@@ -136,7 +142,7 @@ class FormParser
     message += "The following options have annotated values longer than the #{Option::FIELD_LENGTH_MAX} character limit: #{long_options.join(', ')}<br/>" unless long_options.empty?
     if url_options.size > Option::MAX_OPTIONS
       if options[:is_admin]
-        message += "This command has #{url_options.size} options (the limit for everyone else is #{Option::MAX_OPTIONS})"
+        message += "This command has #{url_options.size} options which exceeds the usual option limit of #{Option::MAX_OPTIONS})"
       else
         url_options = url_options.slice(0, Option::MAX_OPTIONS)
       end
@@ -157,4 +163,7 @@ class FormParser
     end
   end
   
+  def self.valid_url_to_scrape?(url)
+    !url.blank? ? ((url =~ /^http/) ? true : false) : true
+  end
 end
