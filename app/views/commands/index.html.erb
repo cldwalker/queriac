@@ -1,3 +1,4 @@
+<%- title = "Commands"; title += " " + sort_description.titleize if params[:sort]; set_header :title=>title -%>
 <% if logged_in? %>
 	<div style="float: right">
 	<% form_tag search_all_commands_path, :method=>:get  do %>

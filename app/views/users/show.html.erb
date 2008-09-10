@@ -1,3 +1,4 @@
+<%- set_header :title=>@user.login, :description=>"#{@user.login}'s Queriac Profile - member since #{@user.created_at.strftime('%B %Y')}"-%>
 <div id="primary">
 	
 	<% if params[:bad_command] %>

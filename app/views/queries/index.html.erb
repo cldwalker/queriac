@@ -1,3 +1,4 @@
+<%- set_header :robots=>'noindex,nofollow' %>
 <h1 class="inline">
 	<%= @queries.blank? ? 'No' : (@user ? whose_commands(@queries.first.user_command) : "All") %> 
 	<%= "#{(@command || @user_command).keyword}" if @command || @user_command %>	

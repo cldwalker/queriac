@@ -1,3 +1,4 @@
+<%- title = set_breadcrumb_title; title += " - " + sort_description if params[:sort]; set_header :title=>title -%>
 <% if logged_in? %>
 	<div style="float: right">
 	<% form_tag search_user_commands_path, :method=>:get  do %>

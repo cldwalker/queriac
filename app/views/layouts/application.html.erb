@@ -2,8 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 	<head>
-		<title><%= render_page_title %></title>
+		<%- set_header_defaults unless @meta_tags -%>
+		<title><%= h(@title) %></title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta http-equiv="imagetoolbar" content="no" />
+		<%- @meta_tags.each do |tag_name, content| -%>
+		<meta name="<%= h(tag_name) %>" content="<%= h(truncate(content, 160)) %>" />
+		<%- end -%>
 
 		<% if logged_in? %>
 			<link rel="search" href="<%= opensearch_user_url(current_user) %>" type="application/opensearchdescription+xml" title="queri.ac/<%= current_user.login %>" />

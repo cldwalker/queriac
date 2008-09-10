@@ -1,3 +1,4 @@
+<%- set_header :title=>"#{@user_command.name} for #{@user_command.user.login}", :description=>"#{@user_command.user.login}'s user command -  #{@user_command.description}" -%>
 <h1 class="inline">
 	<%= link_to h(@user_command.name), public_user_command_path(@user_command) %>
 </h1>
