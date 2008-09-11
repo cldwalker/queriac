@@ -1,9 +1,9 @@
-<h1>Scrape Form</h1>
+<h1>Fetch Form</h1>
 
-<%= collapser_for "scrape_form", :autohide => true, :label => "Hide Scrape Form" %>
-<div id="scrape_form">
+<%= collapser_for "fetch_form", :autohide => true, :label => "Hide Fetch Form" %>
+<div id="fetch_form">
 	<p/>
-	<%= form_tag(scrape_form_user_commands_path, :method=>:post) %>
+	<%= form_tag(fetch_form_user_commands_path, :method=>:post) %>
 		<%= label_tag 'url' %><br/>
 		<%= text_field_tag :url, nil, :class=>'text', :size=>50 %><br/>
 		<h3 style="text-decoration: underline">OPTIONAL FIELDS</h3><br/>
@@ -12,15 +12,15 @@
 		OR<br/>
 		<%= label_tag 'text', 'Form Text' %><br/>
 		<%= text_area_tag :text, nil, :class=>'text', :cols=>50, :rows=>5 %><br/>
-		<%= submit_tag 'Scrape', :class=>'submit'%>
+		<%= submit_tag 'Fetch', :class=>'submit'%>
 	</form>
 </div>
 
 <% if @options %>
-	<%= hide "scrape_form" %>
-	<%= expander_for "scrape_form", :autohide => false, :label => "Have something else to scrape?" %>
+	<%= hide "fetch_form" %>
+	<%= expander_for "fetch_form", :autohide => false, :label => "Have another form to fetch?" %>
 
-	<h2>Scrape Results for
+	<h2>Results for
 		<%= if !params[:url].blank?
 			 'url: ' + h(params[:url])
 			elsif !params[:text].blank?
@@ -42,8 +42,8 @@
 		
 	<% if admin? %>
 		<div style="padding-top: 50px">
-		<h3>Scraped Form Text</h3>
-		<%= text_area_tag "scraped_form", @form.to_html, :cols=>70, :rows=>10%>
+		<h3>Fetched Form Text</h3>
+		<%= text_area_tag "scraped_form_text", @form.to_html, :cols=>70, :rows=>10%>
 		</div>
 	<% end %>
 

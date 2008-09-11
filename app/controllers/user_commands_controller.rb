@@ -307,17 +307,12 @@ class UserCommandsController < ApplicationController
   	end
   end
   
-  def scrape_and_sync_url_options
+  def fetch_and_sync_url_options
     @user_command = UserCommand.new
-    unless FormParser.valid_url_to_scrape?(params[:url])
-      render :update do |page|
-        page.xhr_flash :warning, "Url must start with 'http'. Try again."
-      end
-      return
-    end
-    
-    action_url, options, hpricot_form = FormParser.scrape_form(params[:url], :text=>params[:text], :form_number=>params[:form_number])
-    if hpricot_form && action_url
+    scrape_options = {:text=>params[:text], :form_number=>params[:form_number], :is_admin=>admin?}
+    parser_response = FormParser.scrape_form(params[:url], scrape_options)
+    if parser_response.success
+      action_url, options, hpricot_form = parser_response.action_url, parser_response.url_options, parser_response.form
       http_post = hpricot_form['method'].to_s.downcase == 'post'
       command_url, options, message = FormParser.create_command_url_and_options_from_scrape(action_url, options, {:is_admin=>admin?})
       render :update do |page|
@@ -329,27 +324,22 @@ class UserCommandsController < ApplicationController
       end
     else
       render :update do |page|
-        page.xhr_flash :warning, "Sorry. No form detected. Please try again."
+        page.xhr_flash :warning, parser_response.error_message
       end
     end
   end
   
-  def scrape_form
+  def fetch_form
     if request.post?
-      unless FormParser.valid_url_to_scrape?(params[:url])
-        flash[:warning] = "Url must start with 'http'. Try again."
-        return
-      end
-      unless params[:url].blank? && params[:text].blank?
-        scrape_options = {:text=>params[:text], :form_number=>params[:form_number]}
-        @action_url, @options, @form = FormParser.scrape_form(params[:url], scrape_options)
-        if @form
-          @action_url ||= @form['action'] rescue nil
-          flash[:notice] = 'Scrape succeeded.'
-        else
-          @options = nil
-          flash[:notice] = 'No form found.'
-        end
+      scrape_options = {:text=>params[:text], :form_number=>params[:form_number], :is_admin=>admin?}
+      parser_response = FormParser.scrape_form(params[:url], scrape_options)
+      if parser_response.success
+        @action_url, @options, @form = parser_response.action_url, parser_response.url_options, parser_response.form
+        @action_url ||= @form['action'] rescue nil
+        flash[:notice] = 'Fetch succeeded.'
+      else
+        @options = nil
+        flash[:warning] = parser_response.error_message
       end
     end
   end

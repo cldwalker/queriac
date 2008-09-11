@@ -104,6 +104,11 @@ class Option < OpenStruct
     value_aliases_hash[value] || value
   end
   
+  #from ostruct
+  def to_hash
+    @table
+  end
+  
   # def argument?(name_value=self.name)
   #   name =~ /^\d$/ ? true :false
   # end

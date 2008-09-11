@@ -1,32 +1,53 @@
+require 'ostruct'
 # FormParser parses forms and converts them to arrays of option objects.
 # This is class is tightly coupled to Option.
 class FormParser
-  #js example at http://ostermiller.org/bookmarklets/form.html- Extract Forms
   def self.scrape_form(url, options={})
-    if (form = self.get_form(url, options))
+    unless self.valid_url_to_scrape?(url)
+      return OpenStruct.new(:success=>false, :error_message=>"Url must start with 'http'. Try again.")
+    end
+    
+    form = self.get_form(url, options)
+    if form.is_a?(Hpricot::Elem)
       url_options = scrape_options_from_form(form.to_html)
       url_options = sanitize_scraped_data(url_options).map {|e| Option.new(e) }
+      success = true
+    else
+      error = form.dup if form
+      error ||= 'No form found. Please try again.'
+      success = false
     end
     action_url = URI.parse(url).merge(form['action']).to_s rescue nil
-    return action_url, url_options, form
+    response = OpenStruct.new(:success=>success, :action_url=>action_url, :url_options=>url_options, :form=>form)
+    response.error_message = error if !success
+    response
   end
   
+  #if successful returns a Hpricot::Elem object
+  #if not returns nil or an error messsage
   def self.get_form(url, options={})
     text = ''
+    form_num = 0
     if !options[:text].blank?
       text = options[:text]
-      form_num = 0
     elsif !url.blank?
       url.strip!
       begin
-        text = open(url, "User-Agent" => "Mozilla/5.0 Gecko/2008041004 Firefox/3.0")
+        max_time = options[:is_admin] ? 12 : 3
+        text = Timeout::timeout(max_time) {
+          #open() should be calling OpenURI::OpenRead#open
+          open(url, "User-Agent" => "Mozilla/5.0 Gecko/2008041004 Firefox/3.0")
+        }
+      rescue Timeout::Error
+        logger.error "Timeout when scraping with error: #{$!}\nurl: '#{url}'\noptions: #{options.inspect}"
+        return "Your request timed out. Make sure you have a valid url. Please try again."
       rescue
         logger.error "Scrape failed with error: #{$!}\n:url '#{url}' and options: #{options.inspect}"
         return nil
       end
       form_num = (options[:form_number].to_s =~ /^(\d+)$/) ? $1.to_i : 0
     end
-    (Hpricot(text)/"form")[form_num]    
+    (Hpricot(text)/"form")[form_num]
   end
   
   def self.scrape_options_from_form(form_text)
