@@ -29,17 +29,17 @@
 	
 	<% if admin? && controller.action_name != 'copy' && (@user_command.new_record? || @user_command.command_owned_by?(current_user)) %>
 	<br/>
-	<%= link_to_remote "CONVERT URL TO COMMAND", 
+	<%= link_to_remote image_tag('icons/arrow_refresh.png', :style=>'padding-right: 5px') + "CONVERT URL TO COMMAND", 
 		{:url=>fetch_and_sync_url_options_user_commands_path, :before=>"$('scrape_spinner').show()", 
 			:complete=>"$('scrape_spinner').hide()",
 			:with => %['url=' + escape($('user_command_url').value)+ '&text=' + escape($('form_text').value) + '&form_number=' + escape($('form_number').value)] },
 			 :style=>'font-size: 12px' %>
-		- 
+		
 		<% scrape_description = "What is this? This fetches form data off the above url and then autofills your command fields based on that data. It does NOT sync with existing options." %>
-		<%= truncate_with_more scrape_description , 16, :tag_type=>'span' %>
+		<%= image_tag 'icons/information.png', :title=>scrape_description, :style=>'padding-right:5px' %>
+		<%= link_to_function "Toggle more options", "$('fetch_options').toggle()" %><br/>
 	<%= ajax_spinner 'scrape' %><br/>
 	
-	<%= link_to_function "More options", "$('fetch_options').toggle()" %><br/>
 	<div id="fetch_options" style="display:none">
 		<%= label_tag "form_number"%>
 		<%= text_field_tag "form_number", nil, :size=>3 %><br/>
@@ -52,25 +52,19 @@
 
 </div>
 
-<div id="url_options_instructions">
-	<% if @user_command.new_record? || @user_command.command_owned_by?(current_user)%>
-		To create an option, you need to specify it in the url with format [:option_name].<br/>
-		For example, an option named type is defined in this url: http://cowpie.com?type=[:type]&q=(q). 
-		<%= link_to "Learn more ...", static_page_path('options_tutorial') %>
-	<% else %>
-		<%= link_to "Learn more about url options ...", static_page_path('options_tutorial') %>
-	<% end %>
-</div>
 <% is_hidden = params[:expand] ? false : true %>
-<h3 style="margin-top: 5px">Url options:
-	<%= collapser_for "url_options", :autohide => is_hidden, :label => "Hide" %>
-	<%= expander_for "url_options", :autohide =>!is_hidden, :label => "Show" %>
+<h3 style="margin-top: 5px">
+	<%= collapser_for "url_options", :autohide => is_hidden, :label => "Hide Url Options" %>
+	<%= expander_for "url_options", :autohide =>!is_hidden, :label => "Show Url Options" %>
+	<%= image_tag 'icons/information.png', :title=>"To create an option, you need to specify it in the url with format [:option_name]. For example, an option named type is defined in this url: http://cowpie.com?type=[:type]&q=(q)."%>
+	<%= link_to "Learn more ...", static_page_path('options_tutorial'), :style=>'font-size: 12px' %>
+	
 </h3>
 <div id="url_options" style="<%= 'display:none;' if is_hidden %> margin-left: 20px">
 
 	<% if @user_command.new_record? || @user_command.command_owned_by?(current_user) || current_user.is_admin? %>
 		<% sync_params = @user_command.new_record? ? {} : {:user_command=>@user_command.id} %>
-		<%= link_to_remote "SYNCHRONIZE OPTIONS WITH URL", 
+		<%= link_to_remote image_tag('icons/arrow_refresh.png', :style=>'padding-right: 5px') + "SYNCHRONIZE OPTIONS WITH URL", 
 			{:url=>sync_url_options_user_commands_path(sync_params), :before=>"$('sync_spinner').show()", 
 				:complete=>"$('sync_spinner').hide()",
 				:with => %['user_command_url=' + escape($('user_command_url').value)]}, :style=>'font-size: 12px'

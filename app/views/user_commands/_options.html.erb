@@ -14,7 +14,7 @@
 	<div id="url_option_<%= i%>"class="option_box">
 	<% fields_for "user_command[url_options][]", option, :index=>i do |f1| %>
 		<div class="option_toggle_links">
-			<%= link_to_function image_tag("icons/close.png", :title=>"Remove option"), %[$('url_option_#{i}').fade(); 
+			<%= link_to_function image_tag("icons/cancel.png", :title=>"Remove option"), %[$('url_option_#{i}').fade(); 
 			setTimeout("$('url_option_#{i}').remove()", 2000);], :style=>'padding-right: 10px' %>
 			<%= link_to_function 'Toggle param', "$('option_box_param_#{i}').toggle()"%> |
 			<%= link_to_function 'Toggle alias', "$('option_box_alias_#{i}').toggle()"%> |

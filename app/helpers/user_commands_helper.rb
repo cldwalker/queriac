@@ -2,7 +2,7 @@ module UserCommandsHelper
   #PERF: won't support sorting for @tags till @tags queries are not so db-intensive
   def sort_link_up(column)
     return '' if @tags
-    sort_image = image_tag('icons/arrow-up-triangle.png', :style=>'margin-left: 2px')
+    sort_image = image_tag('icons/arrow_up.png', :style=>'margin-left: 2px')
     if current_page_matches?(search_user_commands_path)
       nofollow_link_to sort_image, search_user_commands_path(params.slice(:q).merge(:sort=>"up_by_#{column}"))
     elsif @command && current_page_matches?(command_user_commands_path(@command))
@@ -16,7 +16,7 @@ module UserCommandsHelper
   
   def sort_link_down(column)
     return '' if @tags
-    sort_image = image_tag('icons/arrow-down-triangle.png', :style=>'margin-left: 2px')
+    sort_image = image_tag('icons/arrow_down.png', :style=>'margin-left: 2px')
     if current_page_matches?(search_user_commands_path)
       nofollow_link_to sort_image, search_user_commands_path(params.slice(:q).merge(:sort=>"down_by_#{column}"))
   	elsif @command && current_page_matches?(command_user_commands_path(@command))
