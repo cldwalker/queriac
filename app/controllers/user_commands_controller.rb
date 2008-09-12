@@ -121,7 +121,9 @@ class UserCommandsController < ApplicationController
     end
     
     @user_command = UserCommand.new
-    @user_command.attributes = (@original_command || @base_command).attributes.slice(*%w{name keyword url description url_options})
+    source_object = @original_command || @base_command
+    @user_command.attributes = source_object.attributes.slice(*%w{name keyword url description})
+    @user_command.url_options = Option.sanitize_copy(source_object.url_options)
     render :action=>'new'
   end
   

@@ -2,7 +2,7 @@
  No options detected.
 <% else %>
 <% options.each_with_index do |option, i| %>
-	<% toggled_columns = [:alias, :description, :value_aliases, :value_prefix, :param]
+	<% toggled_columns = [:alias, :description, :value_aliases, :value_prefix, :param, :private]
 		is_visible = {}
 		toggled_columns.each do |e|
 			is_visible[e] = !option.send(e).blank?
@@ -20,7 +20,8 @@
 			<%= link_to_function 'Toggle alias', "$('option_box_alias_#{i}').toggle()"%> |
 			<%= link_to_function 'Toggle description', "$('option_box_description_#{i}').toggle()"%> |
 			<%= link_to_function 'Toggle value aliases', "$('option_box_value_aliases_#{i}').toggle()"%> |
-			<%= link_to_function 'Toggle value prefix', "$('option_box_value_prefix_#{i}').toggle()"%>
+			<%= link_to_function 'Toggle value prefix', "$('option_box_value_prefix_#{i}').toggle()"%> |
+			<%= link_to_function 'Toggle private', "$('option_box_private_#{i}').toggle()"%>
 		</div>
 		<div class="floater">
 			<%= f1.label :name %><br/>
@@ -47,6 +48,10 @@
 		<div id="option_box_alias_<%= i %>" style="<%= 'display:none' unless is_visible[:alias] %>" class="floater">
 			<%= f1.label :alias %><br/>
 			<%= f1.text_field :alias, :size=>10 %>
+		</div>
+		<div id="option_box_private_<%= i %>" style="<%= 'display:none' unless is_visible[:private] %>" class="floater">
+			<%= f1.label :private %><br/>
+			<%= f1.check_box :private %>
 		</div>
 		<span id="option_type_specific_fields_<%= i%>">
 		<%= option_type_specific_fields option.option_type, f1, :index=>i, :option_obj=>option %>

@@ -64,8 +64,8 @@ class UserCommand < ActiveRecord::Base
       self.keyword ||= self.command.keyword
       self.name ||= self.command.name 
       self.description ||= self.command.description
-      self.url = self.command.url
-      self.url_options = self.command.url_options if self.command[:url_options]
+      self.url ||= self.command.url
+      self.url_options ||= self.command.url_options if self.command[:url_options]
     end
     return self
   end

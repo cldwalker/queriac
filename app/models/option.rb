@@ -4,7 +4,10 @@ require 'ostruct'
 class Option < OpenStruct
   OPTION_TYPES = ['normal', 'boolean', 'enumerated']
   VALID_FIELDS = [:name, :option_type, :description, :alias, :true_value, :false_value, :default, :values, :value_aliases,
-    :value_prefix, :param]
+    :value_prefix, :param, :private]
+  #these fields are hidden + not copied when private field is set
+  #should be in sync with option_metadata() helper
+  PRIVATE_FIELDS = [:default, :value_aliases]
   #maps names to aliases
   GLOBAL_OPTION_ALIASES = {'help'=>'h', 'test'=>'T', 'url_encode'=>'ue'} 
   GLOBAL_OPTIONS = ['off'] + GLOBAL_OPTION_ALIASES.to_a.flatten
@@ -23,6 +26,14 @@ class Option < OpenStruct
       optional_columns = [:value_prefix, :value_aliases, :default, :description, :alias, :param]
       optional_columns.each {|c| e.delete(c) if e[c].blank? }
       e[:option_type] ||= 'normal'
+      e
+    }
+  end
+  
+  def self.sanitize_copy(array_of_hashes)
+    array_of_hashes.map {|e| 
+      e.except!(*PRIVATE_FIELDS) if Option.private_option?(e[:private])
+      e.delete(:private)
       e
     }
   end
@@ -103,6 +114,10 @@ class Option < OpenStruct
     value_aliases_hash = Hash[*values_array]
     value_aliases_hash[value] || value
   end
+  
+  def self.private_option?(value); value == '1'; end
+  def private?; self.class.private_option?(self.private); end
+  def public?; !private?; end
   
   #from ostruct
   def to_hash

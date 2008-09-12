@@ -20,6 +20,7 @@ module AllCommandsHelper
     simple_format command.description.blank? ? 'No description yet.' : command.description
   end
   
+  #:show_private option is used to override option privacy for command owners and admins
   def option_metadata(option, options={})
     metadata = []
     metadata << "param: #{h option.param}" unless option.param.blank?
@@ -29,13 +30,12 @@ module AllCommandsHelper
   		metadata << "true value: #{h option.true_value}" unless option.true_value.blank?
   		metadata << "false value: #{h option.false_value}" unless option.false_value.blank?
   	else
-  		metadata << "default: #{h option.default}" unless option.default.blank?
+  		metadata << "default: #{h option.default}" if !option.default.blank? && (options[:show_private] || option.public?)
   	end
 		metadata << "alias: #{h option.alias}" unless option.alias.blank?
 		metadata << "value prefix: #{h option.value_prefix}" unless option.value_prefix.blank?
-	  if options[:show_all]
-		  metadata << "value aliases: #{h option.value_aliases}" unless option.value_aliases.blank?
-		end
+	  metadata << "value aliases: #{h option.value_aliases}" if !option.value_aliases.blank? && (options[:show_private] || option.public?)
+  	metadata << "private: true" if option.private? if options[:show_private]
 		
 		return '' if metadata.empty?
 		content_tag(:ul) do
