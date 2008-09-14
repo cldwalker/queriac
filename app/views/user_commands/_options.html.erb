@@ -8,14 +8,16 @@
 			is_visible[e] = !option.send(e).blank?
 		end
 	%>
-	<%# disable if subscriber is editing or if user is copying %>
+	<%# disable if subscriber is editing or if user is subscribing %>
 	<% option_fields_disabled = (!@user_command.new_record? && !@user_command.command_owned_by?(current_user) &&
-	 !current_user.is_admin?) || (@user_command.new_record? && @controller.action_name == 'copy') || params[:is_copy] %>
+	 !current_user.is_admin?) || (@user_command.new_record? && subscribe_action?) || params[:is_subscribe] %>
 	<div id="url_option_<%= i%>"class="option_box">
 	<% fields_for "user_command[url_options][]", option, :index=>i do |f1| %>
 		<div class="option_toggle_links">
+			<% unless option_fields_disabled %>
 			<%= link_to_function image_tag("icons/cancel.png", :title=>"Remove option"), %[$('url_option_#{i}').fade(); 
 			setTimeout("$('url_option_#{i}').remove()", 2000);], :style=>'padding-right: 10px' %>
+			<% end %>
 			<%= link_to_function 'Toggle param', "$('option_box_param_#{i}').toggle()"%> |
 			<%= link_to_function 'Toggle alias', "$('option_box_alias_#{i}').toggle()"%> |
 			<%= link_to_function 'Toggle description', "$('option_box_description_#{i}').toggle()"%> |

@@ -10,6 +10,7 @@
 				<li class="delete"><%= link_to 'Delete', user_command_path(@user_command), :confirm => "Are you sure you want to delete this command?", :method=>:delete %></li>
 		<% else %>
 			<li class="add"><%= link_to 'Copy', copy_user_command_path(@user_command) %></li>
+			<li class="add"><%= link_to 'Subscribe', subscribe_user_command_path(@user_command) %></li>
 		<% end %>
 	</ul>
 <% end %>

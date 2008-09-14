@@ -30,7 +30,7 @@ class Option < OpenStruct
     }
   end
   
-  def self.sanitize_copy(array_of_hashes)
+  def self.sanitize_copied_options(array_of_hashes)
     array_of_hashes.map {|e| 
       e.except!(*PRIVATE_FIELDS) if Option.private_option?(e[:private])
       e.delete(:private)

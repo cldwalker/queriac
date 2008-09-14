@@ -37,7 +37,7 @@
 	<li>Save the command and that's it! You can now type <code>y dog</code> in your address bar to do a Yahoo search for 'dog'.</li>
 </ol>
 
-<p>Browsing through other users' commands is another great way to get started. Click the <b>'Copy'</b> link next to any user's command to add a command to your account. <%= link_to "Click here", "/zeke" %> to visit <%= link_to "Zeke", "/zeke" %>'s profile. He has lots of commands.</p>
+<p>Browsing through other users' commands is another great way to get started. Click the <b>'Subscribe'</b> link next to any user's command to add a command to your account. <%= link_to "Click here", "/zeke" %> to visit <%= link_to "Zeke", "/zeke" %>'s profile. He has lots of commands.</p>
 </div>
 
 <h2>What is a bookmarklet?</h2>
@@ -84,19 +84,29 @@
 <h2 id="command_difference">What is the difference between a command and a user command?</h2>
 <p>
 	A command, although initially created by someone, isn't tied to a specific user. Rather, it simply holds the command url
-	and default options for a command. When a user wants to use a command, they copy it and create their own user command.
-	They can then customize their user command by adding their own tags and description etc ...<br/>
-	When a user creates a user command from a command they are essentially subscribing to it. With users grouping around commands
-	and sharing their knowledge, this site will hopefully one day offer commands that are maintainable and easily improved for everyone
-	by those who you use them!
+	and default options for a command. When a user wants to use a command, they subscribe to it. Subscribing to a command creates
+	a user command for the user. They can then customize their user command by editing the tags, options, description etc ...
+	With users grouping around commands	and sharing their knowledge, this site will hopefully one day offer commands that are
+	maintainable and easily improved for everyone by those who you use them!
 </p>
 
-<h2>If I copy a command, why can't I edit my command's url and/or url options?</h2>
+<h2>What's the difference between copying a command and subscribing to one.</h2>
 <p>
-	Currently, only creators of a command can modify anything about a url and its options.
-	Users of a command can modify options except for their names and option types.
-	Once we find a smart way of branching user commands, you'll be able to edit any user command.
-	In the meantime, create another command if a command you've copied is too limiting.
+	These are both ways of creating user commands from someone else's commands. But they differ in that subscribing to a command ties
+	your command to the subscribed command while a copy does not. Tying a command to an existing command can be quite helpful since it
+	joins a subscriber to the other subscribers of a command. This allows for easy sharing of command knowledge between	users. For
+	example, subscribers can update their commands to their latest command versions on their user command pages.
+	A temporary advantage a copy has over a subscription, is that it allows the user to fully edit their command but at the cost of
+	being antisocial. We strongly recommend subscribing to commands as this will encourage sharing knowledge of commands between users.
+	As Queriac growas, we will add more features to explore the benefits of groups based around commands.
+</p>
+
+<h2>If I subscribe to a command, why can't I edit my command's url and/or url options?</h2>
+<p>
+	Currently, only creators of a command can modify anything about its url and options.
+	Command subscribers can modify any of their option fields except for the name and option type fields.
+	Once we develop a smart way of branching user commands, you'll be able to edit any user command.
+	In the meantime, copy another command if a command you've subscribed too is too limiting.
 </p>
 <h2>Things I haven't written yet..</h2>
 <ul class="normal">

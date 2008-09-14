@@ -28,6 +28,10 @@ module PathHelper
     args[0].is_a?(UserCommand) ? super(:id=>args[0].id) : super(*args)
   end
   
+  def subscribe_user_command_path(*args)
+    args[0].is_a?(UserCommand) ? super(:id=>args[0].id) : super(*args)
+  end
+  
   def user_command_queries_path(*args)
     args[0].is_a?(UserCommand) ? super(args[0].user, args[0]) : super
   end

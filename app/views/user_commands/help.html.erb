@@ -1,4 +1,4 @@
-<%- set_header :title=>"#{@user_command.name}'s Help" -%>
+<%- set_header :title=>"#{@user_command.name}'s Help", :robots=>'noindex,nofollow' -%>
 <h1 class="inline">
 	<%= link_to h(@user_command.name), public_user_command_path(@user_command) %> Help
 </h1>

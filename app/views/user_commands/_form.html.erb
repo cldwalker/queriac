@@ -1,8 +1,8 @@
-<% if controller.action_name == 'copy' %>
+<% if subscribe_action? %>
 	<%= hidden_field_tag 'user_command[command_id]', @command_id, :id=>'user_command_command_id' %>
-	<%= hidden_field_tag 'is_copy', 1 %>
+	<%= hidden_field_tag 'is_subscribe', 1 %>
 	<div style="font-size: 12px">
-		Since you are copying an existing command, certain fields cannot be edited ie url.
+		Since you are subscribing to an existing command, certain fields cannot be edited ie url.
 	</div>
 <% end %>
 <% @disabled_fields ||= [] %>
@@ -27,7 +27,7 @@
   <%= f.text_field :url, {:size => 90, :disabled=>@disabled_fields.include?(:url)} %>
   <%= f.hidden_field :url if @disabled_fields.include?(:url) %>
 	
-	<% if admin? && controller.action_name != 'copy' && (@user_command.new_record? || @user_command.command_owned_by?(current_user)) %>
+	<% if admin? && !subscribe_action? && (@user_command.new_record? || @user_command.command_owned_by?(current_user)) %>
 	<br/>
 	<%= link_to_remote image_tag('icons/arrow_refresh.png', :style=>'padding-right: 5px') + "CONVERT URL TO COMMAND", 
 		{:url=>fetch_and_sync_url_options_user_commands_path, :before=>"$('scrape_spinner').show()", 
@@ -105,13 +105,13 @@
 	
 <h3 style="margin-bottom: 0px">COMMAND OPTIONS</h3>
 <div id="command_options_instructions">
-<% if @user_command.new_record? && @controller.action_name != 'copy' %>
+<% if @user_command.new_record? && !subscribe_action? %>
 	* Once a command is public and is used by more than one person it must remain public.
 <% elsif ! @user_command.new_record? && @user_command.command_owned_by?(current_user) %>
 	* As the creator of this command, the public, http post and url encode options are updated for both the command and your user command.<br/>
 	<% unless @user_command.command_editable? %>
 	* Since the command is public and being used by other people, you can't edit the public state of the command.<br/>
-	  You can always create a separate private version of the command by copying the command fields.
+	  You can always create a separate private version of the command by copying this command and making it private.
 	<% end %>
 <% end %>
 </div>

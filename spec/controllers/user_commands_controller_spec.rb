@@ -59,11 +59,11 @@ describe 'user_commands/new:' do
     all_expectations
   end
   
-  it 'when copying user command, displays page and prefills fields' do
+  it 'when subscribing to user command, displays page and prefills fields' do
     ucommand = create_user_command
-    get :copy, :id=>ucommand.id
+    get :subscribe, :id=>ucommand.id
     basic_expectations
-    assigns[:original_command].should be_an_instance_of(UserCommand)
+    assigns[:source_object].should be_an_instance_of(UserCommand)
     assigns[:user_command].name.should == ucommand.name
     response.should have_tag('#user_command_command_id')
     assigns[:disabled_fields].should_not be_empty
@@ -73,17 +73,17 @@ describe 'user_commands/new:' do
     response.should_not have_tag('#user_command_public')
   end
     
-  it "when copying command, displays page and prefills fields"
-  it 'redirects copying private command' do
+  it "when subscribing command, displays page and prefills fields"
+  it 'redirects subscribing to private command' do
     ucommand = create_user_command(:command=>create_command(:public=>false))
-    get :copy, :id=>ucommand.id
+    get :subscribe, :id=>ucommand.id
     response.should be_redirect
     flash[:warning].should_not be_blank
   end
   
   it 'copies user command with options'
   it 'copies command with options'
-  it 'redirects copying your own command'
+  it 'redirects subscribing to your own command'
   
 end
 

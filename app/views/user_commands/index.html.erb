@@ -100,7 +100,7 @@
 				<li class="no_icon"><%= link_to image_tag("icons/edit.png"), edit_user_command_path(uc) %></li>
 				<li class="no_icon"><%= link_to image_tag("icons/delete.png"), user_command_path(uc), :confirm => "Are you sure you want to delete this command?", :method => :delete  %></li>
 			<% else %>
-				<li class="add"><%= link_to 'Copy', copy_user_command_path(uc) %></li>
+				<li class="add"><%= link_to 'Subscribe', subscribe_user_command_path(uc) %></li>
 			<% end %>				
 		</ul>
 	<% end %>

@@ -6,7 +6,7 @@ class UserCommandsController < ApplicationController
   before_filter :permission_required, :only=>[:edit, :update, :destroy, :update_url]
   before_filter :store_location, :only=>[:index, :show, :command_user_commands]
   before_filter :allow_breadcrumbs, :only=>[:search, :index, :command_user_commands, :show, :edit, :help]
-  before_filter :set_disabled_fields, :only=>[:copy, :edit]
+  before_filter :set_disabled_fields, :only=>[:subscribe, :edit]
   before_filter :load_tags_if_specified, :only=>:index
   before_filter :add_rss_feed, :only=>[:index, :command_user_commands]  
   # Possiblities..
@@ -90,41 +90,24 @@ class UserCommandsController < ApplicationController
   end
   
   def copy
-    if params[:is_command]
-      @base_command = Command.find(params[:id])
-      if @base_command.nil?
-        flash[:warning] = "Unable to copy command"
-        redirect_back_or_default command_path(@base_command)
-        return
-      end
-      @command_id = @base_command.id
-    else
-      @original_command = UserCommand.find(params[:id])
-      @command_id = @original_command.command_id
+    if (@source_object = setup_source_object)
+      setup_new_from_source(@source_object)
+      flash.now[:notice] = "If you don't intend to change the url, options or public state of this command, you should use subscribe instead."
     end
-    if (@original_command || @base_command).private?
-      flash[:warning] = "You cannot copy a private command." 
-      redirect_back_or_default home_path
-      return
-    else
-      if @original_command && (existing_user_command = @original_command.command.user_commands.detect {|e| e.user_id == current_user.id}) #@original_command.owned_by?(current_user)
-        flash[:notice] = "No need to copy this command. You already have " + 
-          render_to_string(:inline=>%[<%= link_to('it', public_user_command_path(existing_user_command)) %>], :locals=>{:existing_user_command=>existing_user_command})
-        redirect_back_or_default public_user_command_path(existing_user_command)
-        return
-      elsif @base_command && (existing_user_command = @base_command.user_commands.detect {|e| e.user_id == current_user.id})
-        flash[:notice] = "No need to copy this command. You already have "  + 
-          render_to_string(:inline=>%[<%= link_to('it', public_user_command_path(existing_user_command)) %>], :locals=>{:existing_user_command=>existing_user_command})
+  end
+  
+  def subscribe
+    if (@source_object = setup_source_object)
+      source_command = @source_object.is_a?(UserCommand) ? @source_object.command : @source_object
+      @command_id = source_command.id
+      if (existing_user_command = source_command.user_commands.detect {|e| e.user_id == current_user.id}) #source_command.owned_by?(current_user)
+        flash[:notice] = "No need to #{@source_verb} this command. You already have " + 
+          render_to_string(:inline=>%[<%= link_to(h(existing_user_command.name), public_user_command_path(existing_user_command)) %>], :locals=>{:existing_user_command=>existing_user_command})
         redirect_back_or_default public_user_command_path(existing_user_command)
         return
       end
+      setup_new_from_source(@source_object)
     end
-    
-    @user_command = UserCommand.new
-    source_object = @original_command || @base_command
-    @user_command.attributes = source_object.attributes.slice(*%w{name keyword url description})
-    @user_command.url_options = Option.sanitize_copy(source_object.url_options)
-    render :action=>'new'
   end
   
   def edit
@@ -167,7 +150,7 @@ class UserCommandsController < ApplicationController
             flash.now[:warning] = render_to_string :inline=>"The url entered indicates that you already have this command: 
               <%= link_to existing_user_command.name, public_user_command_path(existing_user_command) %>", :locals=>{:existing_user_command=>existing_user_command}
           end
-          set_disabled_fields #for copy
+          set_disabled_fields #for subscribe
           format.html { render :action => "new" }
           #format.xml  { render :xml => @command.errors.to_xml }
         end
@@ -402,12 +385,12 @@ class UserCommandsController < ApplicationController
   
   def set_disabled_fields
     options = {}
-    options[:copy] = true if self.action_name == 'copy' || params[:is_copy]
+    options[:subscribe] = true if subscribe_action? || params[:is_subscribe]
     @disabled_fields = get_disabled_fields(current_user, options)
   end
   
   def get_disabled_fields(current_user, options={})
-    if options[:copy]
+    if options[:subscribe]
       disabled_fields = [:url, :public]
     elsif ! @user_command.new_record?
       disabled_fields = @user_command.get_disabled_update_fields(current_user)
@@ -436,21 +419,22 @@ class UserCommandsController < ApplicationController
       redirect_back_or_default public_user_command_path(successful_commands[0])
     end
   end
-  
-end
 
-__END__
-#maybe implement later
-def search_all
-  if params[:q].blank?
-    flash[:warning] = "Your search is empty. Try again."
-    @commands = [].paginate
-  else
-    #:select + :group ensure unique urls for commands
-    all_commands = Command.find(:all, :conditions=>["keyword REGEXP ? OR url REGEXP ?", params[:q], params[:q]],
-      :select=>'*, count(url)', :group=>"url HAVING count(url)>=1", :order=>'queries_count_all DESC' )
-    @commands = all_commands.paginate(index_pagination_params)
+  def setup_new_from_source(source_object)
+    @user_command = UserCommand.new
+    @user_command.attributes = source_object.attributes.slice(*%w{name keyword url description})
+    @user_command.url_options = Option.sanitize_copied_options(source_object.url_options)
+    render :action=>'new'
   end
-  render :action => 'index'
+  
+  def setup_source_object
+    source_object = params[:is_command] ? Command.find(params[:id]) : UserCommand.find(params[:id])
+    @source_verb = subscribe_action? ? "subscribe to" : 'copy'
+    if source_object.private?
+      flash[:warning] = "You cannot #{@source_verb} a private command." 
+      redirect_back_or_default home_path
+      return nil
+    end
+    source_object
+  end
 end
-

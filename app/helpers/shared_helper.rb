@@ -29,6 +29,9 @@ module SharedHelper
     user_command_owner? || admin?
   end
   
+  def subscribe_action?
+    self.is_a?(ApplicationController) ? self.action_name == 'subscribe' : (@controller && @controller.action_name == 'subscribe')
+  end
   #misc methods
   
   def feed_icon_tag(title, url)

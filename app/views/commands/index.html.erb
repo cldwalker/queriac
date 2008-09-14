@@ -89,7 +89,7 @@
 				<li class="no_icon"><%= link_to image_tag("icons/edit.png"), edit_command_path(command) %></li>
 			<% end %>
 			<% unless command.created_by?(current_user) %>
-				<li class="add"><%= link_to 'Copy', copy_user_command_path(:id=> command.id, :is_command=>true) %></li>
+				<li class="add"><%= link_to 'Subscribe', subscribe_user_command_path(:id=> command.id, :is_command=>true) %></li>
 			<% end %>				
 		</ul>
 	</td>
