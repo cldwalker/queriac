@@ -59,6 +59,9 @@ class User < ActiveRecord::Base
     end
   end
   
+  #takes ownership of deleted commands
+  def self.public_user; find_by_login('public'); end
+  
   def self.find_top_users(options={})
     #includes user_commands count
     users = User.find(:all, {:conditions=>VIEWABLE_SQL, :joins => "INNER JOIN user_commands ON user_commands.user_id = users.id", 
@@ -241,8 +244,14 @@ class User < ActiveRecord::Base
       crypted_password.blank? || !password.blank?
     end
 
-    
     def make_activation_code
       self.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
     end 
+    
+    def after_destroy
+      if self.commands.size > 0 && (public_user = self.class.public_user)
+        self.commands.each {|e| e.update_attribute :user_id, public_user.id}
+      end
+      true
+    end
 end

@@ -18,6 +18,7 @@ class UserCommand < ActiveRecord::Base
   validates_uniqueness_of :name, :scope=>:user_id
   attr_protected :user_id
   serialize :url_options, Array
+  before_destroy :decrement_command_query_count
   
   named_scope :used, :conditions => ["user_commands.queries_count > 0"]
   named_scope :unused, :conditions => ["user_commands.queries_count = 0"]
@@ -121,10 +122,6 @@ class UserCommand < ActiveRecord::Base
   
   def to_param; keyword; end
   
-  def update_query_counts
-    self.update_attribute(:queries_count, queries.count)
-  end
-
   def public; new_record? ? true : command.public; end
   delegate :public?, :private?, :parametric?, :bookmarklet?, :to=>:command
   def public_queries?; self.public && self.public_queries; end
@@ -156,4 +153,12 @@ class UserCommand < ActiveRecord::Base
     self.tag_list.join(" ")
   end
   
+  def decrement_command_query_count
+    self.command.decrement_query_count(self.queries_count)
+    true
+  end
+  
+  def update_query_counts
+    self.update_attribute(:queries_count, self.queries_count + 1)
+  end
 end

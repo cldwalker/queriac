@@ -25,7 +25,7 @@ class Query < ActiveRecord::Base
   def after_create
     if self.user_command
       self.user_command.update_query_counts 
-      self.user_command.command.update_query_counts if self.user_command.command
+      self.user_command.command.increment_query_count if self.user_command.command
     end
   end
   

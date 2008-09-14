@@ -104,8 +104,14 @@ class Command < ActiveRecord::Base
   #   self.tag_list.join(" ")
   # end
   
-  def update_query_counts
-    self.update_attribute(:queries_count_all, self.queries_count_all + 1)
+  def increment_query_count(increment_count=1)
+    self.update_attribute(:queries_count_all, self.queries_count_all + increment_count)
+  end
+  
+  def decrement_query_count(decrement_count=1)
+    if self.queries_count_all > 0
+      self.update_attribute :queries_count_all, self.queries_count_all - decrement_count
+    end
   end
   
   def self.parse_advanced_search(query)

@@ -5,6 +5,7 @@ class UsersController < ApplicationController
   before_filter :store_location, :only=>[:index, :show, :edit, :home]
   before_filter :load_user_from_param, :only => [:opensearch]
   before_filter :allow_breadcrumbs, :only=>[:index, :home, :edit, :show]
+  verify :method=>:delete, :only=>:destroy
   
   def index
     pagination_params = {:order => "users.created_at DESC", :page => params[:page]}
@@ -92,13 +93,20 @@ class UsersController < ApplicationController
   end
   
   def destroy
-    @user = current_user
-    @user.destroy
-
-    respond_to do |format|
-      flash[:notice] = "Your account has been deleted. Sorry to see you go."      
-      format.html { redirect_to home_path }
-      format.xml  { head :ok }
+    password = params[:user][:password]
+    password_confirmation = params[:user][:password_confirmation]
+    if password == password_confirmation
+      if current_user.authenticated?(password)
+        current_user.destroy
+        flash[:notice] = "Your account has been deleted. Sorry to see you go."
+        redirect_to home_path
+      else
+        flash[:warning] = "Sorry, wrong password. Please try again."
+        redirect_to settings_path
+      end
+    else
+      flash[:warning] = "Your password and password confirmation weren't the same. Please try again."
+      redirect_to settings_path
     end
   end
 

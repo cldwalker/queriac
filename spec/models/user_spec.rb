@@ -48,16 +48,52 @@ describe User do
     end
   end
   
-end
+  it "when destroyed also destroy related models except its commands" do
+    user = create_user
+    #create user commands, command and query for user
+    setup_default_user_commands
+    user.create_default_user_commands
+    user.commands.create(:name=>'Bling', :url=>'bling.com', :keyword=>'bling')
+    user.commands.size.should eql(1)
+    query = create_query(:user_command=>user.user_commands[0])
+    user.queries.size.should eql(1)
+    
+    query_command = query.user_command.command
+    user_commands_size = user.user_commands.size
+    lambda {
+      lambda {
+        lambda {
+          lambda {
+            lambda {
+              user.destroy
+            }.should change(User, :count).by(-1)
+          }.should change(UserCommand, :count).by(user_commands_size * -1)
+        }.should_not change(Command, :count)
+      }.should change(Query, :count).by(-1)
+    }.should change(query_command, :queries_count_all).by(-1)
+    
+    pending "confirm command is moved to public user"
+  end
   
+end
+
+def setup_default_user_commands
+  Command.destroy_all
+  command_keywords = ["g", "gms", "w", "word", "q", "show", "edit", "new", "search"]
+  test_commands = command_keywords.map {|e| create_command(:keyword=>e) }
+  #override default command ids 
+  User.class_eval %[
+    @@test_commands = test_commands
+    def default_commands_config
+      @@test_commands.map {|e| {:command_id=>e.id} }
+    end
+  ]
+end
+
 describe "user with default commands:" do
   before(:all) do
     @user = create_user
-    Command.destroy_all
-    command_keywords = ["g", "gms", "w", "word", "q", "show", "edit", "new", "search"]
-    commands = command_keywords.map {|e| create_command(:keyword=>e) }
-    #stubbing done since command ids are hardcoded
-    Command.should_receive(:find).and_return(*commands)
+    setup_default_user_commands
     @user.create_default_user_commands
   end
   

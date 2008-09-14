@@ -1,4 +1,4 @@
-<div id="secondary" class="boxed">
+<div id="primary">
 	<h1>Edit Your Account</h1>
 
 	<%= error_messages_for :user %>
@@ -49,5 +49,27 @@
 	  <p>
 	    <%= submit_tag "Save Settings", :class => "submit" %>
 	  </p>
+	<% end %>
+</div>
+
+<div id="secondary" class="boxed">
+	<h2>Delete Your Account <%= image_tag("warning_sign.png", :height=>50, :width=>50, :style=>'vertical-align: bottom') %></h2>
+	<h3>Proceed with caution. This will delete everything from your account, including your user commands and queries.</h3>
+	<% form_for(:user, @user, :url => user_path(current_user), :html => { :method => :delete, 
+		:onsubmit=>"return confirm('This truly deletes you from our website. Do you want to proceed?');" }) do |f| %>
+		<div>
+		  <%= f.label :password %><br/>
+		  <%= f.password_field :password %>
+		</div>
+
+		<div>
+		  <%= f.label :password_confirmation %><br/>
+		  <%= f.password_field :password_confirmation %>
+		</div>
+		
+		<p>
+	    <%= submit_tag "Delete!", :class => "submit" %>
+	  </p>
+	  
 	<% end %>
 </div>
