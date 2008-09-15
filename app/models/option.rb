@@ -12,7 +12,7 @@ class Option < OpenStruct
   GLOBAL_OPTION_ALIASES = {'help'=>'h', 'test'=>'T', 'url_encode'=>'ue'} 
   GLOBAL_OPTIONS = ['off'] + GLOBAL_OPTION_ALIASES.to_a.flatten
   GLOBAL_BOOLEAN_OPTIONS = GLOBAL_OPTION_ALIASES.slice('help', 'test').to_a.flatten
-  FIELD_LENGTH_MAX = 500
+  FIELD_LENGTH_MAX = 4000 #txt command provider values comes close to this
   MAX_OPTIONS = 25
   VALUES_SPLITTER = /\s*,\s*/
   
