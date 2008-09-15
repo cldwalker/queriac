@@ -90,7 +90,7 @@ h1 {
 
 h1.inline {
   display: inline;
-  width: 70%;
+  width: 65%;
   float: left;
   margin-bottom: 2px;
 }
@@ -376,7 +376,7 @@ ul.options li.delete a, ul.options li.reject a {
 ul.options.header {
   margin-top: 30px;
   float: right;
-  width: 25%;
+  width: 30%;
   text-align: right;
 }
 

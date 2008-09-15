@@ -14,6 +14,7 @@ class Option < OpenStruct
   GLOBAL_BOOLEAN_OPTIONS = GLOBAL_OPTION_ALIASES.slice('help', 'test').to_a.flatten
   FIELD_LENGTH_MAX = 500
   MAX_OPTIONS = 25
+  VALUES_SPLITTER = /\s*,\s*/
   
   def self.sanitize_input(array_of_hashes, options = {})
     array_of_hashes.map {|e| 
@@ -87,10 +88,24 @@ class Option < OpenStruct
   
   #should return array
   def values_list(values_to_split=self.values)
-    values_to_split.gsub(/\(.*?\)/, '').split(/\s*,\s*/)
+    values_to_split.gsub(/\(.*?\)/, '').split(VALUES_SPLITTER)
   end
   
-  def values_string(values_array); self.class.values_string(values_array); end
+  #returns array of arrays mapping annotation to value
+  def annotated_values_list(values_to_split=self.values)
+    values_to_split.split(VALUES_SPLITTER).map {|e|
+      k = e.gsub(/\((.*)?\)/, '')
+      $1 ? [$1, k] : [e,e]
+    }
+  end
+  
+  def sorted_annotated_values_list
+    annotated_values_list.sort {|a,b| a[0]<=>b[0]}
+  end
+  
+  def values_string(values_array)
+    values_array.join(", ")
+  end
   
   def self.values_string(values_array)
     values_array.join(", ")
@@ -101,7 +116,7 @@ class Option < OpenStruct
   end
   
   def sorted_values(values_to_split=self.values)
-    values_to_split.split(/\s*,\s*/).sort.join(", ")
+    values_string(values_to_split.split(VALUES_SPLITTER).sort)
   end
   
   def prefix_value(value)

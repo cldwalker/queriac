@@ -262,6 +262,10 @@ module CommandHelper
     self.class.url_is_bookmarklet?(url_value)
   end
   
+  def public_queries?; self.public && self.public_queries; end
+  #may move this boolean to its own column
+  def allow_anonymous_queries?; self.public_queries? end
+  
   #domain value should be the same for command + its usercommand
   #pushing to have no dependence on command when rendering favicons
   def domain
@@ -292,80 +296,3 @@ module CommandHelper
   end
   
 end
-
-__END__
-
-# def simple_url_for(query_string, manual_url_encode=nil)
-#   is_url_encoded = !manual_url_encode.nil? ? manual_url_encode : url_encode?
-#   if is_url_encoded
-#     self.url.gsub(DEFAULT_PARAM, CGI.escape(query_string))
-#   else
-#     self.url.gsub(DEFAULT_PARAM,query_string)
-#   end
-# end
-
-
-#TODO: escape characters used in regexs ie value[/[^\\]\|/]
-# def old_url_for(query_string, manual_url_encode=nil)
-#   #no warning is given for options that aren't valid for a command
-#   options = parse_query_options(query_string)
-#   query_string.strip!
-#   
-#   #OPTION_PARAM_REGEX = /\[:(\w+)(=[^\[\]]+)?\]/
-#   redirect_url = self.url.gsub(OPTION_PARAM_REGEX) do
-#     name = $1
-#     default = $2 ? $2[1..-1] : nil
-#      
-#      #position value
-#      if name =~ /^\d$/
-#        value = query_array_value(query_string, name.to_i) || default
-#       #option value
-#      else
-#        #boolean option detected
-#        if default && default.include?("|")
-#          true_value, false_value = default.split("|", 2)
-#          value = options[name] ? true_value : false_value
-#        #enumerated option detected
-#        elsif default && default.include?(",")
-#          possible_values = default.split(",")
-#          value = possible_values.include?(options[name]) ? options[name] : possible_values[0]
-#        else
-#          value = options[name] || default
-#        end
-#      end
-#      
-#      # p [name, default]
-#      #TODO: give user option to error out for parameters without value or default
-#      value ? url_encode_string(value) : ''
-#   end
-#   
-#   redirect_url.gsub(DEFAULT_PARAM, url_encode_string(query_string))
-# end
-
-# def extract_url_options
-#     uoptions = {}
-#     self.url.scan(OPTION_PARAM_REGEX).each do |e|
-#       name = e[0].to_sym
-#       default = e[1] ? e[1][1..-1] : nil
-#        #position value
-#       if name =~ /^\d$/
-#          #do nothing
-#       #option value
-#       else
-#          #boolean option detected
-#          if default && default.include?("|")
-#            true_value, false_value = default.split("|", 2)
-#            uoptions[name] = {:type=>:boolean, :true=>true_value, :false=>false_value}
-#            
-#          #enumerated option detected
-#          elsif default && default.include?(",")
-#            possible_values = default.split(",")
-#            uoptions[name] = {:type=>:enumerated, :values=>possible_values, :default=>possible_values[0]}
-#          else
-#            uoptions[name] = default.nil? ? {} : {:default=>default}
-#          end
-#        end
-#     end
-#     uoptions   
-#   end
-#   

@@ -41,7 +41,7 @@ module UserCommandsHelper
           "<br/>" + form.text_area(:values, :cols=>30, :rows=>2, :wrap=>'virtual') + ajax_spinner("enumerated_#{options[:index]}")
       end 
       fields += content_tag(:div, :class=>'floater') do
-        values_array = options[:option_obj] ? options[:option_obj].values_list : []
+        values_array = options[:option_obj] ? options[:option_obj].sorted_annotated_values_list : []
         form.label(:default) + "<br/>" +  form.select(:default, values_array, {:include_blank=>true}, :index=>options[:index])
       end
       fields += content_tag(:div, nil, :class=>'floatkiller')

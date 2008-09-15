@@ -124,7 +124,6 @@ class UserCommand < ActiveRecord::Base
   
   def public; new_record? ? true : command.public; end
   delegate :public?, :private?, :parametric?, :bookmarklet?, :to=>:command
-  def public_queries?; self.public && self.public_queries; end
   
   def command_url_changed?
     self.command.url != self.url

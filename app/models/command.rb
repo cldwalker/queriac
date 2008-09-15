@@ -79,7 +79,6 @@ class Command < ActiveRecord::Base
   #------------------------------------------------------------------------------------------------------------------
   def parametric?; self.kind == "parametric"; end
   def private?; !public?; end
-  def public_queries?; self.public && self.public_queries; end
   
   # Miscellany
   #------------------------------------------------------------------------------------------------------------------
