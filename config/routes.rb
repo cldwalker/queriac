@@ -12,7 +12,7 @@ ActionController::Routing::Routes.draw do |map|
     c.formatted_command_user_commands  'commands/:id/user_commands.:format', :action=>'command_user_commands', :format=>'rss'
     # c.formatted_tagged_user_commands   ':login/user_commands/tag/*tag.:format',   :action=>'index', :format=>'rss'
     c.tagged_user_commands   ':login/user_commands/tag/*tag',   :action=>'index'
-    c.formatted_all_tagged_user_commands   'user_commands/tag/*tag.:format',   :action=>'index', :format=>'rss'
+    # c.formatted_all_tagged_user_commands   'user_commands/tag/*tag.:format',   :action=>'index', :format=>'rss'
     c.all_tagged_user_commands   'user_commands/tag/*tag',   :action=>'index'
     c.specific_user_commands   ':login/user_commands', :action=>'index'
     c.formatted_specific_user_commands   ':login/user_commands.:format', :action=>'index', :format=>/atom|rss|xml/
