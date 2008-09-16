@@ -16,7 +16,7 @@
 
 <hr />
 <p class="small-url">
-	<%= h @command.url.ellipsize(:max => 150, :delimiter => " . . . . . ") %>
+	<%= truncate_with_more h(@command.url), 150 %>
 </p>
 
 <div id="primary">
