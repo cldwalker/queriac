@@ -436,3 +436,8 @@ hr {
 	background: url(../images/spinner.gif) no-repeat 0 center;
 	vertical-align: middle;	
 }
+
+#user_command_url_box .selected {
+	background: yellow;
+	border: 1px solid;
+}

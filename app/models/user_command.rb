@@ -44,8 +44,11 @@ class UserCommand < ActiveRecord::Base
     end
   end
   
-  def before_validation_on_create
+  def before_validation
     self.keyword.downcase! if self.keyword
+    #clean out newlines created by textarea field
+    self.url.gsub!(/\s*\n\s*/,'')
+    self.url.gsub!(/\s*\r\s*/,'')
   end
   
   def initialize(*args)

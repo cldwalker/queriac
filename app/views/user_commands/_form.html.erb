@@ -17,22 +17,71 @@
   <%= f.text_field :keyword, :size => 14 %>
 </div>
 
-<div class="floatkiller">
+<script type="text/javascript">
+function changeUrlInput(new_id, disabled) {
+	// alert(url_input_id);
+	$(url_input_id).disable();
+	$(url_input_id).hide();
+	
+	//show bookmarklet_functions only for user_command_url_ta
+	if (url_input_id == 'user_command_url_ta') {
+		$('bookmarklet_functions').hide();
+	}
+	if (new_id == 'user_command_url_ta') {
+		$('bookmarklet_functions').show();
+	}
+	
+	$(url_input_id + '_tab').className = null;
+	$(new_id + '_tab').className = 'selected';
+	$(new_id).value = $(url_input_id).value;
+	url_input_id = new_id;
+	
+	//don't enable if originally disabled
+	if(!disabled) {
+		$(url_input_id).enable();
+	}
+	$(url_input_id).show();
+}
+//note: changing this variable name will wreak havoc
+var url_input_id = 'user_command_url';
+</script>
+<%= javascript_include_tag 'beautify' %>
+
+<div id="user_command_url_box" class="floatkiller">
 	<% if ! @user_command.new_record? %>
 		Url status: <%= url_status @user_command %>
 		<br/>
 	<% end %>
-  <% label_string = "URL or Javascript Command. (Don't forget to include the protocol: http, https, javascript, etc..)" %>
+  <% url_disabled = @disabled_fields.include?(:url)%>
+  <% label_string = "URL (Don't forget to include the protocol: http, https, javascript, etc..)"%>
   <%= f.label :url, label_string %><br />
-  <%= f.text_field :url, {:size => 90, :disabled=>@disabled_fields.include?(:url)} %>
-  <%= f.hidden_field :url if @disabled_fields.include?(:url) %>
+  <div style="margin: 0px; padding: 0px; padding-top: 5px">
+	  <span id="user_command_url_tab" class="selected" style="padding: 0px 10px">
+		<%= link_to_function('NORMAL',"changeUrlInput('user_command_url', #{url_disabled})") %>
+	  </span>
+	  <span id="user_command_url_ta_tab" style="padding: 0px 10px">
+		<%= link_to_function('JAVASCRIPT', "changeUrlInput('user_command_url_ta', #{url_disabled})") %>
+	  </span>
+  </div>
+  <%= f.text_field :url, {:size => 90, :disabled=>url_disabled} %>
+  <%= f.text_area :url, :id=>'user_command_url_ta', :style=>'display:none', :disabled=>true, :rows=>8, :cols=>70%>
+  <div id="bookmarklet_functions" style="display: none">
+   <% unless url_disabled %>
+	<%= button_to_function "Format", "$(url_input_id).value = js_beautify($(url_input_id).value)", :style=>'margin-right: 20px'%>
+	<%= button_to_function 'Compress', "$(url_input_id).value = $(url_input_id).value.replace(/#{'\s*\n\s*'}/g, '').replace(/#{'\s*\r\s*'}/g, '')", :style=>'margin-right: 20px' %>
+  	<%= button_to_function "Replace %20", "$(url_input_id).value = $(url_input_id).value.replace(/%20/g, ' ')"%>
+   <% end %>
+  </div>
+  <%= javascript_tag "changeUrlInput('user_command_url_ta')" if !@user_command.new_record? && @user_command.bookmarklet? %>
+
+  <%= f.hidden_field :url if url_disabled %>
 	
 	<% if !subscribe_action? && (@user_command.new_record? || @user_command.command_owned_by?(current_user)) %>
 	<br/>
 	<%= link_to_remote image_tag('icons/arrow_refresh.png', :style=>'padding-right: 5px') + "CONVERT URL TO COMMAND", 
 		{:url=>fetch_and_sync_url_options_user_commands_path, :before=>"$('scrape_spinner').show()", 
 			:complete=>"$('scrape_spinner').hide()",
-			:with => %['url=' + escape($('user_command_url').value)+ '&text=' + escape($('form_text').value) + '&form_number=' + escape($('form_number').value)] },
+			:with => %['url=' + escape($(url_input_id).value)+ '&text=' + escape($('form_text').value) + '&form_number=' + escape($('form_number').value)] },
 			 :style=>'font-size: 12px' %>
 		
 		<% scrape_description = "What is this? This fetches form data off the above url and then autofills your command fields based on that data. It does NOT sync with existing options." %>
@@ -52,7 +101,7 @@
 
 </div>
 
-<% is_hidden = params[:expand] ? false : true %>
+<% is_hidden = params[:expand_options] ? false : true %>
 <h3 style="margin-top: 5px">
 	<%= collapser_for "url_options", :autohide => is_hidden, :label => "Hide Url Options" %>
 	<%= expander_for "url_options", :autohide =>!is_hidden, :label => "Show Url Options" %>
@@ -67,7 +116,7 @@
 		<%= link_to_remote image_tag('icons/arrow_refresh.png', :style=>'padding-right: 5px') + "SYNCHRONIZE OPTIONS WITH URL", 
 			{:url=>sync_url_options_user_commands_path(sync_params), :before=>"$('sync_spinner').show()", 
 				:complete=>"$('sync_spinner').hide()",
-				:with => %['user_command_url=' + escape($('user_command_url').value)]}, :style=>'font-size: 12px'
+				:with => %['user_command_url=' + escape($(url_input_id).value)]}, :style=>'font-size: 12px'
 		%>
 		 - Do this if you have modified the url. NOTE: any new input you have entered in the options will be erased.<br/>
 		<%= ajax_spinner 'sync' %>

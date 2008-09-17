@@ -301,7 +301,7 @@ class UserCommandsController < ApplicationController
       http_post = hpricot_form['method'].to_s.downcase == 'post'
       command_url, options, message = FormParser.create_command_url_and_options_from_scrape(action_url, options, {:is_admin=>admin?})
       render :update do |page|
-        page << "$('user_command_url').value = '#{command_url}'"
+        page << "$(url_input_id).value = '#{command_url}'"
         page.replace_html :user_command_options, :partial=>'options', :locals=>{:options=>options}
         page << %[Effect.BlindDown('url_options'); Element.show('url_optionsCollapse'); Element.hide('url_optionsExpand');]
         page << %[$('user_command_http_post').checked = true] if http_post
