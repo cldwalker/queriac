@@ -23,3 +23,13 @@ function addp(csurl) {
     alert("You need to use Internet Explorer (7.0 or later) or Firefox (2.0 or later) to install the OpenSearch plug-in.");
   }
 }
+
+function check_all_for_selector(selector) {
+	checkboxes = $$(selector);
+	checkboxes.each(function(checkbox) {checkbox.checked = 1;});
+}
+
+function uncheck_all_for_selector(selector) {
+	checkboxes = $$(selector);
+	checkboxes.each(function(checkbox) {checkbox.checked = 0;});
+}

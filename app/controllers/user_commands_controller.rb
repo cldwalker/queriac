@@ -160,7 +160,7 @@ class UserCommandsController < ApplicationController
 
   def update
     respond_to do |format|
-      if @user_command.update_all_attributes(params[:user_command].merge(:url_options=>get_url_options), current_user)
+      if @user_command.update_all_attributes(params[:user_command].merge(:url_options=>get_url_options), current_user, :command_fields=>params[:command_fields]|| [])
         @user_command.update_tags(params[:tags])
         flash[:notice] = "Command updated"
         format.html { redirect_back_or_default public_user_command_path(@user_command) }
@@ -334,7 +334,7 @@ class UserCommandsController < ApplicationController
   protected
   def get_url_options
     if (url_options = params[:user_command].delete(:url_options))
-      #only for update action
+      #only for update action- automagically merge new options from url
       if @user_command
         new_url_options = Option.sanitize_input(url_options.values)
         if @user_command.options_from_url(params[:user_command][:url]).sort != @user_command.options_from_url_options(new_url_options).sort

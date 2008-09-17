@@ -36,6 +36,8 @@ class UserCommand < ActiveRecord::Base
   COMMAND_FIELDS = %w{url http_post url_encode public url_options}
   #fields which are passed from creating user_command to command on create
   COMMAND_CREATE_FIELDS = %w{name description origin keyword}
+  #for admin- optional fields to sync between usercommand and command
+  COMMAND_UPDATE_FIELDS = %w{name description keyword url url_options http_post}
   COMMAND_ONLY_FIELDS = %w{public}
   
   def validate
@@ -101,13 +103,16 @@ class UserCommand < ActiveRecord::Base
     updated_url_options
   end
   
-  def update_all_attributes(hash, current_user)
+  def update_all_attributes(hash, current_user, options={})
     disabled_fields = get_disabled_update_fields(current_user)
     hash.except!(*disabled_fields)
     if update_attributes(hash.except(*COMMAND_ONLY_FIELDS))
-      if self.command_owned_by?(current_user)
+      if self.command_owned_by?(current_user) || (current_user.is_admin? && options[:command_fields])
         command_fields = COMMAND_FIELDS
-        command_fields += COMMAND_CREATE_FIELDS if current_user.is_admin?
+        if current_user.is_admin? && options[:command_fields]
+          base_fields = COMMAND_FIELDS - COMMAND_UPDATE_FIELDS
+          command_fields = base_fields + (COMMAND_UPDATE_FIELDS & options[:command_fields])
+        end
         self.command.update_attributes_safely(hash.slice(*command_fields))
       end
       return true
