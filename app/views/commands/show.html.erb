@@ -43,7 +43,7 @@
 		<%= render_favicon_for_command @command %>
 		About this Command
 	</h2>
-	<p>Created by <%= link_to @command.user.login, user_home_path(@command.user)%> on <%= @command.created_at.to_s(:medium)%>.</p>
+	<p>Created by <%= user_link @command.user %> on <%= @command.created_at.to_s(:medium)%>.</p>
 	
 	<p><b>Keyword:</b> <%=h @command.keyword %></p>
 	

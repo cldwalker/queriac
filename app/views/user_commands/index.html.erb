@@ -69,15 +69,13 @@
 	<tr <%= cycle('class="offset"', '') -%>>
     <td>
 			<p class="command_title">
-				<%= render_favicon_for_command uc %>
-				<%= link_to uc.name, public_user_command_path(uc), :title=>uc.url, :class => "iconed" %>
+				<%= user_command_link uc %>
 			</p>
 			<p class="tag_list">Tags: <%= uc.tags.map{|t| link_to(t.name, tagged_user_commands_path(uc.user,t.name)) }.join(" ") %></p>
 	</td>
 	<td>
 		<p class="command_title">
-			<% command = uc.command %>
-			<%= link_to command.name, command_path(command), :title=>command.url, :class => "iconed" %>
+			<%= basic_command_link uc.command %>
 		</p>
 	</td>
     <td class="centered <%= "faded" if uc.queries_count == 0 %>"><%= uc.queries_count %></td>	
@@ -87,7 +85,7 @@
 			<%# PERF: too expensive for now %>
 			<%# uc.queries_count > 0 ? time_ago_in_words_or_date(uc.queries.find(:first, :select=>'created_at').created_at) : link_to("(Unused)", command_path(command), :class => "faded") %>
 		<% else %>
-			<%= link_to uc.user.login, user_home_path(uc.user) %>
+			<%= user_link uc.user %>
 		<% end %>
 	</td>
 	<td>

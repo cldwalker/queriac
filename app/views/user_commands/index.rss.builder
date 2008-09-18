@@ -18,9 +18,8 @@ xml.rss(:version => '2.0', 'xmlns:media'.to_sym => 'http://search.yahoo.com/mrss
         xml.title(c.name)
         xml.description do 
           xml.cdata! <<-END
-          #{render_favicon_for_command c}
-  				#{link_to c.name, command_path(c), :title=>c.url, :class => "iconed"}<br/>
-  				Created by: #{link_to c.user.login, user_home_path(c.user)}
+          #{user_command_link(c)}<br/>
+  				Created by: #{user_link(c.user)}
           
           <p>
           <b>Description</b>

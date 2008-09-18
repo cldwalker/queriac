@@ -65,8 +65,7 @@
 	<tr <%= cycle('class="offset"', '') -%>>
     <td>
 			<p class="command_title">
-				<%= render_favicon_for_command command %>
-				<%= link_to command.name, command_path(command), :title=>command.url, :class => "iconed" %>
+				<%= command_link command %>
 			</p>
 		</td>
 	<td class="centered"><%= command.users.count %></td>
@@ -77,7 +76,7 @@
 		<%# command.queries_count_all > 0 ? time_ago_in_words_or_date(command.queries.find(:first).created_at) : link_to("(Unused)", command_path(command), :class => "faded") %>
 	</td> -->
 	<td class="centered">
-		<%= link_to command.user.login, user_home_path(command.user) %>
+		<%= user_link command.user %>
 	</td>
 	<td>
 		<%= time_ago_in_words_or_date(command.created_at) %>

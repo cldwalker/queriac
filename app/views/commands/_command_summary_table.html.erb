@@ -13,11 +13,10 @@
 <% for ucommand in commands %>
 	<tr <%= cycle('class="offset"', '') -%>>	
     <td>
-			<%= render_favicon_for_command ucommand %>
-			<%= link_to ucommand.name, public_user_command_path(ucommand) %>
+		<%= user_command_link ucommand %>
 	</td>
 	<td>
-		<%= link_to ucommand.command.name, command_path(ucommand.command) %>
+		<%= basic_command_link ucommand.command %>
 	</td>
     <td><%= ucommand.keyword %></td>
     <td><%= ucommand.queries_count %></td>	

@@ -30,11 +30,10 @@
 		<% for uc in @user_commands %>
 		<tr <%= cycle('class="offset"', '') -%>>
 			<td>
-				<%= render_favicon_for_command uc %>
-				<%= link_to truncate(uc.name, 30), public_user_command_path(uc), :title=>uc.name %>
+				<%= user_command_link uc, :name_length=>30 %>
 			</td>
 			<td>
-				<%= link_to truncate(uc.name, 25), command_path(uc.command), :title=>uc.name %>
+				<%= link_to truncate(uc.command.name, 25), command_path(uc.command), :title=>uc.command.name %>
 				<% if uc.command.created_at > 7.days.ago %>
 				<span style="color: #427f0b; font-weight: bold">NEW!</span>
 				<% end %>

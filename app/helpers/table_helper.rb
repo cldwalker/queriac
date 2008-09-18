@@ -3,9 +3,9 @@ module TableHelper
   def user_command_column_value(user_command, column)
     case column
     when :user
-        link_to user_command.user.login, user_home_path(user_command.user)
+        user_link(user_command.user)
     when :name
-      render_favicon_for_command(user_command) + " " + link_to(user_command.name, public_user_command_path(user_command))
+      user_command_link(user_command)
     when :queries_count
       user_command.queries_count
     else
@@ -27,8 +27,7 @@ module TableHelper
     when :query_string
       link_to_query query
     when :user_command
-      render_favicon_for_command(query.user_command) + " " + 
-        link_to(query.user_command.name, public_user_command_path(query.user_command))
+      user_command_link(query.user_command)
     when :created_at
 	    time_ago_in_words_or_date query.created_at
 	  end

@@ -17,7 +17,7 @@
 <h2>Import Results</h2><br/>
 NAME / KEYWORD / URL<br/>
 <% for command in @user_commands %>
-	<%= "#{link_to(command.name, public_user_command_path(command))} / #{command.keyword} / #{command.url}" %><br />
+	<%= "#{basic_user_command_link(command)} / #{command.keyword} / #{command.url}" %><br />
 <% end %>
 
 <% end %>

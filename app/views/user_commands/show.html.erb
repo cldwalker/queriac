@@ -1,6 +1,6 @@
 <%- set_header :title=>"#{@user_command.name} for #{@user_command.user.login}", :description=>"#{@user_command.user.login}'s user command -  #{@user_command.description}" -%>
 <h1 class="inline">
-	<%= link_to h(@user_command.name), public_user_command_path(@user_command) %>
+	<%= basic_user_command_link @user_command %>
 </h1>
 
 <% if logged_in? %>
@@ -31,9 +31,9 @@
 		<%= render_favicon_for_command @user_command %>
 		About this User Command
 	</h2>
-	<p>Created by <%= link_to @user_command.user.login, user_home_path(@user_command.user) %> on <%= @user_command.created_at.to_s(:medium) %>.
+	<p>Created by <%= user_link @user_command.user %> on <%= @user_command.created_at.to_s(:medium) %>.
 	</p>
-	<p><b>Command:</b> <%= link_to h(@user_command.command.name), command_path(@user_command.command) %></p>
+	<p><b>Command:</b> <%= basic_command_link @user_command.command %></p>
 	
 	<p><b>Url Status:</b>
 		<%= url_status(@user_command) %>

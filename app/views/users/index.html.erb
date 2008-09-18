@@ -14,7 +14,7 @@
 	
 	<% for user in @users %>
 		<tr <%= cycle('class="offset"', '') -%>>	
-			<td><b><%= link_to user.login, user_home_path(user) %></b></td>
+			<td><b><%= user_link(user) %></b></td>
 			<td class="centered"><%= user.user_commands_count.to_i.zero? ? "<span class=\"faded\">0</span>" : link_to(user.user_commands_count, specific_user_commands_path(user)) %></td>
 			<td class="centered"><%= user[:queries_count].zero? ? "<span class=\"faded\">0</span>" : link_to(user[:queries_count], user_queries_path(user)) %></td>
 			<td><%= time_ago_in_words_or_date user.created_at %></td>

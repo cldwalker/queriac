@@ -1,9 +1,5 @@
 module ApplicationHelper
-  include PathHelper, HeaderHelper, SharedHelper, TableHelper, TagHelper, AllCommandsHelper
-  
-  def nofollow_link_to(name, options = {}, html_options = nil, *parameters_for_method_reference)
-    link_to(name, options, (html_options || {}).merge(:rel=>'nofollow'), *parameters_for_method_reference)
-  end
+  include PathHelper, HeaderHelper, LinkHelper, SharedHelper, TableHelper, TagHelper, AllCommandsHelper
   
   def flash_div 
     flash.keys.collect { |key| content_tag( :div, flash[key], :class => "flash-msg #{key}" ) if flash[key] }.join
@@ -40,17 +36,7 @@ module ApplicationHelper
   def hide(field_id)
     javascript_tag("Element.hide('#{field_id}');")
   end
-  
-  def link_to_query(query)
-    label = query.query_string.empty? ? "(Command run with no parameters)" : h(query.query_string.ellipsize)
-    klass = query.query_string.empty? ? "faded" : ""
-    nofollow_link_to(label, h(query.user_command.url_for(query.query_string)), :class => klass, :title=>"Date: #{query.created_at.to_s(:long)}")
-  end
-  
-  def query_user(query)
-    query.user ? link_to(query.user.login, user_home_path(query.user)) : '--' # + query.user_command.user.login
-  end
-  
+    
   # Use words if within the last week
   # otherwise use date (show year if not this year)
   def time_ago_in_words_or_date(date)

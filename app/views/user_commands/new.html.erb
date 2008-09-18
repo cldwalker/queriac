@@ -1,9 +1,9 @@
 <h1>
 	<%= if @source_object
 			if @source_object.is_a?(Command)
-				"#{@source_verb.titleize} Command: #{link_to(@source_object.name, command_path(@source_object))}"
+				"#{@source_verb.titleize} Command: #{basic_command_link(@source_object)}"
 			else
-				"#{@source_verb.titleize} User Command: #{link_to(@source_object.name, public_user_command_path(@source_object))}"
+				"#{@source_verb.titleize} User Command: #{basic_user_command_link(@source_object)}"
 			end
 		else
 			'New User Command'

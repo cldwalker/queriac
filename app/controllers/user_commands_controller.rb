@@ -102,7 +102,7 @@ class UserCommandsController < ApplicationController
       @command_id = source_command.id
       if (existing_user_command = source_command.user_commands.detect {|e| e.user_id == current_user.id}) #source_command.owned_by?(current_user)
         flash[:notice] = "No need to #{@source_verb} this command. You already have " + 
-          render_to_string(:inline=>%[<%= link_to(h(existing_user_command.name), public_user_command_path(existing_user_command)) %>], :locals=>{:existing_user_command=>existing_user_command})
+          render_to_string(:inline=>%[<%= basic_user_command_link(existing_user_command) %>], :locals=>{:existing_user_command=>existing_user_command})
         redirect_back_or_default public_user_command_path(existing_user_command)
         return
       end
@@ -148,7 +148,7 @@ class UserCommandsController < ApplicationController
           if @user_command.errors[:command_id] && 
             (existing_user_command = current_user.user_commands.find(:first, :conditions=>{:command_id=>@user_command.command_id}))
             flash.now[:warning] = render_to_string :inline=>"The url entered indicates that you already have this command: 
-              <%= link_to existing_user_command.name, public_user_command_path(existing_user_command) %>", :locals=>{:existing_user_command=>existing_user_command}
+              <%= link_to basic_user_command_link(existing_user_command) %>", :locals=>{:existing_user_command=>existing_user_command}
           end
           set_disabled_fields #for subscribe
           format.html { render :action => "new" }
