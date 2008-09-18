@@ -1,15 +1,15 @@
 module SharedHelper
   #Permission methods
-  def command_owner?
-    logged_in? && @command.created_by?(current_user)
+  def command_owner?(command=@command)
+    logged_in? && command.created_by?(current_user)
   end
   
   def admin?
     (logged_in? && current_user.is_admin?)
   end
   
-  def command_owner_or_admin?
-    command_owner? || admin?
+  def command_owner_or_admin?(command=@command)
+    command_owner?(command) || admin?
   end
 
   #used where load_valid_user() and/or @user defined

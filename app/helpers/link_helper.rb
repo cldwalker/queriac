@@ -11,7 +11,7 @@ module LinkHelper
   
   #to be used in table listings
   def command_link(command, options={})
-    render_favicon_for_command(command) + " " + basic_command_link(command, options.merge(:class=>'iconed')) # + "- #{any_command_stats(command)}"
+    render_favicon_for_command(command) + " " + basic_command_link(command, options.merge(:class=>'iconed')) #+ "- #{any_command_stats(command)}"
   end
   
   def any_command_stats(command)
