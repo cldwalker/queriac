@@ -353,6 +353,10 @@ ul.options li.search {
 	background: url(../images/icons/search.png) no-repeat left center;
 }
 
+ul.options li.refresh {
+	background: url(../images/icons/arrow_refresh.png) no-repeat left center;
+}
+
 ul.options li.command {
 	background: url(../images/icons/cog.png) no-repeat left center;
 }

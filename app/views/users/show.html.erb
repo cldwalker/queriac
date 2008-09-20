@@ -52,8 +52,23 @@
 			<% end %>
 			<li class="command"><%= link_to "View all #{whose} commands", specific_user_commands_path(@user) %></li>
 			<li class="search"><%= link_to "View all #{whose} queries", user_queries_path(@user) %></li>
+			<% if current_user? %>
+				<li class="refresh">
+					<%= link_to_function "View Commands to Update (#{@commands_to_update.size})", "$('commands_to_update_table').toggle()" %>
+				</li>
+			<% end %>
 		</ul>
-	
+		
+		<% if current_user? %>
+		<div id="commands_to_update_table" style="display:none">
+			<p style="font-size: 10px"><%= image_tag "icons/information.png"%> Updating your commands is optional. 
+				However, the command owner or admin has probably modified the command for a good reason. You should look at the 
+				new version of a command before updating.
+			</p>
+			<%= user_command_table @commands_to_update, :columns=>[:name, :url_status], :headers=>[['User Command', {:width=>25}],['Url Status', {:width=>50}]]%>
+		</div>
+		<% end %>
+		
 	<h1>Tags</h1>
 	<%= tag_cloud_or_list @tags %>
 	

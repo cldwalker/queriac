@@ -8,6 +8,14 @@ module TableHelper
       user_command_link(user_command)
     when :queries_count
       user_command.queries_count
+    when :url_status
+      url_status(user_command, :status_length=>25)
+    when :command
+      basic_command_link user_command.command
+    when :keyword
+      user_command.keyword
+    when :command_actions
+      command_actions(user_command)
     else
       ''
     end
@@ -16,7 +24,7 @@ module TableHelper
   def user_command_table(user_commands, options={})
     options = {:columns=>[:user, :name, :queries_count]}.merge(options)
     default_headers = {:user=>'User', :name=>'User Command', :queries_count=>'Queries'}
-    options[:headers] = options[:columns].map {|c| default_headers[c] || c.humanize }
+    options[:headers] ||= options[:columns].map {|c| default_headers[c] || c.to_s.humanize }
     active_record_table(user_commands, options)
   end
   
@@ -36,7 +44,7 @@ module TableHelper
   def query_table(queries, options={})
     options.reverse_merge! :columns=>[:query_string, :created_at]
     default_headers = {:query_string=>'Query', :created_at=>'Date', :user=>'User', :user_command=>'User Command'}
-    options[:headers] = options[:columns].map {|c| default_headers[c] || c.to_s.humanize }
+    options[:headers] ||= options[:columns].map {|c| default_headers[c] || c.to_s.humanize }
     active_record_table(queries, options)
   end
   

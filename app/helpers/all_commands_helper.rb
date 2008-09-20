@@ -1,4 +1,4 @@
-#for methods used both by commands and user commands
+#global methods used both by commands and/or user commands
 module AllCommandsHelper
   def whose_commands(command)
     command.user == current_user ? "Your" : "#{@user.login}'s public"
@@ -42,4 +42,46 @@ module AllCommandsHelper
 		  metadata.map {|e| content_tag(:li, e, :style=>'margin: 0px 0px 2px 0px')}.join("\n")
 		end
   end  
+  
+  def url_status(user_command, html_options={})
+    html_options.reverse_merge(:status_length=>100)
+    content_tag(:span, {:id=>'url_status'}.update(html_options)) do
+		  if user_command.command_url_changed?
+		    if user_command_owner?(user_command)
+  		    %[Not up to date.<br/>
+  		      The command's url has changed to: #{truncate_with_more(h(user_command.command.url), html_options[:status_length], :tag_type=>'span')}<br/>] +
+  		      link_to_remote('Click to update url and options', :url=>update_url_user_command_path(user_command),
+  		      :before=>"$('url_status_spinner').show()", :complete=>"$('url_status_spinner').hide()")  + ajax_spinner('url_status')
+		    else
+		      "Not up to date"
+		    end
+		  else
+			  "Up to date"
+		  end
+		end
+  end
+  
+  def command_actions(ucommand, options={})
+    options.reverse_merge!(:class=>'options')
+    content_tag(:ul, :class=>options[:class]) do
+		  if ucommand.owned_by?(current_user)
+		    if options[:with_words]
+          content_tag(:li, link_to("Edit", edit_user_command_path(ucommand)), :class=>'edit') + 
+          content_tag(:li, link_to("Delete", user_command_path(ucommand), 
+          :confirm => "Are you sure you want to delete this command?", :method=>:delete), :class=>'delete')
+        else
+          content_tag(:li, link_to(image_tag("icons/edit.png"), edit_user_command_path(ucommand)), :class=>'no_icon') + 
+          content_tag(:li, link_to(image_tag("icons/delete.png"), user_command_path(ucommand), 
+          :confirm => "Are you sure you want to delete this command?", :method=>:delete), :class=>'no_icon')
+        end
+		  elsif logged_in?
+		    body = ''
+		    if options[:with_copy]
+		      body += content_tag(:li, link_to('Copy', copy_user_command_path(ucommand)), :class=>'add')
+		    end
+  			body += content_tag(:li, link_to('Subscribe', subscribe_user_command_path(ucommand)), :class=>'add')
+  			body
+	    end
+	  end
+  end
 end

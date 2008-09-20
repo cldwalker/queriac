@@ -35,6 +35,7 @@ class UsersController < ApplicationController
     
     @tags = @user.tags
     @users = User.find_top_users
+    @commands_to_update = @user.user_commands.out_of_date if current_user?
   end
   
   def opensearch

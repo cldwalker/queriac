@@ -30,6 +30,7 @@ class UserCommand < ActiveRecord::Base
   named_scope :shortcuts, :conditions => ["commands.kind ='shortcut' AND commands.bookmarklet=0"], :include=>:command
   named_scope :non_bootstrap, :conditions=>["commands.id NOT IN (1,2,3,4,5,6,7,8,645)"], :include=>:command
   named_scope :search, lambda {|v| {:conditions=>["user_commands.keyword REGEXP ? OR user_commands.url REGEXP ?", v, v]} }
+  named_scope :out_of_date, :conditions=>["commands.url != user_commands.url"], :include=>:command
   named_scope :any
 
   #fields which are passed from creating user_command to command on create + updates

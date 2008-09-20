@@ -21,8 +21,8 @@ module SharedHelper
     user_command_owner? || @user_command.public_queries?
   end
   
-  def user_command_owner?
-    @user_command.owned_by?(current_user)
+  def user_command_owner?(user_command=@user_command)
+    user_command.owned_by?(current_user)
   end
   
   def user_command_owner_or_admin?
