@@ -6,16 +6,24 @@ module TableHelper
         user_link(user_command.user)
     when :name
       user_command_link(user_command)
+    when :name_bolded
+      content_tag(:p, user_command_link(user_command), :class=>'command_title') + 
+      content_tag(:p, %[Tags #{user_command.tags.map{|t| link_to(t.name, tagged_user_commands_path(user_command.user,t.name)) }.join(" ")}], :class=>'tag_list')
     when :queries_count
-      user_command.queries_count
+      klass = user_command.queries_count == 0 ? "centered faded" : "centered"
+      [user_command.queries_count, {:class=>klass}]
     when :url_status
       url_status(user_command, :status_length=>25)
+    when :command_bolded
+      content_tag(:p, basic_command_link(user_command.command), :class=>'command_title')
     when :command
       basic_command_link user_command.command
     when :keyword
-      user_command.keyword
+      [user_command.keyword, {:class=>'centered'}]
+    when :created_at
+      time_ago_in_words_or_date(user_command.created_at)
     when :command_actions
-      command_actions(user_command)
+      user_command_actions(user_command)
     else
       ''
     end
@@ -59,7 +67,8 @@ module TableHelper
       body = ar_collection.map do |uc|
         content_tag(:tr, :class=>cycle('offset', '')) do
           options[:columns].map do |c|
-            content_tag(:td, send("#{ar_collection[0].class.to_s.underscore}_column_value", uc, c))
+            td_content = send("#{ar_collection[0].class.to_s.underscore}_column_value", uc, c).to_a
+            content_tag(:td, *td_content)
           end.join("\n")
         end
       end.join("\n")

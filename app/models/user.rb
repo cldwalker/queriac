@@ -92,7 +92,11 @@ class User < ActiveRecord::Base
     end
     hash
   end
-
+  
+  def subscribe_to(command)
+    self.user_commands.create(:command_id=>command.id, :url_options=>command.url_options)
+  end
+  
   def set_default_url_options
     default_url_options[:host] = ::HOST
   end

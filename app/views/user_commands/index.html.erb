@@ -41,61 +41,15 @@
 
 
 <hr />
-
-<table class="top_spaced">
-  <tr>
-    <th>User Command<br/>
-		<%= sort_link_up 'name'%>
-		<%= sort_link_down 'name'%>
-	</th>
-	<th width="150">Command</th>
-    <th width="30" class="centered">Queries<br/>
-		<%= sort_link_up 'queries_count' %>
-		<%= sort_link_down 'queries_count' %>
-	</th>
-    <th width="70">Keyword<br/>
-		<%= sort_link_up 'keyword'%>
-		<%= sort_link_down 'keyword'%>
-	</th>
-    <th><%= "User" %></th>
-	<th>Created<br/>
-		<%= sort_link_up 'created_at'%>
-		<%= sort_link_down 'created_at'%>
-	</th>
-	<th>Options</th>
-  </tr>
- 
-<% for uc in @user_commands %>
-	<tr <%= cycle('class="offset"', '') -%>>
-    <td>
-			<p class="command_title">
-				<%= user_command_link uc %>
-			</p>
-			<p class="tag_list">Tags: <%= uc.tags.map{|t| link_to(t.name, tagged_user_commands_path(uc.user,t.name)) }.join(" ") %></p>
-	</td>
-	<td>
-		<p class="command_title">
-			<%= basic_command_link uc.command %>
-		</p>
-	</td>
-    <td class="centered <%= "faded" if uc.queries_count == 0 %>"><%= uc.queries_count %></td>	
-    <td class="centered"><%= uc.keyword %></td>
-    <td>
-		<% if false #@user %>
-			<%# PERF: too expensive for now %>
-			<%# uc.queries_count > 0 ? time_ago_in_words_or_date(uc.queries.find(:first, :select=>'created_at').created_at) : link_to("(Unused)", command_path(command), :class => "faded") %>
-		<% else %>
-			<%= user_link uc.user %>
-		<% end %>
-	</td>
-	<td>
-		<%= time_ago_in_words_or_date(uc.created_at) %>
-	</td>		
-	<td>
-		<%= command_actions(uc)%>
-	</td>
-  </tr>
-<% end %>
-</table>
-
+<%- headers = ["User Command<br/>#{sort_link_up('name') + sort_link_down('name')}", ['Command', {:width=>150}], 
+	["Queries<br/>#{sort_link_up('queries_count') + sort_link_down('queries_count')}", {:width=>30, :class=>'centered'}], 
+	["Keyword<br/>#{sort_link_up('keyword') + sort_link_down('keyword')}", {:width=>70}], 'User',
+	 "Created<br/>#{sort_link_up('created_at') + sort_link_down('created_at')}"]
+  columns = [:name_bolded, :command_bolded, :queries_count, :keyword, :user, :created_at]
+  if logged_in?
+	headers << 'Options'
+	columns << :command_actions
+  end
+-%>
+<%= user_command_table @user_commands, :table=>{:class=>'top_spaced'},:headers=>headers, :columns=>columns %>
 <%= will_paginate @user_commands %>

@@ -4,7 +4,7 @@
 </h1>
 
 <% if logged_in? %>
-	<%= command_actions @user_command, :with_copy=>true, :class=>'options header', :with_words=>true%>
+	<%= user_command_actions @user_command, :with_copy=>true, :class=>'options header', :action=>'show' %>
 <% end %>
 
 <hr />

@@ -61,18 +61,23 @@ module AllCommandsHelper
 		end
   end
   
-  def command_actions(ucommand, options={})
+  def user_command_actions(ucommand, options={})
     options.reverse_merge!(:class=>'options')
     content_tag(:ul, :class=>options[:class]) do
+      body = ''
 		  if ucommand.owned_by?(current_user)
-		    if options[:with_words]
-          content_tag(:li, link_to("Edit", edit_user_command_path(ucommand)), :class=>'edit') + 
-          content_tag(:li, link_to("Delete", user_command_path(ucommand), 
-          :confirm => "Are you sure you want to delete this command?", :method=>:delete), :class=>'delete')
+		    if options[:action]
+		      if options[:action] == 'edit'
+            body += content_tag(:li, link_to("Show", public_user_command_path(ucommand)), :class=>'search')
+          elsif options[:action] == 'show'
+            body += content_tag(:li, link_to("Edit", edit_user_command_path(ucommand)), :class=>'edit')
+          end
+          body += content_tag(:li, link_to("Delete", user_command_path(ucommand), 
+            :confirm => "Are you sure you want to delete this command?", :method=>:delete), :class=>'delete')
         else
-          content_tag(:li, link_to(image_tag("icons/edit.png"), edit_user_command_path(ucommand)), :class=>'no_icon') + 
-          content_tag(:li, link_to(image_tag("icons/delete.png"), user_command_path(ucommand), 
-          :confirm => "Are you sure you want to delete this command?", :method=>:delete), :class=>'no_icon')
+          body += content_tag(:li, link_to(image_tag("icons/edit.png"), edit_user_command_path(ucommand)), :class=>'no_icon')
+          body += content_tag(:li, link_to(image_tag("icons/delete.png"), user_command_path(ucommand), 
+            :confirm => "Are you sure you want to delete this command?", :method=>:delete), :class=>'no_icon')
         end
 		  elsif logged_in?
 		    body = ''
@@ -80,8 +85,8 @@ module AllCommandsHelper
 		      body += content_tag(:li, link_to('Copy', copy_user_command_path(ucommand)), :class=>'add')
 		    end
   			body += content_tag(:li, link_to('Subscribe', subscribe_user_command_path(ucommand)), :class=>'add')
-  			body
 	    end
+	    body
 	  end
   end
 end

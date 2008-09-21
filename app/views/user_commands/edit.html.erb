@@ -1,18 +1,7 @@
 <h1 class="inline">Edit User Command</h1>
 
-<ul class="options header">
-	<li class="search"><%= link_to 'Show this User Command', public_user_command_path(@user_command) %></li>
-	<% unless @user_command.owned_by?(current_user) %>
-	<li class="add"><%= link_to 'Subscribe', subscribe_user_command_path(@user_command) %></li>
-	<% end %>
-	<li class="delete"><%= link_to 'Delete', user_command_path(@user_command), :confirm => "Are you sure you want to delete this command?",
-	:method=>:delete %>
-	</li>
-</ul>
-
-
+<%= user_command_actions @user_command, :class=>"options header", :action=>'edit'%>
 <hr />
-
 
 <%= error_messages_for :user_command %>
 
