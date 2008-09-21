@@ -17,6 +17,7 @@
 <p class="caption">&rarr; Type <code>edit g</code> to edit a command. (again, g as in Google Quicksearch in this example)</p>
 
 <% if logged_in? %>
+	<div id="bookmarklets">
 	<h2>Using Bookmarklets</h2>
 	<p>If you want to use bookmarklets through Queriac, you'll need to add the following bookmarklet to your local
 		bookmarks in your browser. Because of Javascript's client-side nature (see <%= link_to "Same Origin Policy", "http://www.mozilla.org/projects/security/components/same-origin.html" %>), this bookmarklet is needed to download 
@@ -31,6 +32,7 @@
 	<p class="bordered">
 		Right-click to install: <a href="javascript:_s=document.createElement('script');_s.type='text/javascript';_s.src='http://queri.ac/<%= current_user.login %>/%s?js=1';document.getElementsByTagName('head')[0].appendChild(_s);void(0);">Queriac Bookmarklet Enabler</a>
 	</p>
+	</div>
 <% end %>
 
 <h2>Using Options</h2>

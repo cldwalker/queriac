@@ -1,5 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
   map.connect  'commands/new', :controller=>'commands', :action=>'show', :id=>'new'
+  map.command_type_commands 'commands/:type', :controller=>'commands', :action=>'index', :type=>/#{Command::TYPES.join("|")}/
   map.resources :commands, :member => { :execute => :get } , :collection=>{:search_all=>:get}
   map.resources :sessions
   map.resources :user_commands, :member=>{:subscribe=>:get, :copy=>:get, :update_url=>:post, :destroy=>:get}, 
@@ -7,6 +8,7 @@ ActionController::Routing::Routes.draw do |map|
       :change_option_type_fields=>:post, :update_default_picker=>:post, :sync_url_options=>:post, :fetch_form=>:any,
       :fetch_and_sync_url_options=>:post
   }
+  
   map.with_options(:controller=>'user_commands') do |c|
     c.command_user_commands  'commands/:id/user_commands', :action=>'command_user_commands'
     c.formatted_command_user_commands  'commands/:id/user_commands.:format', :action=>'command_user_commands', :format=>'rss'

@@ -11,7 +11,10 @@ class Command < ActiveRecord::Base
   named_scope :unique, :select=>'*, count(url)', :group=>"url HAVING count(url)>=1"
   named_scope :search, lambda {|v| {:conditions=>["commands.keyword REGEXP ? OR commands.url REGEXP ?", v, v]} }
   named_scope :advanced_search, lambda {|v| parse_advanced_search(v) }
-  named_scope :with_options, :conditions=>"url_options IS NOT NULL"
+  named_scope :options, :conditions=>"commands.url_options IS NOT NULL"
+  named_scope :bookmarklets, :conditions => ["commands.bookmarklet=1"]
+  named_scope :shortcuts, :conditions => ["commands.kind ='shortcut' AND commands.bookmarklet=0"]
+  named_scope :quicksearches, :conditions => ["commands.kind ='parametric' AND commands.bookmarklet=0"]
   
   validates_presence_of :name, :url
   validates_uniqueness_of :name
@@ -19,6 +22,8 @@ class Command < ActiveRecord::Base
   validates_uniqueness_of :keyword, :allow_nil=>true
   validates_format_of :keyword, :with => /^\w+$/i, :message => "can only contain letters and numbers.", :unless=>Proc.new {|c| c.keyword.nil?}  
   serialize :url_options, Array
+  
+  TYPES = [:bookmarklets, :shortcuts, :options, :quicksearches]
   
   # Validation / Initialization
   #------------------------------------------------------------------------------------------------------------------

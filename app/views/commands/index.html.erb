@@ -1,4 +1,7 @@
-<%- title = "Commands"; title += " " + sort_description.titleize if params[:sort]; set_header :title=>title -%>
+<%- title = "Commands"
+title = @command_type.singularize.titleize + " #{title}" if @command_type
+title += " " + sort_description.titleize if params[:sort]
+set_header :title=>title -%>
 <% if logged_in? %>
 	<div style="float: right">
 	<% form_tag search_all_commands_path, :method=>:get  do %>
@@ -9,29 +12,32 @@
 	</div>
 <% end %>
 
-<h1 class="inline">
+<h1 class="inline" style="width: 50%">
 	<% if current_page_matches?(search_all_commands_path) %>
 		Search Results for '<%= params[:q] %>'
 	<% else %>
-		<%# @commands.empty? ? 'No' : (@user ? whose_commands(@commands.first) : "All") %>
-		<%= @commands.empty? ? 'No' : 'All' %>
-		commands
+		<%= command_type_image(@command_type) if @command_type %>
+		All
+		<%= @command_type.singularize.titleize if @command_type %>
+		Commands
 		<%= sort_description if params[:sort ]%>
 	<% end %>
 	<span class="pagination_description">(<%= pagination_description @commands %>)</span>
 </h1>
-
-<% if false %>
-<ul class="bolder options header">
-	<% if logged_in? && @user != current_user %>
-		<li class="search"><%= link_to 'Yours', specific_user_commands_path(current_user) %></li>
-	<% end %>
-	<% if @user %>
-		<li class="search"><%= link_to 'All', commands_path %></li>
+<ul class="options header" style="width: 45%; font-size: 12px">
+	<span style="color:#427f0b; font-weight: bold">Filter By:</span>
+	<% if current_page_matches?(search_all_commands_path)%>
+		<%= content_tag(:li, link_to("None", search_all_commands_path(params.slice(:q)), :style=>'padding:0px'))%> |
+		<%= Command::TYPES.map {|e| 
+			content_tag(:li, link_to(e.to_s.titleize, search_all_commands_path(params.slice(:q).merge(:type=>e)), :style=>"padding: 0px", :title=>command_type_title(e)))
+			}.join(" | ")%>
+	<% else %>
+		<%= content_tag(:li, link_to("None", commands_path, :style=>'padding:0px'))%> |
+		<%= Command::TYPES.map {|e| 
+			content_tag(:li, link_to(e.to_s.titleize, command_type_commands_path(e), :style=>"padding: 0px", :title=>command_type_title(e)))
+			}.join(" | ")%>
 	<% end %>
 </ul>
-<% end %>
-
 
 <hr />
 

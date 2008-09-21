@@ -89,4 +89,22 @@ module AllCommandsHelper
 	    body
 	  end
   end
+  
+  def command_type_title(command_type)
+    title_hash = {  
+      :options=>"Commands that have command options and/or multiple arguments. Think of these as more complex quicksearches",
+      :bookmarklets=>"Commands that use javascript. Your Queriac Bookmarklet Enabler must come before these commands. See http://queri.ac/tutorial#bookmarklets",
+      :shortcuts=>"Commands that are shortcuts to a webpage.",
+      :quicksearches=>"Commands that take one argument. They are used mainly for searching websites."
+    }
+    title_hash[command_type.to_sym]
+  end
+  
+  def command_type_image(command_type)
+    image_hash = {:options=>"star.png", :bookmarklets=>"bookmarklet.png", :shortcuts=>"shortcut.png", :quicksearches=>"search.png"}
+    command_type = command_type.to_sym
+    if image_hash[command_type]
+      image_tag("icons/#{image_hash[command_type]}", :title=>command_type_title(command_type))
+    end
+  end
 end

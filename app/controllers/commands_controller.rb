@@ -2,7 +2,6 @@ class CommandsController < ApplicationController
 
   before_filter :login_required, :except => [:index, :execute, :show]
   before_filter :load_valid_user, :only=>[:execute]
-  # before_filter :load_valid_user_if_specified, :only=>:index
   # before_filter :load_tags_if_specified, :only=>:index
   before_filter :admin_required, :only=>[:edit, :update]
   before_filter :set_command, :only=>[:show, :edit, :update]
@@ -12,24 +11,12 @@ class CommandsController < ApplicationController
   
   # Possiblities..
   # /commands                   => public commands
-  def index
-    pagination_params = index_pagination_params.dup
-    
-    #TODO: enable tag + user listings of commands    
-    # publicity = current_user? ? "any" : "public"
-    # if @tags
-    #   if @user
-    #     @commands = @user.commands.send(publicity).find_tagged_with(@tags.join(", "), :match_all => true, :order => "commands.queries_count_all DESC").paginate(pagination_params)
-    #   else
-    #     @commands = Command.send("public").find_tagged_with(@tags.join(", "), :match_all => true, :order => "user_commands.queries_count DESC").paginate(pagination_params)
-    #   end
-    # else
-    # end
-    # if @user
-    #   @commands = @user.commands.send(publicity).paginate(pagination_params)
-    # end
-    
-    @commands = Command.send("public").paginate(pagination_params.merge(:order=>sort_param_value))
+  #TODO: enable tag listings of commands    
+  # @commands = Command.send("public").find_tagged_with(@tags.join(", "), :match_all => true, :order => "commands.queries_count_all DESC").paginate(pagination_params)      
+  def index    
+    command_chain = Command.send("public")
+    command_chain = filter_command_chain_by_type(command_chain)
+    @commands = command_chain.paginate(index_pagination_params.dup.merge(:order=>sort_param_value))
     
     if @commands.empty?
       flash[:warning] = "Sorry, no commands matched your request."
@@ -50,9 +37,13 @@ class CommandsController < ApplicationController
       @commands = [].paginate
     else
       if admin?
-        @commands = Command.any.advanced_search(params[:q]).paginate(index_pagination_params.merge(:order=>sort_param_value('commands.queries_count_all DESC')))
+        command_chain = Command.any
+        command_chain = filter_command_chain_by_type(command_chain)
+        @commands = command_chain.advanced_search(params[:q]).paginate(index_pagination_params.merge(:order=>sort_param_value('commands.queries_count_all DESC')))
       else
-        @commands = Command.public.search(params[:q]).paginate(index_pagination_params.merge(:order=>sort_param_value('commands.queries_count_all DESC')))
+        command_chain = Command.public
+        command_chain = filter_command_chain_by_type(command_chain)
+        @commands = command_chain.search(params[:q]).paginate(index_pagination_params.merge(:order=>sort_param_value('commands.queries_count_all DESC')))
       end
     end
     render :action => 'index'
@@ -162,6 +153,13 @@ class CommandsController < ApplicationController
 
   def valid_sort_columns; %w{name queries_count_all created_at keyword}; end
   protected
+  def filter_command_chain_by_type(command_chain)
+    if Command::TYPES.map(&:to_s).include?(params[:type])
+      @command_type = params[:type]
+      command_chain = command_chain.send(params[:type]) 
+    end
+    command_chain
+  end
   
   def sort_param_value(default_sort = 'commands.created_at DESC')
     general_sort_param_value('commands', valid_sort_columns, default_sort)
