@@ -1,9 +1,12 @@
 <div id="primary">
+	<h1><%= link_to "Latest Quicksearch Commands", command_type_commands_path('quicksearches') %></h1>
+	<%= command_table @latest_quicksearches, :columns=>[:name, :user, :created_at] %>
 	
-	<h1>Latest Public Queries <span style="font-size: 14px">(by logged-in users) </span></h1>
+	<h1><%= link_to "Latest User Commands", user_commands_path %></h1>
+	<%= user_command_table @latest_user_commands, :columns=>[:name, :user, :created_at]%>
 	
-	<%= query_table @queries, :columns=>[:user, :user_command, :query_string]%>
-	<%= table_link_to "View all queries", queries_path %>
+	<h1><%= link_to "Latest Bookmarklet Commands", command_type_commands_path('bookmarklets') %></h1>
+	<%= command_table @latest_bookmarklets, :columns=>[:name, :user, :created_at] %>
 </div>
 
 <div id="secondary">
@@ -27,6 +30,7 @@
 	%>
 	
 	<h1 style="margin-top: 0px">New Features</h1>
+	
 	<ul class="normal" style="list-style-type: square">
 		<li>You can now filter our commands and command searches by command type ie 
 		<%= link_to "our bookmarklet commands", command_type_commands_path('bookmarklets')%>.
@@ -52,31 +56,12 @@
 		</span>
 		<%= link_to_function "See More/Less Features ...", "$('more_features').toggle()", :class=>'function_link' %>
 	</ul>
-	<h1>Latest User Commands</h1>
-	<table>
-		<tr>
-			<th width="150">User Command</th>
-			<th width="120">Command</th>
-			<th width="80">User</th>
-		</tr>
-		<% for uc in @user_commands %>
-		<tr <%= cycle('class="offset"', '') -%>>
-			<td>
-				<%= user_command_link uc, :name_length=>30 %>
-			</td>
-			<td>
-				<%= link_to truncate(uc.command.name, 25), command_path(uc.command), :title=>uc.command.name %>
-				<% if uc.command.created_at > 7.days.ago %>
-				<span style="color: #427f0b; font-weight: bold">NEW!</span>
-				<% end %>
-			</td>
-			<td class="centered"><%= link_to truncate(uc.user.login, 10), user_home_path(uc.user) %></td>
-		</tr>
-		<% end %>
-	</table>
-	<p><%= link_to "View more commands", commands_path %> <%= link_to "View more user commands", user_commands_path %></p>
-	<%= link_to "What's the difference between a command and a user command?", static_page_path('help') + "#command_difference", :class=>'faded' %>
-
+	
+	<h1>Latest Public Queries</h1>
+	
+	<%= query_table @queries, :columns=>[:command_icon, :user, :query_string], :headers=>["&nbsp;", "User", "Query"]%>
+	<%= table_link_to "View all queries", queries_path %>
+	
 	<h1>Updates &amp; Support</h1>
 
 	<h2>Google Group</h2>

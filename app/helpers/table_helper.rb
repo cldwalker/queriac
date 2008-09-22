@@ -36,10 +36,41 @@ module TableHelper
     active_record_table(user_commands, options)
   end
   
+  def command_column_value(command, column)
+    case column
+    when :name
+      command_link(command)
+    when :name_bolded
+      content_tag(:p, command_link(command), :class=>'command_title')
+    when :user
+      user_link(command.user)
+    when :users_count
+      [command.users.count, {:class=>'centered'}]
+    when :queries_count
+      klass = command.queries_count_all == 0 ? "centered faded" : "centered"
+      [command.queries_count_all, {:class=>klass}]
+    when :keyword
+      [command.keyword, {:class=>'centered'}]
+    when :created_at
+      time_ago_in_words_or_date(command.created_at)
+    when :command_actions
+      command_actions(command)
+    end
+  end
+  
+  def command_table(commands, options={})
+    options = {:columns=>[:name, :user, :created_at]}.merge(options)
+    default_headers = {:user=>'Creator', :name=>'Command', :queries_count=>'Queries'}
+    options[:headers] ||= options[:columns].map {|c| default_headers[c] || c.to_s.humanize }
+    active_record_table(commands, options)
+  end
+  
   def query_column_value(query, column)
     case column
     when :user
       query_user(query)
+    when :command_icon
+      link_to(render_favicon_for_command(query.user_command), public_user_command_path(query.user_command))
     when :query_string
       link_to_query query
     when :user_command
@@ -56,6 +87,11 @@ module TableHelper
     active_record_table(queries, options)
   end
   
+  #build tables with the following options:
+  # :headers - override default, takes array of header values (which can be a string or array)
+     #if header value is array, the second array element is a hash to specifies attributes for td tag
+  # :columns - specify symbol keys used by *_column_value() methods to map to columns
+  # :table - constructs attributes for table tag
   def active_record_table(ar_collection, options={})
     options[:table] ||= {}
     options[:headers] ||= options[:columns].map {|c| c.to_s.humanize }

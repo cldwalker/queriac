@@ -90,6 +90,19 @@ module AllCommandsHelper
 	  end
   end
   
+  def command_actions(command)
+		content_tag(:ul, :class=>'options') do
+		  body = ''
+		  if current_user.is_admin?
+		    body += content_tag(:li, link_to(image_tag("icons/edit.png"), edit_command_path(command)), :class=>'no_icon')
+		  end
+		  unless command.created_by?(current_user)
+		    body += content_tag(:li, link_to('Subscribe', subscribe_user_command_path(:id=> command.id, :is_command=>true)), :class=>'add' )
+		  end
+		  body
+		end
+  end
+  
   def command_type_title(command_type)
     title_hash = {  
       :options=>"Commands that have command options and/or multiple arguments. Think of these as more complex quicksearches",

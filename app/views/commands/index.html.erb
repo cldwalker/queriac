@@ -41,66 +41,17 @@ set_header :title=>title -%>
 
 <hr />
 
-<table class="top_spaced">
-  <tr>
-    <th>Name<br/>
-		<%= sort_link_up 'name'%>
-		<%= sort_link_down 'name'%>
-	</th>
-   	<th width="30">Users</th>
- <th width="30" class="centered">Queries<br/>
-	<%= sort_link_up 'queries_count_all' %>
-	<%= sort_link_down 'queries_count_all' %>
- </th>
-    <th width="70" class="centered">Keyword<br/>
-	<%= sort_link_up 'keyword'%>
-	<%= sort_link_down 'keyword'%>
-</th>
-    <!-- <th width="120">Last Used</th> -->
-	<th>Creator</th>
-	<th>Created<br/>
-		<%= sort_link_up 'created_at'%>
-		<%= sort_link_down 'created_at'%>
-	</th>
-	<% if logged_in? %>
-	<th>Options</th>
-	<% end %>
-  </tr>
- 
-<% for command in @commands %>
-	<tr <%= cycle('class="offset"', '') -%>>
-    <td>
-			<p class="command_title">
-				<%= command_link command %>
-			</p>
-		</td>
-	<td class="centered"><%= command.users.count %></td>
-    <td class="centered <%= "faded" if command.queries_count_all == 0 %>"><%= command.queries_count_all %></td>	
-    <td class="centered"><%= command.keyword %></td>
-	<%# PERF: command.queries is too db-intensive for now %>
-    <!-- <td>
-		<%# command.queries_count_all > 0 ? time_ago_in_words_or_date(command.queries.find(:first).created_at) : link_to("(Unused)", command_path(command), :class => "faded") %>
-	</td> -->
-	<td class="centered">
-		<%= user_link command.user %>
-	</td>
-	<td>
-		<%= time_ago_in_words_or_date(command.created_at) %>
-	</td>
-	<% if logged_in? %>
-	<td>
-		<ul class="options">
-			<% if current_user.is_admin? %>
-				<li class="no_icon"><%= link_to image_tag("icons/edit.png"), edit_command_path(command) %></li>
-			<% end %>
-			<% unless command.created_by?(current_user) %>
-				<li class="add"><%= link_to 'Subscribe', subscribe_user_command_path(:id=> command.id, :is_command=>true) %></li>
-			<% end %>				
-		</ul>
-	</td>
-	<% end %>
-  </tr>
-<% end %>
-</table>
+<%-
+  headers = ["Name<br/>#{sort_link_up('name') + sort_link_down('name')}", ["Users", {:width=>30}], 
+	["Queries<br/>#{sort_link_up('queries_count_all') + sort_link_down('queries_count_all')}",{:width=>30, :class=>'centered'}],
+	["Keyword<br/>#{sort_link_up('keyword') + sort_link_down('keyword')}", {:width=>70,:class=>'centered'}],
+	"Creator", "Created<br>#{sort_link_up('created_at')+sort_link_down('created_at')}"]
+	columns = [:name_bolded, :users_count, :queries_count, :keyword, :user, :created_at]
+	if logged_in?
+		headers << "Options"
+		columns << :command_actions
+	end
+-%>
+<%= command_table @commands, :headers=>headers, :columns=>columns, :table=>{:class=>'top_spaced'}%>
 
 <%= will_paginate @commands %>
