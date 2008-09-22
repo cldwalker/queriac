@@ -1,5 +1,5 @@
 <% if command.has_options? %>
-<h2 style="text-decoration: underline"><%= link_to_function 'Options', "$('options_description_box').toggle()" %></h2>
+<h2><%= link_to_function 'Options', "$('options_description_box').toggle()", :class=>"function_link" %></h2>
 <div id="options_description_box" style="margin-left: 20px">
 	<ul id="url_options_descriptions">
 		<% option_metadata_options = {:show_private=>admin? || (logged_in? && command.user == current_user)}%>

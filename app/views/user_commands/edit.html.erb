@@ -17,8 +17,8 @@
 				When you don't own a command, this allows you to selectively act as the command creator. For commands with options, url
 				and url options	should be toggled together unless you understand why not to.
 			</p>
-			<%= link_to_function "Check All", "check_all_for_selector('.command_fields')"%> |
-			<%= link_to_function "Uncheck All", "uncheck_all_for_selector('.command_fields')"%><br/>
+			<%= link_to_function "Check All", "check_all_for_selector('.command_fields')", :class=>'function_link'%> |
+			<%= link_to_function "Uncheck All", "uncheck_all_for_selector('.command_fields')", :class=>'function_link'%><br/>
 			<% checkbox_state = @user_command.command_owned_by?(current_user)%>
 			<% UserCommand::COMMAND_UPDATE_FIELDS.each do |c| %>
 				<% id = "command_field_#{c}"%>

@@ -18,6 +18,15 @@ a.iconed {
 a:hover {
   text-decoration: underline;
 }
+
+a.function_link {
+  text-decoration: underline;
+}
+
+a:hover.function_link {
+	font-weight: bold;
+}
+
 p a {
 	text-decoration: underline;
 	color: #427f0b;

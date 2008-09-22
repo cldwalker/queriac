@@ -9,17 +9,49 @@
 <div id="secondary">
 	
 	<h1>Manifesto</h1>
-	<p class="justified">
-		Queriac allows you to manage your quicksearches, shortcuts, and bookmarklets 
-		by taking them out of your browser profile and onto the web, making them portable, 
-		taggable, shareable, and generally easier to manage. Drawing from the concept of 
-		<%= nofollow_link_to "Yubnub", "http://yubnub.org" %> and extending it in the spirit of 
-		<%= nofollow_link_to "del.icio.us", "http://del.icio.us" %>, Queriac effectively turns 
-		your browser's address bar into a flexible command line.
-	</p>
+	<%= 
+	manifesto = %[
+		<p class="justified">
+			Queriac allows you to manage your quicksearches, shortcuts, and bookmarklets 
+			by taking them out of your browser profile and onto the web, making them portable, 
+			taggable, shareable, and generally easier to manage. Drawing from the concept of 
+			#{nofollow_link_to("Yubnub", "http://yubnub.org")} and extending it in the spirit of 
+			#{nofollow_link_to("del.icio.us", "http://del.icio.us")}, Queriac effectively turns 
+			your browser's address bar into a flexible command line.
+		</p>
 	
-	<p>To start using Queriac, <%= link_to "create an account", new_user_path %>. It's easy, free, and awesome.</p>
+		<p>To start using Queriac, #{link_to("create an account", new_user_path)}. It's easy, free, and awesome.</p>
+	]
+	#careful where this truncates, since it could cut a tag
+	truncate_with_more(manifesto, 65)
+	%>
 	
+	<h1 style="margin-top: 0px">New Features</h1>
+	<ul class="normal" style="list-style-type: square">
+		<li>You can now filter our commands and command searches by command type ie 
+		<%= link_to "our bookmarklet commands", command_type_commands_path('bookmarklets')%>.
+			[9/21]
+		</li>
+		<li>
+			You can see your commands that are out of date on your home page under the Options section.[9/21]
+		</li>
+		<span id="more_features" style="display:none">
+			<li>
+				When creating/editing bookmarklets, you can access a text box just for bookmarklets by clicking on 'JAVASCRIPT'.
+				This comes with some handy functions such as compressing and formating your javascript.
+				[9/18]
+			</li>
+			<li>
+				Get help on any of your commands with a -h or -help after your command ie
+				<%= nofollow_link_to("g -h", user_command_execute_path("public", "g -h"))%>. [9/18]
+			</li>
+			<li>
+				Want to test your command before executing it? Add a -T or -test to your command query
+				ie <%= nofollow_link_to "g -T this is a test", user_command_execute_path("public", "g -T this is a test")%>. [9/18]
+			</li>
+		</span>
+		<%= link_to_function "See More/Less Features ...", "$('more_features').toggle()", :class=>'function_link' %>
+	</ul>
 	<h1>Latest User Commands</h1>
 	<table>
 		<tr>
