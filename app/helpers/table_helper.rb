@@ -97,14 +97,14 @@ module TableHelper
     options[:headers] ||= options[:columns].map {|c| c.to_s.humanize }
     content_tag(:table, options[:table]) do
       headers = content_tag(:tr) do
-        options[:headers].map {|e| content_tag(:th, *e)}.join("\n")
+        options[:headers].map {|e| e = e.to_a; content_tag(:th, e[0], e[1])}.join("\n")
       end
       
       body = ar_collection.map do |uc|
         content_tag(:tr, :class=>cycle('offset', '')) do
           options[:columns].map do |c|
             td_content = send("#{ar_collection[0].class.to_s.underscore}_column_value", uc, c).to_a
-            content_tag(:td, *td_content)
+            content_tag(:td, td_content[0], td_content[1])
           end.join("\n")
         end
       end.join("\n")
@@ -134,8 +134,8 @@ module TableHelper
       others << "Description: #{h option.description}" unless option.description.blank?
       content_tag(:ul, :style=>"list-style-type: disc; list-style-position: inside") do
         others.map {|e| 
-          e.gsub!("\n",'') unless e.is_a?(Array) #otherwise the * will fail by dividing on '\n'
-          content_tag(:li, *e)
+          e = e.to_a
+          content_tag(:li, e[0], e[1])
         }
       end
     else
