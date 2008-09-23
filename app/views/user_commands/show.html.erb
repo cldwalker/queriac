@@ -35,13 +35,15 @@
 	
 	<p><b>User's Keyword:</b> <%=h @user_command.keyword %></p>	
 	
-	<p><b>Kind:</b> <%=h command.kind %> <%= "(uses POST)" if @user_command.http_post? %></p>
+	<p><b>Type:</b> <%= command_type_image @user_command.command_type.pluralize %> <%= @user_command.command_type.capitalize %> <%= "(uses POST)" if @user_command.http_post? %></p>
 	
 	<p><b>Visible to Public:</b> <%= @user_command.public? ? "Yes" : "No" %></p>
 	
 	<p><b>Url Encoded: <%= @user_command.url_encode? ? "Yes" : "No"%></b></p>
 	
 	<p><b>Queries visible to Public:</b> <%= @user_command.public_queries? ? "Yes" : "No" %></p>
+
+	<p><b>Last Used:</b> <%= time_ago_in_words_or_date @user_command.updated_at %></p>
 
 	<p><b>Owner queries:</b>
 		<span style="font-size: 12px">

@@ -295,4 +295,17 @@ module CommandHelper
     "http://#{domain}/favicon.ico"
   end
   
+  #for now loads up command
+  #must be a type that is in Command::TYPES (these are singular versions of them)
+  def command_type
+    if has_options?
+      "option"
+    elsif bookmarklet?
+      "bookmarklet"
+    elsif parametric?
+      "quicksearch"
+    else
+      "shortcut"
+    end
+  end
 end

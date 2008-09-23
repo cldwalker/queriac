@@ -16,6 +16,7 @@ class Command < ActiveRecord::Base
   named_scope :shortcuts, :conditions => ["commands.kind ='shortcut' AND commands.bookmarklet=0"]
   named_scope :quicksearches, :conditions => ["commands.kind ='parametric' AND commands.bookmarklet=0"]
   
+  before_save {|r| r.revised_at = Time.now if r.changed.include?('url')}
   validates_presence_of :name, :url
   validates_uniqueness_of :name
   validates_uniqueness_of :url, :scope=>[:public], :unless=>Proc.new {|c| c.private? }

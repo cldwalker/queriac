@@ -1,7 +1,13 @@
-<%- title = "Commands"
-title = @command_type.singularize.titleize + " #{title}" if @command_type
-title += " " + sort_description.titleize if params[:sort]
-set_header :title=>title -%>
+<%- title = ''
+   title += @command_type.singularize.titleize if @command_type
+   if current_page_matches?(search_all_commands_path)
+     title += " Search Results for '#{params[:q]}'"
+   else
+	 title += " Commands"
+   end
+   title += " " + sort_description if params[:sort ]
+   set_header :title=>title
+-%>
 <% if logged_in? %>
 	<div style="float: right">
 	<% form_tag search_all_commands_path, :method=>:get  do %>
@@ -13,15 +19,8 @@ set_header :title=>title -%>
 <% end %>
 
 <h1 class="inline" style="width: 50%">
-	<% if current_page_matches?(search_all_commands_path) %>
-		Search Results for '<%= params[:q] %>'
-	<% else %>
-		<%= command_type_image(@command_type) if @command_type %>
-		All
-		<%= @command_type.singularize.titleize if @command_type %>
-		Commands
-		<%= sort_description if params[:sort ]%>
-	<% end %>
+	<%= command_type_image(@command_type) if @command_type %>
+	<%= title %>
 	<span class="pagination_description">(<%= pagination_description @commands %>)</span>
 </h1>
 <ul class="options header" style="width: 45%; font-size: 12px">
