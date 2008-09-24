@@ -54,7 +54,7 @@ module TableHelper
     when :created_at
       time_ago_in_words_or_date(command.created_at)
     when :revised_at
-      [time_ago_in_words_or_date(command.revised_at) || '--', {}]
+      time_ago_in_words_or_date(command.revised_at) || '--'
     when :command_actions
       command_actions(command)
     end

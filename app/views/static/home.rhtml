@@ -1,13 +1,12 @@
 <div id="primary">
-	<h1><%= link_to "New Commands", commands_path %></h1>
-	<%= command_table @latest_commands, :columns=>[:name, :user, :created_at] %>
-	
-	<h1><%= link_to "Latest Revised Commands", commands_path(:sort=>'down_by_revised_at') %></h1>
-	<%= command_table @latest_revised_commands, :columns=>[:name, :user, :revised_at] %>
-	
-	<h1><%= link_to "Latest User Commands", user_commands_path %></h1>
+	<h1><%= link_to "Latest User Commands", user_commands_path, :title=>"Commands that users have subscribe to." %></h1>
 	<%= user_command_table @latest_user_commands, :columns=>[:name, :user, :created_at]%>
 	
+	<h1><%= link_to "Latest Revised Commands", commands_path(:sort=>'down_by_revised_at'), :title=>"Commands that have had their functionality revised." %></h1>
+	<%= command_table @latest_revised_commands, :columns=>[:name, :user, :revised_at] %>
+	
+	<h1><%= link_to "Latest Commands", commands_path, :title=>"Commands that have just been created." %></h1>
+	<%= command_table @latest_commands, :columns=>[:name, :user, :created_at] %>
 </div>
 
 <div id="secondary">
@@ -33,14 +32,18 @@
 	<h1 style="margin-top: 0px">New Features</h1>
 	
 	<ul class="normal" style="list-style-type: square">
+		<li>
+			Commands now have a revision date. This date holds the last time a command's functionality was revised.
+			This is helpful for seeing commands that are getting new features ie <%= link_to "latest revised commands", commands_path(:sort=>'down_by_revised_at') %> [9/24]
+		</li>
 		<li>You can now filter our commands and command searches by command type ie 
 		<%= link_to "our bookmarklet commands", command_type_commands_path('bookmarklets')%>.
 			[9/21]
 		</li>
-		<li>
-			You can see your commands that are out of date on your home page under the Options section.[9/21]
-		</li>
 		<span id="more_features" style="display:none">
+			<li>
+				You can see your commands that are out of date on your home page under the Options section.[9/21]
+			</li>
 			<li>
 				When creating/editing bookmarklets, you can access a text box just for bookmarklets by clicking on 'JAVASCRIPT'.
 				This comes with some handy functions such as compressing and formating your javascript.
