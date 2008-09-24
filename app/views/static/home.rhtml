@@ -1,12 +1,13 @@
 <div id="primary">
-	<h1><%= link_to "Latest Quicksearch Commands", command_type_commands_path('quicksearches') %></h1>
-	<%= command_table @latest_quicksearches, :columns=>[:name, :user, :created_at] %>
+	<h1><%= link_to "New Commands", commands_path %></h1>
+	<%= command_table @latest_commands, :columns=>[:name, :user, :created_at] %>
+	
+	<h1><%= link_to "Latest Revised Commands", commands_path(:sort=>'down_by_revised_at') %></h1>
+	<%= command_table @latest_revised_commands, :columns=>[:name, :user, :revised_at] %>
 	
 	<h1><%= link_to "Latest User Commands", user_commands_path %></h1>
 	<%= user_command_table @latest_user_commands, :columns=>[:name, :user, :created_at]%>
 	
-	<h1><%= link_to "Latest Bookmarklet Commands", command_type_commands_path('bookmarklets') %></h1>
-	<%= command_table @latest_bookmarklets, :columns=>[:name, :user, :created_at] %>
 </div>
 
 <div id="secondary">

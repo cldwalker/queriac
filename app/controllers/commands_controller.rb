@@ -151,7 +151,7 @@ class CommandsController < ApplicationController
     end
   end
 
-  def valid_sort_columns; %w{name queries_count_all created_at keyword}; end
+  def valid_sort_columns; %w{name queries_count_all created_at keyword revised_at}; end
   protected
   def filter_command_chain_by_type(command_chain)
     if Command::TYPES.map(&:to_s).include?(params[:type])

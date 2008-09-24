@@ -13,6 +13,7 @@ class Command < ActiveRecord::Base
   named_scope :advanced_search, lambda {|v| parse_advanced_search(v) }
   named_scope :options, :conditions=>"commands.url_options IS NOT NULL"
   named_scope :bookmarklets, :conditions => ["commands.bookmarklet=1"]
+  named_scope :nonshortcuts, :conditions=>["NOT(commands.kind ='shortcut' AND commands.bookmarklet=0)"]
   named_scope :shortcuts, :conditions => ["commands.kind ='shortcut' AND commands.bookmarklet=0"]
   named_scope :quicksearches, :conditions => ["commands.kind ='parametric' AND commands.bookmarklet=0"]
   

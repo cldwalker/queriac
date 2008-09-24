@@ -44,8 +44,9 @@
   headers = ["Name<br/>#{sort_link_up('name') + sort_link_down('name')}", ["Users", {:width=>30}], 
 	["Queries<br/>#{sort_link_up('queries_count_all') + sort_link_down('queries_count_all')}",{:width=>30, :class=>'centered'}],
 	["Keyword<br/>#{sort_link_up('keyword') + sort_link_down('keyword')}", {:width=>70,:class=>'centered'}],
-	"Creator", "Created<br>#{sort_link_up('created_at')+sort_link_down('created_at')}"]
-	columns = [:name_bolded, :users_count, :queries_count, :keyword, :user, :created_at]
+	"Creator", "Created<br/>#{sort_link_up('created_at')+sort_link_down('created_at')}", 
+	["Revised<br>#{sort_link_up('revised_at')+sort_link_down('revised_at')}", {:width=>70}]]
+	columns = [:name_bolded, :users_count, :queries_count, :keyword, :user, :created_at, :revised_at]
 	if logged_in?
 		headers << "Options"
 		columns << :command_actions
