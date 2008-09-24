@@ -43,6 +43,8 @@
 	
 	<p><b>Queries visible to Public:</b> <%= @user_command.public_queries? ? "Yes" : "No" %></p>
 
+	<p><b>Queries saved:</b> <%= @user_command.save_queries? ? "Yes" : "No" %></p>
+	
 	<p><b>Last Used:</b> <%= time_ago_in_words_or_date @user_command.updated_at %></p>
 
 	<p><b>Owner queries:</b>

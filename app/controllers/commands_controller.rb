@@ -78,13 +78,14 @@ class CommandsController < ApplicationController
       redirect_to(redirect_path) and return
     end
     
+    save_queries = options[:toggle_save_query] ? !@user_command.save_queries? : @user_command.save_queries?
     # Store the query in the database (or not)
     @user_command.queries.create(
       :query_string => query_string,
       :run_by_default => options[:defaulted] || false,
       :user_id => logged_in? ? current_user.id : nil,
       :referrer => request.env["HTTP_REFERER"]
-    ) unless options[:dont_save_query]
+    ) if save_queries
     
     #parse alias js symbols before query parsing since js symbols do appear in some urls
     if params[:js] && !@user_command.bookmarklet?

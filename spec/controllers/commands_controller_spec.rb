@@ -146,6 +146,13 @@ describe 'commands/execute:' do
     basic_expectations
   end
   
+  it '! toggles saving of query' do
+    @command.save_queries = false
+    @command.save
+    lambda { get_request(:command=>["!+#{@command.keyword}"])}.should change(Query, :count).by(1)
+    basic_expectations
+  end
+  
   it 'executes bookmarklet'
   it 'executes default_to via search_form'
   it 'executes post'

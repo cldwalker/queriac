@@ -5,7 +5,7 @@ module CommandSpecHelper
   def valid_command_attributes
     {
       :name => "Google Search",
-      :keyword => "g",
+      :keyword => "ggg",
       :url  => "http://google.com/search?q=(q)"
     }
   end
@@ -16,7 +16,9 @@ end
 describe Command do
   
   include CommandSpecHelper
-  
+
+  #to get rid of existing g command
+  before(:all) {Command.destroy_all }
   before(:each) do
     @command = Command.new
   end
@@ -97,43 +99,43 @@ end
 describe 'Command.parse_into_keyword_and_query: ' do
   
   it 'normal' do
-    result = ["g", "that is so awesome", {:defaulted=>false, :dont_save_query=>false}]
+    result = ["g", "that is so awesome", {:defaulted=>false, :toggle_save_query=>false}]
     Command.parse_into_keyword_and_query('g that is so awesome').should == result
   end
   
-  it 'sets dont_save_query flag for command_string starting with "!"' do
-    result = ["g", "hide me", {:defaulted=>false, :dont_save_query=>true}]
+  it 'sets toggle_save_query flag for command_string starting with "!"' do
+    result = ["g", "hide me", {:defaulted=>false, :toggle_save_query=>true}]
     Command.parse_into_keyword_and_query('!g hide me').should == result
   end
   
-  it 'sets dont_save_query flag for command_string with separate "!"' do
-    result = ["g", "hide me", {:defaulted=>false, :dont_save_query=>true}]
+  it 'sets toggle_save_query flag for command_string with separate "!"' do
+    result = ["g", "hide me", {:defaulted=>false, :toggle_save_query=>true}]
     Command.parse_into_keyword_and_query('! g hide me').should == result
   end
   
   it 'sets defaulted flag' do
-    result = ["g", "me default", {:defaulted=>true, :dont_save_query=>false}]
+    result = ["g", "me default", {:defaulted=>true, :toggle_save_query=>false}]
     Command.parse_into_keyword_and_query('default_to g me default').should == result
   end
   
-  it "set defaulted flag and dont_save_query flag" do
+  it "set defaulted flag and toggle_save_query flag" do
     pending "can't do this for now"
-    result = ["g", "me default", {:defaulted=>true, :dont_save_query=>true}]
+    result = ["g", "me default", {:defaulted=>true, :toggle_save_query=>true}]
     Command.parse_into_keyword_and_query('default_to !g me default').should == result
   end
   
   it 'handles "+" from Rails as whitespace' do
-    result = ["g", "so cool", {:defaulted=>false, :dont_save_query=>false}]
+    result = ["g", "so cool", {:defaulted=>false, :toggle_save_query=>false}]
     Command.parse_into_keyword_and_query('g so+cool').should == result
   end
   
   it 'handles empty command' do
-    result = ["", "", {:defaulted=>false, :dont_save_query=>false}]
+    result = ["", "", {:defaulted=>false, :toggle_save_query=>false}]
     Command.parse_into_keyword_and_query('').should == result
   end
   
   it 'preserves white space in command' do
-    result = ["g", "i want   space", {:defaulted=>false, :dont_save_query=>false}]
+    result = ["g", "i want   space", {:defaulted=>false, :toggle_save_query=>false}]
     Command.parse_into_keyword_and_query('g i want   space').should == result
   end
 end

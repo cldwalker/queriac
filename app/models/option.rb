@@ -39,12 +39,13 @@ class Option < OpenStruct
     }
   end
   
-  #should be in sync with global options constants
+  #should be in sync with global options constants except for ! option
   def self.global_options
     global_opt = [{:name=>'help', :option_type=>'boolean', :alias=>'h', :description=>'Displays help page for user command.'}, 
       {:name=>'test', :alias=>'T', :description=>'Tests a user command and its arguments by displaying its result.', :option_type=>'boolean'},
       {:name=>'url_encode', :alias=>'ue', :option_type=>'normal', :description=>"Override default url encode. 1 toggles it on and 0 toggles it off."},
-      {:name=>'off', :option_type=>'boolean', :description=>"Turns off option parsing for remainder of command"}]
+      {:name=>'off', :option_type=>'boolean', :description=>"Turns off option parsing for remainder of command"},
+      {:name=>"!", :option_type=>'boolean', :description=>"Toggles a command's default save queries state ie a query isn't saved that would normally be saved. This is not a traditional option since it must come before the command."}]
     global_opt.map {|e| Option.new(e) }
   end
   

@@ -177,7 +177,7 @@ class Command < ActiveRecord::Base
   end
   
   def self.parse_into_keyword_and_query(command_string)
-    options = {:defaulted=>false, :dont_save_query=>false}
+    options = {:defaulted=>false, :toggle_save_query=>false}
     
     # Note: When upgrading to Rails 2, split(' ') had to be changed into split('+')
     param_parts = command_string.gsub(' ', '+').split('+')
@@ -192,7 +192,7 @@ class Command < ActiveRecord::Base
     
     # Handle stealth queries (allowing for presence or absence of space following the !)
     if keyword.starts_with? "!"
-      options[:dont_save_query] = true
+      options[:toggle_save_query] = true
       if keyword == "!"
         keyword = (param_parts.shift || '').downcase
       else
