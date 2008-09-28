@@ -33,7 +33,7 @@ module LinkHelper
   end
   
   def user_link(user)
-    link_to(h(user.login), user_home_path(user), :title=>'poop')
+    link_to(h(user.login), user_home_path(user))
   end
   
   def query_user(query)

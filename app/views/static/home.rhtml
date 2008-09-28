@@ -1,4 +1,37 @@
 <div id="primary">
+	<h1>Public Queriac Commandline</h1>
+	<div class="description_box">
+		<% form_tag user_command_execute_path(User::PUBLIC_USER, 'search_form'), :method=>:get  do %>
+			<%= link_to_function 'Some Tips', "$('commandline_tips').toggle()", :class=>'function_link',:style=>"font-size: 10px; color:#427F0B" %>
+			<%= text_field_tag 'search_command',nil, :size=>30 %>
+			<%= submit_tag 'GO' %>
+		<% end %>
+		<div id="commandline_tips" style="padding-left: 20px; padding-top: 10px; display:none">
+			<ul class="normal" style="list-style-type: square">
+			<li>
+				Commands are given in the form [command] [options] [arguments].<br/>
+				For example, if you want to search google news for facts, <br/>
+				try <%= link_to_function "g -type news facts", "$('search_command').value = 'g -type news facts'", :class=>'function_link' %> 
+				or in its aliased form
+				<%= link_to_function "g -t n facts", "$('search_command').value = 'g -t n facts'", :class=>'function_link' %>.
+			</li>
+			<li>
+				 You can get help for any command by appending a -h or -help option to it ie 
+				<%= link_to_function "g -h", "$('search_command').value = 'g -h'", :class=>'function_link' %>.<br/>
+			</li>
+			<li>
+				Any public command created by our users can be used from here within 24 hours of its creation. Check out 
+				<%= link_to "our repository of commands", commands_path %>.
+			</li>
+			<li>
+				Bookmarklets cannot be executed from here. You can still try them anonymously by <%=link_to 'setting up your browser',
+				static_page_path('setup')%> to point to <%= link_to 'our public user', user_home_path(User::PUBLIC_USER) %> and then
+				installing <%= link_to "our bookmarklet enabler", static_page_path('tutorial') + '#bookmarklets'%>.
+			</li>
+			</ul>
+			
+		</div>
+	</div>
 	<h1><%= link_to "Latest User Commands", user_commands_path, :title=>"Commands that users have subscribe to." %></h1>
 	<%= user_command_table @latest_user_commands, :columns=>[:name, :user, :created_at]%>
 	
@@ -32,14 +65,18 @@
 	<h1 style="margin-top: 0px">New Features</h1>
 	
 	<ul class="normal" style="list-style-type: square">
+		<li>
+			We now have a <%= link_to "public user", user_home_path(User::PUBLIC_USER) %> whose sole responsibility is to automatically
+			subscribe to and offer access to all <%= link_to "our public commands", commands_path %>. [9/28]
+		</li>
 		<li>You now have the option of not saving queries by default for a given command.
 			If you want to occasionally save a query for a query-less command, you can prefix a command with '!'. [9/24]
 		</li>
-		<li>
-			Commands now have a revision date. This date holds the last time a command's functionality was revised.
-			This is helpful for seeing commands that are getting new features ie <%= link_to "latest revised commands", commands_path(:sort=>'down_by_revised_at') %>. [9/24]
-		</li>
 		<span id="more_features" style="display:none">
+			<li>
+				Commands now have a revision date. This date holds the last time a command's functionality was revised.
+				This is helpful for seeing commands that are getting new features ie <%= link_to "latest revised commands", commands_path(:sort=>'down_by_revised_at') %>. [9/24]
+			</li>
 			<li>You can now filter our commands and command searches by command type ie 
 			<%= link_to "our bookmarklet commands", command_type_commands_path('bookmarklets')%>.
 				[9/21]
@@ -54,11 +91,11 @@
 			</li>
 			<li>
 				Get help on any of your commands with a -h or -help after your command ie
-				<%= nofollow_link_to("g -h", user_command_execute_path("public", "g -h"))%>. [9/18]
+				<%= nofollow_link_to("g -h", user_command_execute_path(User::PUBLIC_USER, "g -h"))%>. [9/18]
 			</li>
 			<li>
 				Want to test your command before executing it? Add a -T or -test to your command query
-				ie <%= nofollow_link_to "g -T this is a test", user_command_execute_path("public", "g -T this is a test")%>. [9/18]
+				ie <%= nofollow_link_to "g -T this is a test", user_command_execute_path(User::PUBLIC_USER, "g -T this is a test")%>. [9/18]
 			</li>
 		</span>
 		<%= link_to_function "See More/Less Features ...", "$('more_features').toggle()", :class=>'function_link' %>

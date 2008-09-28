@@ -117,6 +117,7 @@ module HeaderHelper
   def render_mininav
     items = []
     items << "logged in as " + link_to(current_user.login, user_home_path(current_user), :class => "underlined") if logged_in?
+    items << link_to_unless_current("commands", commands_path)
     items << link_to_unless_current("settings", settings_path) if logged_in?
     items << link_to_unless_current("help", static_page_path('help'))
     items << link_to_unless_current("tutorial", static_page_path('tutorial'))

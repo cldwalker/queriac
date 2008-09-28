@@ -16,24 +16,24 @@
 
 <p class="caption">&rarr; Type <code>edit g</code> to edit a command. (again, g as in Google Quicksearch in this example)</p>
 
-<% if logged_in? %>
-	<div id="bookmarklets">
+<div id="bookmarklets">
 	<h2>Using Bookmarklets</h2>
 	<p>If you want to use bookmarklets through Queriac, you'll need to add the following bookmarklet to your local
 		bookmarks in your browser. Because of Javascript's client-side nature (see <%= link_to "Same Origin Policy", "http://www.mozilla.org/projects/security/components/same-origin.html" %>), this bookmarklet is needed to download 
-		the Javascript source from your Queriac commands and it evaluates it locally.
+		the Javascript source from <%= logged_in? ? "your" : link_to("#{User::PUBLIC_USER}'s", user_home_path(User::PUBLIC_USER)) %>
+		Queriac commands and evaluate it locally.
 	</p>
 	<p>
-		<b>To install:</b> Right-click on the link below and save it as a local bookmakrk. You'll need to give it a keyword 
+		<b>To install:</b> Right-click on the link below and save it as a local bookmark. You'll need to give it a keyword 
 		(or shortcut in Camino).. something like <code>j</code>. If you don't see the keyword/shortcut column in
 		your browser's bookmarks window, you'll need to enable it by clicking the little dropdown doohicky on the right
 		side of the column header.
 	</p>
 	<p class="bordered">
-		Right-click to install: <a href="javascript:_s=document.createElement('script');_s.type='text/javascript';_s.src='http://queri.ac/<%= current_user.login %>/%s?js=1';document.getElementsByTagName('head')[0].appendChild(_s);void(0);">Queriac Bookmarklet Enabler</a>
+		<% user_name =  logged_in? ? current_user.login : User::PUBLIC_USER %>
+		Right-click to install: <a href="javascript:_s=document.createElement('script');_s.type='text/javascript';_s.src='http://queri.ac/<%= user_name %>/%s?js=1';document.getElementsByTagName('head')[0].appendChild(_s);void(0);">Queriac Bookmarklet Enabler</a>
 	</p>
-	</div>
-<% end %>
+</div>
 
 <h2>Using Options</h2>
 <%= link_to "See the tutorial just for options", static_page_path('options_tutorial') %>

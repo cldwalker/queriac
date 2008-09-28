@@ -31,6 +31,7 @@ class User < ActiveRecord::Base
   
   belongs_to :default_command, :class_name => "UserCommand", :foreign_key => :default_command_id
   
+  PUBLIC_USER = 'public' #can query all public commands + gets deleted user commands
   VIEWABLE_SQL = %[users.activation_code IS NULL]
   #these named_scope methods are just for console since they work intermittently with paginate (only for this model)
   named_scope :any
@@ -60,7 +61,7 @@ class User < ActiveRecord::Base
   end
   
   #takes ownership of deleted commands
-  def self.public_user; find_by_login('public'); end
+  def self.public_user; find_by_login(PUBLIC_USER); end
   
   def self.find_top_users(options={})
     #includes user_commands count

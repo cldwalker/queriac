@@ -40,3 +40,13 @@ describe UserCommand do
   end
   
 end
+
+describe 'misc methods:' do
+  it "destroy updates command query counts" do
+    user_command = create_user_command(:command=>create_command(:queries_count_all=>40), :queries_count=>10)
+    command = user_command.command
+    lambda {
+      user_command.destroy
+    }.should change(command, :queries_count_all).by(-10)
+  end
+end

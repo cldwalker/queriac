@@ -17,7 +17,7 @@ class Command < ActiveRecord::Base
   named_scope :shortcuts, :conditions => ["commands.kind ='shortcut' AND commands.bookmarklet=0"]
   named_scope :quicksearches, :conditions => ["commands.kind ='parametric' AND commands.bookmarklet=0"]
   
-  before_update {|r| r.revised_at = Time.now if r.changed.include?('url')}
+  before_update :update_revised_at, :destroy_public_user_command_if_privatized
   validates_presence_of :name, :url
   validates_uniqueness_of :name
   validates_uniqueness_of :url, :scope=>[:public], :unless=>Proc.new {|c| c.private? }
@@ -55,6 +55,18 @@ class Command < ActiveRecord::Base
       self.errors.instance_eval "@errors.delete('name')"
       self.save if self.valid?
     end
+  end
+  
+  def destroy_public_user_command_if_privatized
+    if self.changed.include?('public') && self.public == false
+      (user_command = self.user_commands.detect {|e| e.user.login == User::PUBLIC_USER}) && user_command.destroy
+    end
+    true
+  end
+  
+  def update_revised_at
+    self.revised_at = Time.now if self.changed.include?('url')
+    true
   end
   
   #to be called from vicarious updates ie @user_command.update_all_attributes

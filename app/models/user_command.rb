@@ -18,7 +18,7 @@ class UserCommand < ActiveRecord::Base
   validates_uniqueness_of :name, :scope=>:user_id
   attr_protected :user_id
   serialize :url_options, Array
-  before_destroy :decrement_command_query_count
+  before_destroy :decrement_command_query_count, :destroy_public_user_command_if_last_command
   
   named_scope :used, :conditions => ["user_commands.queries_count > 0"]
   named_scope :unused, :conditions => ["user_commands.queries_count = 0"]
@@ -144,7 +144,10 @@ class UserCommand < ActiveRecord::Base
     self.update_attributes new_values
   end
   
-  def command_editable?; command.users.size <= 1; end
+  def command_editable?
+    command_users = command.users
+    command_users.size <= 1 || (command_users.size ==2 && command_users.map(&:login).include?(User::PUBLIC_USER))
+  end
   
   def owned_by?(possible_owner); self.user == possible_owner; end
   
@@ -168,5 +171,13 @@ class UserCommand < ActiveRecord::Base
   
   def update_query_counts
     self.update_attribute(:queries_count, self.queries_count + 1)
+  end
+  
+  #won't be necessary if we just delete the command
+  def destroy_public_user_command_if_last_command
+    if self.command.users.length == 2 && self.command.users.map(&:login).include?(User::PUBLIC_USER) && self.user.login != User::PUBLIC_USER
+      (user_command = self.command.user_commands.detect {|e| e.user.login == User::PUBLIC_USER}) && user_command.destroy
+    end
+    true
   end
 end
