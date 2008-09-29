@@ -10,6 +10,7 @@ class CronManager
       logger.info("\n*** Starting Cron Manager at #{Time.now}")
       run_job(:subscribe_to_new_commands_for_public)
       run_job(:update_commands_for_public)
+      run_job(:sync_command_user_counts)
       run_job(:sync_user_command_query_counts)
       run_job(:sync_command_query_counts)
       run_job(:check_for_unused_commands)
@@ -82,13 +83,38 @@ class CronManager
       end
     end
     
-    def check_for_unused_commands
+    def check_for_unused_public_commands
       used_command_ids = UserCommand.find(:all, :group=>"command_id", :select=>"command_id").map(&:command_id)
       unused_commands = Command.find(:all).select {|e| !used_command_ids.include?(e.id)}
-      logger.info "Following commands are not used: #{unused_commands.map(&:id).inspect}"
+      logger.info "Following public commands are not used: #{unused_commands.select(&:public).map(&:id).inspect}"
+      logger.info "Following private commands are not used: #{unused_commands.reject(&:public).map(&:id).inspect}"
     end
     
-    # def check_for_private_commands_with_multiple_users
-    # end
+    def check_for_private_commands_with_multiple_users
+      command_ids = UserCommand.find(:all, :group=>"command_id HAVING count > 1", :select=>"command_id, count(*) as count")
+      private_commands = command_ids.select {|e| e.command.private?}
+      logger.info "Following private commands have multiple users: #{private_commands.map(&:id).inspect}"
+    end
+    
+    def sync_command_user_counts
+      command_ids = UserCommand.find(:all, :group=>"command_id", :select=>"command_id, count(*) as users_count")
+      logger.info "Checking #{command_ids.size} command counts."
+      command_ids.each do |e|
+        command = e.command
+        actual_count = e.users_count.to_i
+        if actual_count != command.users_count
+          logger.info "Command #{command.id}: cached/actual - #{command.users_count}/#{actual_count}"
+          unless @dry_run
+            logger.info "Command #{command.id}: updating users_count from #{command.users_count} to #{actual_count}"
+            command.update_attribute(:users_count, actual_count)
+          end
+        end
+      end
+    end
+    
+    def cleanup_public_commands
+      #keyword keywordless commands
+      #delete/hide commands with no subscribers after x days?
+    end
   end
 end

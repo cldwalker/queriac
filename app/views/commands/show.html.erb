@@ -51,7 +51,7 @@
 	
 	<p><b>Visible to Public:</b> <%= @command.public? ? "Yes" : "No" %></p>
 	<p><b>Last Used:</b> <%= time_ago_in_words_or_date @command.updated_at %></p>
-	<p><b>Number of Users:</b> <%= @command.users.size %></p>
+	<p><b>Number of Users:</b> <%= @command.users_count %></p>
 		
 	<p><b>Total Queries:</b> <%= @command.queries_count_all %></p>
 	

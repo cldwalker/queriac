@@ -18,7 +18,8 @@ class UserCommand < ActiveRecord::Base
   validates_uniqueness_of :name, :scope=>:user_id
   attr_protected :user_id
   serialize :url_options, Array
-  before_destroy :decrement_command_query_count, :destroy_public_user_command_if_last_command
+  after_create {|e| e.command.increment_users_count}
+  before_destroy :decrement_command_counts, :destroy_public_user_command_if_last_command
   
   named_scope :used, :conditions => ["user_commands.queries_count > 0"]
   named_scope :unused, :conditions => ["user_commands.queries_count = 0"]
@@ -164,8 +165,8 @@ class UserCommand < ActiveRecord::Base
     self.tag_list.join(" ")
   end
   
-  def decrement_command_query_count
-    self.command.decrement_query_count(self.queries_count)
+  def decrement_command_counts
+    self.command.decrement_user_command_counts(self.queries_count)
     true
   end
   

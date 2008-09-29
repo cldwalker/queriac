@@ -21,7 +21,7 @@ module TableHelper
     when :keyword
       [user_command.keyword, {:class=>'centered'}]
     when :created_at
-      time_ago_in_words_or_date(user_command.created_at)
+      time_ago_in_words_or_date(user_command.created_at, :short=>true)
     when :command_actions
       user_command_actions(user_command)
     else
@@ -45,16 +45,16 @@ module TableHelper
     when :user
       user_link(command.user)
     when :users_count
-      [command.users.count, {:class=>'centered'}]
+      [command.users_count, {:class=>'centered'}]
     when :queries_count
       klass = command.queries_count_all == 0 ? "centered faded" : "centered"
       [command.queries_count_all, {:class=>klass}]
     when :keyword
       [command.keyword, {:class=>'centered'}]
     when :created_at
-      time_ago_in_words_or_date(command.created_at)
+      time_ago_in_words_or_date(command.created_at, :short=>true)
     when :revised_at
-      time_ago_in_words_or_date(command.revised_at) || '--'
+      time_ago_in_words_or_date(command.revised_at, :short=>true) || '--'
     when :command_actions
       command_actions(command)
     end

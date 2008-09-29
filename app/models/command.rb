@@ -121,15 +121,22 @@ class Command < ActiveRecord::Base
   # def tag_string
   #   self.tag_list.join(" ")
   # end
+
+  def increment_users_count(increment_count=1)
+    self.update_attribute(:users_count, self.users_count + increment_count)
+  end
   
   def increment_query_count(increment_count=1)
     self.update_attribute(:queries_count_all, self.queries_count_all + increment_count)
   end
   
-  def decrement_query_count(decrement_count=1)
+  def decrement_user_command_counts(queries_count=1)
+    hash = {}
     if self.queries_count_all > 0
-      self.update_attribute :queries_count_all, self.queries_count_all - decrement_count
+      hash[:queries_count_all] = self.queries_count_all - queries_count
     end
+    hash[:users_count] = self.users_count - 1
+    self.update_attributes hash
   end
   
   def self.parse_advanced_search(query)

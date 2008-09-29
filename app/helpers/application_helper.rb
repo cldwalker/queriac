@@ -39,14 +39,14 @@ module ApplicationHelper
     
   # Use words if within the last week
   # otherwise use date (show year if not this year)
-  def time_ago_in_words_or_date(date)
+  def time_ago_in_words_or_date(date,options={})
     return nil unless date
     if (Time.now-date)/60/60/24 < 7
       time_ago_in_words(date) + " ago"
     elsif date.year == Time.now.year
-      date.to_s(:short)
+      options[:short] ? date.strftime("%m/%d %I:%M%p") : date.to_s(:short)
     else
-      date.to_s(:medium)
+      options[:short] ? date.strftime("%m/%d/%y") : date.to_s(:medium)
     end
   end
     
