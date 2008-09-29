@@ -156,15 +156,6 @@ class UserCommand < ActiveRecord::Base
     self.command.user == possible_owner
   end
   
-  def update_tags(tags)
-    self.tag_list = tags.split(" ").join(", ")
-    self.save
-  end
-  
-  def tag_string
-    self.tag_list.join(" ")
-  end
-  
   def decrement_command_counts
     self.command.decrement_user_command_counts(self.queries_count)
     true

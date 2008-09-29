@@ -6,6 +6,7 @@ class Command < ActiveRecord::Base
   has_many :users, :through=>:user_commands, :conditions=>User::VIEWABLE_SQL
   has_many :user_tags, :through=>:user_commands
   
+  acts_as_taggable
   named_scope :public, :conditions => {:public => true}
   named_scope :any
   named_scope :unique, :select=>'*, count(url)', :group=>"url HAVING count(url)>=1"
@@ -113,15 +114,6 @@ class Command < ActiveRecord::Base
     self.user_commands.find(:first, :conditions=>{:user_id=>self.user_id})
   end
   
-  # def update_tags(tags)
-  #   self.tag_list = tags.split(" ").join(", ")
-  #   self.save
-  # end
-  # 
-  # def tag_string
-  #   self.tag_list.join(" ")
-  # end
-
   def increment_users_count(increment_count=1)
     self.update_attribute(:users_count, self.users_count + increment_count)
   end

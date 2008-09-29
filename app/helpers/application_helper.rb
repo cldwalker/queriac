@@ -85,5 +85,10 @@ module ApplicationHelper
       lesslink = link_to_function(options[:less], "$(this).up('#{tag_type}').previous().show(); $(this).up('#{tag_type}').hide()", options[:link_options])
       all_text = content_tag(tag_type, starter)+content_tag(tag_type, "#{text} #{lesslink}", :style => 'display:none;')
     end
-  end  
+  end
+  
+  def tag_description(tags)
+    return nil if tags.empty?
+    Tag.find_by_name(tags[0]).description rescue nil
+  end
 end

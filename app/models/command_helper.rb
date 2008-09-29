@@ -1,4 +1,4 @@
-#contains common code used between commands and user_commands: options and domain related methods
+#contains common code used between commands and user_commands: options, tag and domain related methods
 module CommandHelper
   def self.included(base)
     base.class_eval %[
@@ -307,5 +307,14 @@ module CommandHelper
     else
       "shortcut"
     end
+  end
+  
+  def update_tags(tags)
+    self.tag_list = tags.split(" ").join(", ")
+    self.save
+  end
+  
+  def tag_string
+    self.tag_list.join(" ")
   end
 end

@@ -83,13 +83,14 @@ module HeaderHelper
       elsif params[:controller] == 'user_commands'
         crumbs << 'user commands'
         add_tags_to_crumbs(crumbs)
-        end
+      end
     #index-ish user_controller actions
     elsif @user_commands && params[:controller] == 'user_commands'
       crumbs << ['user commands', user_commands_path]
       add_tags_to_crumbs(crumbs)
     elsif @commands && params[:controller] == 'commands'
       crumbs << ['commands', commands_path]
+      add_tags_to_crumbs(crumbs)
     elsif @users && params[:controller] = 'users'
       crumbs << ['users', users_path]
     elsif @queries && params[:controller] == 'queries'

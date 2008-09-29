@@ -1,4 +1,5 @@
 class UserCommandsController < ApplicationController
+  include CommandsControllerHelper
   before_filter :login_required, :except => [:index, :show, :command_user_commands, :help]
   before_filter :load_valid_user_if_specified, :only=>[:index, :show, :help]
   before_filter :set_user_command, :only=>[:show, :edit, :update, :destroy, :update_url, :help]
@@ -187,37 +188,11 @@ class UserCommandsController < ApplicationController
   end
   
   def tag_add_remove
-    keywords, tag_string = parse_tag_input
-    
-    successful_commands = []
-    unless tag_string.blank?
-      #TODO: should move \w+ to a validation regex constant
-      remove_list, add_list = tag_string.scan(/-?\w+/).partition {|e| e[0,1] == '-' }
-      remove_list.map! {|e| e[1..-1]}
-      keywords.each do |n| 
-        if (cmd = current_user.user_commands.find_by_keyword(n))
-          cmd.tag_list.add(add_list)
-          cmd.tag_list.remove(remove_list)
-          cmd.save
-          successful_commands << cmd
-        end
-      end
-    end
-    render_tag_action(tag_string, keywords, successful_commands)
+    tag_add_remover {|e| current_user.user_commands.find_by_keyword(e)}
   end
   
   def tag_set
-    edited_commands = []
-    keywords, tag_string = parse_tag_input
-    unless tag_string.blank?
-      keywords.each do |n| 
-        if (cmd = current_user.user_commands.find_by_keyword(n))
-          cmd.update_tags(tag_string)
-          edited_commands << cmd
-        end
-      end
-    end
-    render_tag_action(tag_string, keywords, edited_commands)
+    tag_setter {|e| current_user.user_commands.find_by_keyword(e)}
   end
   
   def search
@@ -398,13 +373,6 @@ class UserCommandsController < ApplicationController
   	  disabled_fields = []
     end
   	disabled_fields
-  end
-  
-  def parse_tag_input
-    return nil, nil unless params[:v]
-    keyword_string, tags = params[:v].split(/\s+/, 2)
-    keywords = keyword_string.split(',')
-    return keywords, tags
   end
   
   def render_tag_action(tag_string, keywords, successful_commands)

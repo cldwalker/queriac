@@ -22,8 +22,8 @@
   <%= f.text_area :description, :cols => 100, :rows => 12  %>
 </div>
 
-<% if false %>
 <div>
+	Note: These tags are independent of user command tags<br/>
 	<label for="tags">Tags (separated by spaces)</label><br />
 	
 	<% 
@@ -36,7 +36,6 @@
 	
   <%= text_field_tag :tags, tag_list, {:size => 90} %>
 </div>
-<% end %>
 
 <div class="floater">
   <%= f.check_box :public %> <%= f.label :public, "Share this command with the public" %>

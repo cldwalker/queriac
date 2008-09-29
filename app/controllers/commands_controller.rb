@@ -1,18 +1,25 @@
 class CommandsController < ApplicationController
-
-  before_filter :login_required, :except => [:index, :execute, :show]
+  include CommandsControllerHelper
+  before_filter :login_required, :except => [:index, :execute, :show, :tagged_commands]
   before_filter :load_valid_user, :only=>[:execute]
-  # before_filter :load_tags_if_specified, :only=>:index
-  before_filter :admin_required, :only=>[:edit, :update]
+  before_filter :load_tags_if_specified, :only=>:tagged_commands
+  before_filter :admin_required, :only=>[:edit, :update, :tag_set, :tag_add_remove]
   before_filter :set_command, :only=>[:show, :edit, :update]
-  before_filter :allow_breadcrumbs, :only=>[:index, :show, :edit]
-  before_filter :store_location, :only=>[:index, :show]
+  before_filter :allow_breadcrumbs, :only=>[:index, :show, :edit, :tagged_commands]
+  before_filter :store_location, :only=>[:index, :show, :tagged_commands]
   before_filter :add_rss_feed, :only=>:index
   
-  # Possiblities..
-  # /commands                   => public commands
-  #TODO: enable tag listings of commands    
-  # @commands = Command.send("public").find_tagged_with(@tags.join(", "), :match_all => true, :order => "commands.queries_count_all DESC").paginate(pagination_params)      
+  def tagged_commands
+    @commands = Command.public.find_tagged_with(@tags.join(", "), :match_all => true,
+      :order =>sort_param_value).paginate(index_pagination_params)
+    if @commands.empty?
+      flash[:warning] = "Sorry, no commands matched your request."
+      redirect_to home_path
+      return
+    end
+    render :action=>'index'
+  end
+  
   def index    
     command_chain = Command.send("public")
     command_chain = filter_command_chain_by_type(command_chain)
@@ -142,6 +149,7 @@ class CommandsController < ApplicationController
   def update
     respond_to do |format|
       if @command.update_attributes(params[:command])
+        @command.update_tags(params[:tags])
         flash[:notice] = "Command updated."
         format.html { redirect_to command_path(@command) }
         format.xml  { head :ok }
@@ -151,9 +159,30 @@ class CommandsController < ApplicationController
       end
     end
   end
+  def tag_add_remove
+    tag_add_remover {|e| Command.find_by_keyword(e)}
+  end
+  
+  def tag_set
+    tag_setter {|e| Command.find_by_keyword(e)}
+  end
 
   def valid_sort_columns; %w{name queries_count_all created_at keyword revised_at users_count}; end
   protected
+  
+  def render_tag_action(tag_string, keywords, successful_commands)
+    if tag_string.blank?
+      flash[:warning] = "No tags specified. Please try again."
+      redirect_to commands_path
+    elsif successful_commands.empty?
+      flash[:warning] = "Failed to find commands: #{keywords.to_sentence}"
+      redirect_to commands_path
+    else
+      flash[:notice] = "Updated tags for commands: #{successful_commands.map(&:keyword).to_sentence}."
+      redirect_back_or_default command_path(successful_commands[0])
+    end
+  end
+  
   def filter_command_chain_by_type(command_chain)
     if Command::TYPES.map(&:to_s).include?(params[:type])
       @command_type = params[:type]

@@ -393,6 +393,15 @@ ul.options.header {
   text-align: right;
 }
 
+.commands_right_header {
+  margin-top: 30px;
+  float: right;
+  width: 45%;
+  text-align: left;
+  color:#427f0b;
+  font-size:12px;
+}
+
 ul.options.header li {
   float: none;
 }

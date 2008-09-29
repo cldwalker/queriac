@@ -48,7 +48,10 @@
 	<p><b>Keyword:</b> <%=h @command.keyword %></p>
 	
 	<p><b>Type:</b> <%= command_type_image @command.command_type.pluralize %> <%= @command.command_type.capitalize %> <%= "(uses POST)" if @command.http_post? %></p>
-	
+	<% unless @command.tags.empty? %>	
+		<p><b>Tags:</b> <%= @command.tag_list.map{|tag| link_to(tag, tagged_commands_path(tag))}.join(" ") %></p>	
+	<% end %>
+		
 	<p><b>Visible to Public:</b> <%= @command.public? ? "Yes" : "No" %></p>
 	<p><b>Last Used:</b> <%= time_ago_in_words_or_date @command.updated_at %></p>
 	<p><b>Number of Users:</b> <%= @command.users_count %></p>

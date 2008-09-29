@@ -1,6 +1,6 @@
 module PathHelper
   #NOTE: these methods are regenerated every time this file is loaded
-  tagged_methods = %w{tagged_user_commands_path user_tagged_queries_path}
+  tagged_methods = %w{tagged_user_commands_path user_tagged_queries_path tagged_commands_path}
   tagged_methods.each do |m|
     class_eval %[
       def #{m}(*args)

@@ -5,7 +5,9 @@
    else
 	 title += " Commands"
    end
+   title += " tagged with '#{@tags.join("+").gsub("+", "' and '")}'" if ! @tags.blank?
    title += " " + sort_description if params[:sort ]
+
    set_header :title=>title
 -%>
 <% if logged_in? %>
@@ -23,6 +25,13 @@
 	<%= title %>
 	<span class="pagination_description">(<%= pagination_description @commands %>)</span>
 </h1>
+<% if @tags %>
+	<% if !@tags.empty? && description = tag_description(@tags)%>
+	<div class="commands_right_header">
+		<b>Tag Description</b>: <%= h description %>
+	</div>
+	<% end %>
+<% else %>
 <ul class="options header" style="width: 45%; font-size: 12px">
 	<span style="color:#427f0b; font-weight: bold">Filter By:</span>
 	<% if current_page_matches?(search_all_commands_path)%>
@@ -37,7 +46,7 @@
 			}.join(" | ")%>
 	<% end %>
 </ul>
-
+<% end %>
 <hr />
 
 <%-
