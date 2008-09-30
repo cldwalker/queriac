@@ -32,7 +32,9 @@
 		Public Queries
 		<%= "(Last #{@queries.size})" %>
 	</h2>
+	<% cache(:id=>@command.id, :section=>'query_table') do %>
 	<%= query_table @queries, :columns=>[:query_string, :created_at]%>
+	<% end %>
 	<%= table_link_to "View all queries", command_queries_path(@command) %>
 </div>
 
