@@ -1,4 +1,5 @@
 class Tag < ActiveRecord::Base
+  include TagModelHelper
   has_many :taggings
   
   validates_presence_of :name

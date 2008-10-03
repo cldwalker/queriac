@@ -83,7 +83,7 @@ class CronManager
       end
     end
     
-    def check_for_unused_public_commands
+    def check_for_unused_commands
       used_command_ids = UserCommand.find(:all, :group=>"command_id", :select=>"command_id").map(&:command_id)
       unused_commands = Command.find(:all).select {|e| !used_command_ids.include?(e.id)}
       logger.info "Following public commands are not used: #{unused_commands.select(&:public).map(&:id).inspect}"

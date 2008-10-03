@@ -60,17 +60,16 @@
 		
 	<p><b>Total Queries:</b> <%= @command.queries_count_all %></p>
 	
+	<% cache(:id=>@command.id, :section=>'user_tags') do %>
+		<h2>User Tags</h2>
+		<%= tag_cloud_or_list @command.user_tags, :path=>:all_users %>
+	<% end %>
+
 	<% if @command.public? && ! @user_commands.empty? %>
 		<h2>Top Users of this Command</h2>
 		<%= user_command_table(@user_commands, :columns=>[:user, :name, :queries_count]) %>
 		<%= table_link_to "View all user commands", command_user_commands_path(@command) %>
 	
 	<% end %>
-	<% if false %>
-		<h2>Tags</h2>
-		<%= tag_cloud @command.tags %>
-		<!-- <p><b>Tags:</b> <%# @command.tag_string.split(" ").map{|tag| "<a href=''>#{tag}</a>"}.join(" ") %></p>	 -->
-	<% end %>
-
 	
 </div>

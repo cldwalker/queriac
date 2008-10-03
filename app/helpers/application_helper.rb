@@ -89,6 +89,7 @@ module ApplicationHelper
   
   def tag_description(tags)
     return nil if tags.empty?
+    tags = tags.to_a
     Tag.find_by_name(tags[0]).description rescue nil
   end
 end

@@ -10,6 +10,7 @@ ActionController::Routing::Routes.draw do |map|
       :change_option_type_fields=>:post, :update_default_picker=>:post, :sync_url_options=>:post, :fetch_form=>:any,
       :fetch_and_sync_url_options=>:post
   }
+  map.resources :tags
   
   map.with_options(:controller=>'user_commands') do |c|
     c.command_user_commands  'commands/:id/user_commands', :action=>'command_user_commands'

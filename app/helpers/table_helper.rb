@@ -146,8 +146,7 @@ module TableHelper
   end
   
   def table_link_to(name, options={}, html_options={})
-    html_options[:class] ||= 'faded'
-    content_tag(:p, link_to(name, options, html_options))
+    content_tag(:p, link_to(name, options, :class=>'faded'), html_options)
   end
   
 end

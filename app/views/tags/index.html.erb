@@ -1,0 +1,39 @@
+<%- set_header :title=>'Queriac Tags', :description=>"Tagged commands, tag lists, tagged user commands"-%>
+<div id="primary">
+	<% explanation = %[A tag list is a list of items that are related by a common tag. Command tag lists are tag lists for commands.]%>
+	<h1>Featured Command Tag Lists <%= image_tag 'icons/information.png', :title=>explanation %></h1>
+	<% cache :section=>"featured tags" do %>
+	<% @featured_tag_groups.each do |tag, tagged_commands| %>
+		<h2 style="margin-bottom:0px;padding-bottom: 0px">
+			<% title = "#{tag.capitalize} (#{tagged_commands.length})" %>
+			<%= collapser_for "tag_table_#{tag}",:autohide=>true, :label=>image_tag('icons/collapse.png') + title%>
+			<%= expander_for "tag_table_#{tag}", :label=>image_tag('icons/expand.png') + title%>
+		</h2>
+		<% if description = tag_description(tag) %>
+		<h3 style="margin-left: 20px;padding-bottom:10px">
+		  <%= h description%>
+		</h3>
+		<% end %>
+		<div id="tag_table_<%=tag %>" style="display:none">
+			<%= command_table tagged_commands, :columns=>[:name, :created_at, :queries_count], :table=>{:style=>'margin-left: 20px'}%>
+			<%= table_link_to "See more details", tagged_commands_path(tag), :style=>"margin-left: 20px; margin-top: 10px" %>
+		</div>
+	<% end %>
+	<% end %>
+</div>
+<div id="secondary">
+	<h1>Tag Manifesto</h1>
+		<%- description = %[<p>Tags were cool when they first came out. They were easy to use and allowed for quick lists and a flexible
+		categorization system. But as they became popular, people realized how messy they can be and how meaningless that makes them.
+		What's so hard about making meaningful tags? Maintenance and standards. The very things that get in the way of quick, easy tags.
+		Are do they? #{nofollow_link_to("Del.icio.us", "http://delicious.com")} and its tag bundles are a step
+		in the right direction to organizing tags but there is more to be done ...<br/>
+		I hope to offer features for better tagging in hopes that our user community will use them and push their boundaries.</p>
+		] -%>
+		<%=truncate_with_more description, 150 %>
+	<h1>Top User Command Tags</h1>
+	<%= tag_cloud_or_list @top_uc_tags, :path=>:all_users %>
+	<h1>All Command Tags</h1>
+	<%= tag_cloud_or_list @ctags, :path=>:command %>
+	
+</div>

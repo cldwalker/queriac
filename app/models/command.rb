@@ -4,7 +4,7 @@ class Command < ActiveRecord::Base
   has_many :queries, :through=>:user_commands
   has_many :user_commands, :dependent=>:destroy
   has_many :users, :through=>:user_commands, :conditions=>User::VIEWABLE_SQL
-  has_many :user_tags, :through=>:user_commands
+  has_many :user_tags, :through=>:user_commands, :source=>:tags
   
   acts_as_taggable
   named_scope :public, :conditions => {:public => true}
