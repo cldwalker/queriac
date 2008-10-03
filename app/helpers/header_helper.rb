@@ -96,6 +96,8 @@ module HeaderHelper
     elsif @queries && params[:controller] == 'queries'
       crumbs << ['queries', queries_path]
       add_tags_to_crumbs(crumbs)
+    elsif params[:controller] == 'tags'
+      crumbs << ['tags', tags_path]
     elsif params[:controller] == 'static'
       crumbs << params[:static_page]
     end
@@ -117,17 +119,33 @@ module HeaderHelper
   
   def render_mininav
     items = []
-    items << "logged in as " + link_to(current_user.login, user_home_path(current_user), :class => "underlined") if logged_in?
-    items << link_to_unless_current("commands", commands_path)
-    items << link_to_unless_current("settings", settings_path) if logged_in?
-    items << link_to_unless_current("help", static_page_path('help'))
-    items << link_to_unless_current("tutorial", static_page_path('tutorial'))
-    items << link_to("logout", session_path(session), :confirm => "Are you sure you want to log out?", :method => :delete) if logged_in?
-    items << link_to("sign up", new_user_path) unless logged_in?
-    items << link_to("log in", new_session_path) unless logged_in?
+    items << "Logged in as " + link_to(current_user.login, user_home_path(current_user), :class => "underlined") if logged_in?
+    items << link_to_unless_current("Settings", settings_path) if logged_in?
+    items << link_to_unless_current("Help", static_page_path('help'))
+    items << link_to_unless_current("Tutorial", static_page_path('tutorial'))
+    items << link_to("Logout", session_path(session), :confirm => "Are you sure you want to log out?", :method => :delete) if logged_in?
+    items << link_to("Sign up", new_user_path) unless logged_in?
+    items << link_to("Log in", new_session_path) unless logged_in?
     output = ""
     items.each_with_index do |item, index|
       klass = (index == items.size-1) ? 'class="last"' : ''
+      output << "<li #{klass}>#{item}</li>"
+    end
+    content_tag(:ul, output)
+  end
+  
+  def render_footernav
+    items = []
+    items << link_to_unless_current("Home", home_path)
+    items << link_to_unless_current("Commands", commands_path)
+    items << link_to_unless_current("User Commands", user_commands_path)
+    items << link_to_unless_current("Tags", tags_path)
+    items << link_to_unless_current("Queries", queries_path)
+    items << link_to(image_tag('railsmachine_small.gif'), "http://railsmachine.com/?ref=queriac")
+		
+    output = ""
+    items.each_with_index do |item, index|
+      klass = (index == items.size-2 || index == items.size-1) ? 'class="last"' : ''
       output << "<li #{klass}>#{item}</li>"
     end
     content_tag(:ul, output)

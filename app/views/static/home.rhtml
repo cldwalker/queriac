@@ -66,13 +66,17 @@
 	
 	<ul class="normal" style="list-style-type: square">
 		<li>
+			We have our first page dedicated to <%= link_to("Tags", tags_path) %>! For now it has
+			commands we recommend through our tag lists and some interesting tag clouds. [10/3]
+		</li>
+		<li>
 			We now have a <%= link_to "public user", user_home_path(User::PUBLIC_USER) %> whose sole responsibility is to automatically
 			subscribe to and offer access to all <%= link_to "our public commands", commands_path %>. [9/28]
 		</li>
-		<li>You now have the option of not saving queries by default for a given command.
-			If you want to occasionally save a query for a query-less command, you can prefix a command with '!'. [9/24]
-		</li>
 		<span id="more_features" style="display:none">
+			<li>You now have the option of not saving queries by default for a given command.
+				If you want to occasionally save a query for a query-less command, you can prefix a command with '!'. [9/24]
+			</li>
 			<li>
 				Commands now have a revision date. This date holds the last time a command's functionality was revised.
 				This is helpful for seeing commands that are getting new features ie <%= link_to "latest revised commands", commands_path(:sort=>'down_by_revised_at') %>. [9/24]

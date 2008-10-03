@@ -1,7 +1,9 @@
 <%- set_header :title=>'Queriac Tags', :description=>"Tagged commands, tag lists, tagged user commands"-%>
 <div id="primary">
+	<h1>Tags</h1>
+	<hr/>
 	<% explanation = %[A tag list is a list of items that are related by a common tag. Command tag lists are tag lists for commands.]%>
-	<h1>Featured Command Tag Lists <%= image_tag 'icons/information.png', :title=>explanation %></h1>
+	<h2 style="color: #427f0b">Featured Command Tag Lists <%= image_tag 'icons/information.png', :title=>explanation %></h2>
 	<% cache :section=>"featured tags" do %>
 	<% @featured_tag_groups.each do |tag, tagged_commands| %>
 		<h2 style="margin-bottom:0px;padding-bottom: 0px">
@@ -30,7 +32,7 @@
 		in the right direction to organizing tags but there is more to be done ...<br/>
 		I hope to offer features for better tagging in hopes that our user community will use them and push their boundaries.</p>
 		] -%>
-		<%=truncate_with_more description, 150 %>
+		<%=truncate_with_more description, 80 %>
 	<h1>Top User Command Tags</h1>
 	<%= tag_cloud_or_list @top_uc_tags, :path=>:all_users %>
 	<h1>All Command Tags</h1>

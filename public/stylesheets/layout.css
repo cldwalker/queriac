@@ -37,7 +37,7 @@ body {
 	color: white;
 }
 
-/* ***** MINI-NAV ***** */
+/* ***** MINI-NAV and FOOTERNAV ***** */
 
 #mininav {
 	position: absolute;
@@ -78,6 +78,32 @@ body {
 #mininav a:hover {
 	text-decoration: underline;
 }
+
+#footernav {
+	float:right; padding-right: 30px;
+}
+
+#footernav li.last {
+	padding-right: 0;
+	border-right: 0;
+}
+
+#footernav li {
+	float: left;
+	color: white;
+	font-weight: bold;
+	padding: 1px 10px 3px 10px;
+	border-right: 1px solid white;
+}
+
+#footernav a {
+	font-weight: normal;
+	font-size: 11px;
+	color:#FFFFFF;
+	text-decoration: none;
+}
+
+
 
 /* ***** CONTENT / MAIN ***** */
 
@@ -173,11 +199,12 @@ td.bookmarklet {
 #footer {
 	clear:both;
 	padding:  20px 0 10px 0;
+	background-color: #427f0b;
 	text-align:center;
-/*	background: #76191A url(../images/base/footer-bg.gif) repeat-x left top;*/
+/*	background: #427f0b url(../images/base/footer-bg.gif) repeat-x left top;*/
 }
 
-#footer ul {
+/*#footer ul {
 	display: table;
 	margin: 0 auto 10px auto;
 }
@@ -197,7 +224,7 @@ td.bookmarklet {
 	color:#FFFFFF;	
 	font-size: 1.2em;
 }
-
+*/
 
 
 
