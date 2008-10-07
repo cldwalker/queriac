@@ -1,13 +1,21 @@
 class CommandsController < ApplicationController
   include CommandsControllerHelper
-  before_filter :login_required, :except => [:index, :execute, :show, :tagged_commands]
+  before_filter :login_required, :except => [:index, :execute, :show, :tagged_commands, :header_search]
   before_filter :load_valid_user, :only=>[:execute]
   before_filter :load_tags_if_specified, :only=>:tagged_commands
-  before_filter :admin_required, :only=>[:edit, :update, :tag_set, :tag_add_remove]
+  before_filter :admin_required, :only=>[:edit, :update, :tag_set, :tag_add_remove, :find_by_ids]
   before_filter :set_command, :only=>[:show, :edit, :update]
   before_filter :allow_breadcrumbs, :only=>[:index, :show, :edit, :tagged_commands]
   before_filter :store_location, :only=>[:index, :show, :tagged_commands]
   before_filter :add_rss_feed, :only=>:index
+  
+  def header_search
+    if logged_in? && params[:commit] == "Search Commands"
+      redirect_to search_all_commands_path :q=>params[:q]
+    else
+      redirect_to user_command_execute_path(User::PUBLIC_USER, params[:q])
+    end
+  end
   
   def tagged_commands
     @commands = Command.public.find_tagged_with(@tags.join(", "), :match_all => true,
@@ -17,6 +25,13 @@ class CommandsController < ApplicationController
       redirect_to home_path
       return
     end
+    render :action=>'index'
+  end
+  
+  def find_by_ids
+    @commands = Command.find(params[:ids].split(",")).paginate(index_pagination_params.dup.merge(:order=>sort_param_value))
+    private_commands = @commands.reject(&:public)
+    flash[:notice] = "Private commands: #{private_commands.map(&:keyword).join(', ')}" if ! private_commands.empty?
     render :action=>'index'
   end
   

@@ -1,4 +1,5 @@
 <%- set_header :title=>@command.name, :description=>@command.description -%>
+<%= javascript_tag "$('header_search_query').value = '#{@command.keyword}'"%>
 <h1 class="inline">
 	<%= h @command.name %>
 </h1>

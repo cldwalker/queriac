@@ -14,6 +14,7 @@ class CronManager
       run_job(:sync_user_command_query_counts)
       run_job(:sync_command_query_counts)
       run_job(:check_for_unused_commands)
+      run_job(:delete_unused_tags)
       logger.info("\n*** Ended Cron Manager at #{Time.now}")
     end
     
@@ -110,6 +111,14 @@ class CronManager
           end
         end
       end
+    end
+    
+    def delete_unused_tags
+      tag_ids = Tag.unused_tag_ids
+      tags = Tag.find(tag_ids)
+      logger.info "Following are unused tags: #{tags.map(&:name).join(',')}"
+      return if dry_run
+      tags.each {|e| e.destroy }
     end
     
     def cleanup_public_commands

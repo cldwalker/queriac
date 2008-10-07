@@ -90,6 +90,6 @@ ActionController::Base.cache_store = CacheMemstore.new(:ttl =>15.minutes)
 
 # STOPWORDS = %w(default_to delete tags help home tutorial settings queries commands opensearch users search_form user_commands)
 common_stopwords = %w(user_commands commands tags queries users opensearch)
-COMMAND_STOPWORDS = %w(default_to delete search_form search_all execute update tag_set tag_add_remove) + common_stopwords + Command::TYPES.map {|e| e.to_s}
+COMMAND_STOPWORDS = %w(default_to delete search_form search_all execute update tag_set tag_add_remove find_by_ids) + common_stopwords + Command::TYPES.map {|e| e.to_s}
 USER_STOPWORDS = %w(help home tutorial setup settings options_tutorial) + common_stopwords
 HOST = 'localhost:3000' unless Object.const_defined?('HOST')

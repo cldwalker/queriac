@@ -1,4 +1,6 @@
 <%- set_header :title=>"#{@user_command.name} for #{@user_command.user.login}", :description=>"#{@user_command.user.login}'s user command -  #{@user_command.description}" -%>
+<%= javascript_tag "$('header_search_query').value = '#{@user_command.command.keyword}'"%>
+
 <h1 class="inline">
 	<%= basic_user_command_link @user_command %>
 </h1>

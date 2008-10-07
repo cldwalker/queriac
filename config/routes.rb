@@ -1,7 +1,8 @@
 ActionController::Routing::Routes.draw do |map|
   map.connect  'commands/new', :controller=>'commands', :action=>'show', :id=>'new'
   map.command_type_commands 'commands/:type', :controller=>'commands', :action=>'index', :type=>/#{Command::TYPES.join("|")}/
-  map.resources :commands, :member => { :execute => :get } , :collection=>{:search_all=>:get, :tag_set=>:get, :tag_add_remove=>:get}
+  map.resources :commands, :member => { :execute => :get } , :collection=>{:search_all=>:get, :tag_set=>:get, :tag_add_remove=>:get,
+     :find_by_ids=>:get, :header_search=>:get}
   #tagged_commands needs to be after map.resources :commands to allow for commands/tag
   map.tagged_commands 'commands/tag/*tag', :controller=>'commands', :action=>'tagged_commands'
   map.resources :sessions
