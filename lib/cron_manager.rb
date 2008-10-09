@@ -8,6 +8,7 @@ class CronManager
       @dry_run = true if dryrun
       logger.level = Logger::INFO
       logger.info("\n*** Starting Cron Manager at #{Time.now}")
+      run_job(:sync_command_and_public_command_keywords)
       run_job(:subscribe_to_new_commands_for_public)
       run_job(:update_commands_for_public)
       run_job(:sync_command_user_counts)
@@ -50,6 +51,15 @@ class CronManager
            logger.info("Failed to subscribed to command id #{c.id}: #{user_command.errors.inspect}")
          end
       end
+    end
+    
+    #needed to ensure public command bar works in header
+    def sync_command_and_public_command_keywords
+      user = User.find_by_login 'public'
+      out_of_sync_commands = user.user_commands.find(:all, :conditions=>"commands.keyword != user_commands.keyword", :include=>:command)
+      logger.info("Following public user commands are out of sync with their command's keyword: #{out_of_sync_commands.map(&:id).inspect}")
+      return if @dry_run
+      out_of_sync_commands.each {|e| e.update_attribute :keyword, e.command.keyword }
     end
     
     def sync_command_query_counts
@@ -117,7 +127,7 @@ class CronManager
       tag_ids = Tag.unused_tag_ids
       tags = Tag.find(tag_ids)
       logger.info "Following are unused tags: #{tags.map(&:name).join(',')}"
-      return if dry_run
+      return if @dry_run
       tags.each {|e| e.destroy }
     end
     

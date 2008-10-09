@@ -27,11 +27,10 @@
 <%= error_messages_for :user_command %>
 
 <% form_for :user_command, :url => user_commands_path do |f| %>
-
 	<%= render :partial => "form", :locals => {:f => f} %>
 
   <div class="floatkiller">	
-    <%= submit_tag "Create Command", :class => "submit" %>
+    <%= submit_tag (subscribe_action? ? "Subscribe" : "Create Command"), :class => "submit" %>
     <%= submit_tag "Cancel", :class => "submit" if subscribe_action? || controller.action_name == 'copy' %>
   </div>
 <% end %>

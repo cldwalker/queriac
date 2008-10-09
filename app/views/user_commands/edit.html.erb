@@ -9,6 +9,15 @@
 
 	<%= render :partial => "form", :locals => {:f => f} %>
 	
+	<% if false && (fields = @user_command.fields_different_than_command) && !fields.empty? %>
+		<div class="floatkiller">
+			<p style="font-size: 11px">
+				<%= image_tag 'icons/cog.png'%>
+				The following fields are different between your command and the source command: <%= fields.join(", ")%>.
+				We recommend comparing the two.
+			</p>
+		</div>
+	<% end %>
 	<% if admin? %>
 		<div class="floatkiller">
 			<h3>Admin Only: Command Fields to Update</h3>

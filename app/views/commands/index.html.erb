@@ -10,7 +10,7 @@
 
    set_header :title=>title
 -%>
-<% if logged_in? %>
+<% if false #logged_in? %>
 	<div style="float: right">
 	<% form_tag search_all_commands_path, :method=>:get  do %>
 	<label for="q">Search commands by url or keyword</label>

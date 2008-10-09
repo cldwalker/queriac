@@ -1,5 +1,5 @@
 <div style="margin: 20px 0px">		
-	<h2>Description</h2>
+	<h2><%= link_to_function 'Description', "$('user_command_description_box').toggle()", :class=>"function_link" %></h2>
 	<div id="user_command_description_box">
 		<%= command_description(@user_command) %>
 	</div>

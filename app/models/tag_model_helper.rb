@@ -2,6 +2,10 @@ module TagModelHelper
   
   def self.included(base)
     base.extend(ClassMethods)
+    base.class_eval %[
+      has_many :user_commands, :through=>:taggings, :source=>:taggable, :source_type=>"UserCommand"
+      has_many :commands, :through=>:taggings, :source=>:taggable, :source_type=>"Command"
+    ]
   end
   
   def before_validation

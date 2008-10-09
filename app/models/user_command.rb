@@ -139,6 +139,13 @@ class UserCommand < ActiveRecord::Base
     self.command.url != self.url
   end
   
+  def fields_different_than_command
+    common_attributes = %w{name keyword description http_post url_encode url url_options}
+    h = self.attributes.slice(*common_attributes)
+    h2 = self.command.attributes.slice(*common_attributes)
+    h.select {|k,v| h2[k] != v}.map {|e| e[0] }
+  end  
+  
   def update_url_and_options
     new_url_options = Option.merge_option_arrays(self.command.url_options, self.url_options)
     new_values = {:url=>self.command.url, :url_options=>new_url_options}

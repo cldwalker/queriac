@@ -1,4 +1,8 @@
 <% if subscribe_action? %>
+	<div class="floatkiller" style="padding: 0px; margin: 0px">
+		<span style="font-size:12px">If you're not interested in personalizing your command, simply</span>
+		<%= submit_tag "Subscribe", :class => "submit" %>
+	</div>
 	<%= hidden_field_tag 'user_command[command_id]', @command_id, :id=>'user_command_command_id' %>
 	<%= hidden_field_tag 'is_subscribe', 1 %>
 	<div style="font-size: 12px">
