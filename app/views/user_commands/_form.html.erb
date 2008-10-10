@@ -67,7 +67,11 @@
 <% end %>
 
 <div class="floater">
-  <%= f.check_box :public_queries %> <%= f.label :public_queries, "Share my queries and allow anonymous queries", :id => "command_public_queries_label" %>
+  <%= f.check_box :public_queries %> <%= f.label :public_queries, "Show my queries", :id => "command_public_queries_label" %>
+</div>
+
+<div class="floater">
+  <%= f.check_box :anonymous_queries %> <%= f.label :anonymous_queries, "Allow anonymous queries" %>
 </div>
 
 <div class="floater">

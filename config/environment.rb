@@ -13,6 +13,9 @@ require File.join(File.dirname(__FILE__), 'secrets')
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
 
+#needs to be placed before initializer b/c routes
+STATIC_PAGES = %w(options_tutorial tutorial setup help features)
+
 Rails::Initializer.run do |config|
   # Settings in config/environments/* take precedence over those specified here.
   # Application configuration should go into files in config/initializers
@@ -88,8 +91,7 @@ require 'hpricot'
 require 'cache_memstore'
 ActionController::Base.cache_store = CacheMemstore.new(:ttl =>15.minutes)
 
-# STOPWORDS = %w(default_to delete tags help home tutorial settings queries commands opensearch users search_form user_commands)
 common_stopwords = %w(user_commands commands tags queries users opensearch)
 COMMAND_STOPWORDS = %w(default_to delete search_form search_all execute update tag_set tag_add_remove find_by_ids) + common_stopwords + Command::TYPES.map {|e| e.to_s}
-USER_STOPWORDS = %w(help home tutorial setup settings options_tutorial) + common_stopwords
+USER_STOPWORDS = %w(home settings) + STATIC_PAGES + common_stopwords
 HOST = 'localhost:3000' unless Object.const_defined?('HOST')

@@ -66,43 +66,26 @@
 	
 	<ul class="normal" style="list-style-type: square">
 		<li>
-			We have our first page dedicated to <%= link_to("Tags", tags_path) %>! For now it has
-			commands we recommend through our tag lists and some interesting tag clouds. [10/3]
+			Allowing others to anonymously query your commands is a separate option per command. [10/10]
 		</li>
 		<li>
-			We now have a <%= link_to "public user", user_home_path(User::PUBLIC_USER) %> whose sole responsibility is to automatically
-			subscribe to and offer access to all <%= link_to "our public commands", commands_path %>. [9/28]
+			The header now has two actions: search commands and public command.
+			'search commands' simply searches our list of commands. 'public command' executes any public command through
+			<%= link_to "the public user", user_home_path(User::PUBLIC_USER) %>. This is especially handy if you want to try out a
+			command before subscribing to it. Note that bookmarklet	commands can't be executed from here. [10/8]
 		</li>
 		<span id="more_features" style="display:none">
-			<li>You now have the option of not saving queries by default for a given command.
-				If you want to occasionally save a query for a query-less command, you can prefix a command with '!'. [9/24]
+			<li>
+				We have our first page dedicated to <%= link_to("Tags", tags_path) %>! For now it has
+				commands we recommend through our tag lists and some interesting tag clouds. [10/3]
 			</li>
 			<li>
-				Commands now have a revision date. This date holds the last time a command's functionality was revised.
-				This is helpful for seeing commands that are getting new features ie <%= link_to "latest revised commands", commands_path(:sort=>'down_by_revised_at') %>. [9/24]
-			</li>
-			<li>You can now filter our commands and command searches by command type ie 
-			<%= link_to "our bookmarklet commands", command_type_commands_path('bookmarklets')%>.
-				[9/21]
-			</li>
-			<li>
-				You can see your commands that are out of date on your home page under the Options section.[9/21]
-			</li>
-			<li>
-				When creating/editing bookmarklets, you can access a text box just for bookmarklets by clicking on 'JAVASCRIPT'.
-				This comes with some handy functions such as compressing and formating your javascript.
-				[9/18]
-			</li>
-			<li>
-				Get help on any of your commands with a -h or -help after your command ie
-				<%= nofollow_link_to("g -h", user_command_execute_path(User::PUBLIC_USER, "g -h"))%>. [9/18]
-			</li>
-			<li>
-				Want to test your command before executing it? Add a -T or -test to your command query
-				ie <%= nofollow_link_to "g -T this is a test", user_command_execute_path(User::PUBLIC_USER, "g -T this is a test")%>. [9/18]
+				We now have a <%= link_to "public user", user_home_path(User::PUBLIC_USER) %> whose sole responsibility is to automatically
+				subscribe to and offer access to all <%= link_to "our public commands", commands_path %>. [9/28]
 			</li>
 		</span>
 		<%= link_to_function "See More/Less Features ...", "$('more_features').toggle()", :class=>'function_link' %>
+		<%= link_to "See All Features", static_page_path('features'), :style=>'padding-left: 10px'%>
 	</ul>
 	
 	<h1>Latest Public Queries</h1>

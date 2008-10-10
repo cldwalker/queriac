@@ -47,6 +47,10 @@ class UserCommandsController < ApplicationController
     end
   end
   
+  def old_index
+    redirect_to tagged_user_commands_path(params[:login], *params[:tag]), :status=>301
+  end
+  
   def command_user_commands
     @user_commands = @command.user_commands.paginate(index_pagination_params.merge(:order=>sort_param_value))
     render :action=>'index'
@@ -177,7 +181,9 @@ class UserCommandsController < ApplicationController
   def update_url
     @user_command.update_url_and_options
     render :update do |page|
-      page.replace 'url_status', "Url and options updated"
+      message =  "Url and options updated."
+      message += "But since you were editing, also reload your page." if (request.env["HTTP_REFERER"] == edit_user_command_url(@user_command))
+      page.replace 'url_status', message
     end
   end
 

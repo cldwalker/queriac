@@ -25,8 +25,8 @@ module SharedHelper
     user_command.owned_by?(current_user)
   end
   
-  def user_command_owner_or_admin?
-    user_command_owner? || admin?
+  def user_command_owner_or_admin?(user_command=@user_command)
+    user_command_owner?(user_command) || admin?
   end
   
   def subscribe_action?

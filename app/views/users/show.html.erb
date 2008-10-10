@@ -65,7 +65,11 @@
 				However, the command owner or admin has probably modified the command for a good reason. You should look at the 
 				new version of a command before updating.
 			</p>
+			<% if @commands_to_update.empty? %>
+				<p>No commands to update.</p>
+			<% else %>
 			<%= user_command_table @commands_to_update, :columns=>[:name, :url_status], :headers=>[['User Command', {:width=>25}],['Url Status', {:width=>50}]]%>
+			<% end %>
 		</div>
 		<% end %>
 		

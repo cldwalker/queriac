@@ -1,0 +1,33 @@
+<div id="primary">
+	<h1>Features</h1>
+	<p>For now, we're just listing features that were on the home page.</p>
+	<ul class="normal" style="list-style-type: square">
+		<li>You now have the option of not saving queries by default for a given command.
+			If you want to occasionally save a query for a query-less command, you can prefix a command with '!'. [9/24]
+		</li>
+		<li>
+			Commands now have a revision date. This date holds the last time a command's functionality was revised.
+			This is helpful for seeing commands that are getting new features ie <%= link_to "latest revised commands", commands_path(:sort=>'down_by_revised_at') %>. [9/24]
+		</li>
+		<li>You can now filter our commands and command searches by command type ie 
+		<%= link_to "our bookmarklet commands", command_type_commands_path('bookmarklets') %>.
+			[9/21]
+		</li>
+		<li>
+			You can see your commands that are out of date on your home page under the Options section.[9/21]
+		</li>
+		<li>
+			When creating/editing bookmarklets, you can access a text box just for bookmarklets by clicking on 'JAVASCRIPT'.
+			This comes with some handy functions such as compressing and formating your javascript.
+			[9/18]
+		</li>
+		<li>
+			Get help on any of your commands with a -h or -help after your command ie
+			<%= nofollow_link_to("g -h", user_command_execute_path(User::PUBLIC_USER, "g -h"))%>. [9/18]
+		</li>
+		<li>
+			Want to test your command before executing it? Add a -T or -test to your command query
+			ie <%= nofollow_link_to "g -T this is a test", user_command_execute_path(User::PUBLIC_USER, "g -T this is a test")%>. [9/18]
+		</li>
+	</ul>
+</div>

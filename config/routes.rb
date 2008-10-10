@@ -18,6 +18,7 @@ ActionController::Routing::Routes.draw do |map|
     c.formatted_command_user_commands  'commands/:id/user_commands.:format', :action=>'command_user_commands', :format=>'rss'
     # c.formatted_tagged_user_commands   ':login/user_commands/tag/*tag.:format',   :action=>'index', :format=>'rss'
     c.tagged_user_commands   ':login/user_commands/tag/*tag',   :action=>'index'
+    c.old_tagged_user_commands   ':login/commands/tag/*tag',   :action=>'old_index'
     # c.formatted_all_tagged_user_commands   'user_commands/tag/*tag.:format',   :action=>'index', :format=>'rss'
     c.all_tagged_user_commands   'user_commands/tag/*tag',   :action=>'index'
     c.specific_user_commands   ':login/user_commands', :action=>'index'
@@ -30,8 +31,7 @@ ActionController::Routing::Routes.draw do |map|
     
   map.activate_user  '/activate/:activation_code',     :controller => 'users', :action => 'activate'
   map.settings    'settings',                     :controller => 'users', :action => 'edit'
-  #static_page values should be in USER_STOPWORDS
-  map.static_page    ':static_page',              :controller=>'static', :action=>'render_page', :static_page=>/tutorial|setup|help|options_tutorial/
+  map.static_page    ':static_page',              :controller=>'static', :action=>'render_page', :static_page=>/#{STATIC_PAGES.join("|")}/
   map.home        '',                             :controller => "static", :action => "home"
   map.queries     'queries',                      :controller => 'queries', :action => 'index'
  

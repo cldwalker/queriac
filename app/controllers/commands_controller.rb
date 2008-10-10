@@ -94,7 +94,7 @@ class CommandsController < ApplicationController
     end
 
     # Don't allow outsiders to run private commands  
-    if (@user_command.private? || !@user_command.allow_anonymous_queries?) && ! @user_command.owned_by?(current_user)
+    if (@user_command.private? || !@user_command.anonymous_queries?) && ! @user_command.owned_by?(current_user)
       redirect_path = user_home_path(@user)
       redirect_path << (logged_in? ? "?illegal_command=#{keyword}" : "?private_command=#{keyword}")
       redirect_to(redirect_path) and return

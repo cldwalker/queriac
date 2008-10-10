@@ -263,8 +263,6 @@ module CommandHelper
   end
   
   def public_queries?; self.public && self.public_queries; end
-  #may move this boolean to its own column
-  def allow_anonymous_queries?; self.public_queries? end
   
   #domain value should be the same for command + its usercommand
   #pushing to have no dependence on command when rendering favicons
