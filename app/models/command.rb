@@ -1,4 +1,5 @@
 class Command < ActiveRecord::Base
+  acts_as_cached
   include CommandHelper
   belongs_to :user
   has_many :queries, :through=>:user_commands

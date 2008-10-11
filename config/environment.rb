@@ -88,8 +88,6 @@ ExceptionNotifier.email_prefix = "[queriac] "
 # Include your application configuration below
 require 'open-uri'
 require 'hpricot'
-require 'cache_memstore'
-ActionController::Base.cache_store = CacheMemstore.new(:ttl =>15.minutes)
 
 common_stopwords = %w(user_commands commands tags queries users opensearch)
 COMMAND_STOPWORDS = %w(default_to delete search_form search_all execute update tag_set tag_add_remove find_by_ids) + common_stopwords + Command::TYPES.map {|e| e.to_s}

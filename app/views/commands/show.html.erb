@@ -33,7 +33,7 @@
 		Public Queries
 		<%= "(Last #{@queries.size})" %>
 	</h2>
-	<% cache(:id=>@command.id, :section=>'query_table') do %>
+	<% cache({:id=>@command.id, :section=>'query_table'}, :ttl=>10.minutes) do %>
 	<%= query_table @queries, :columns=>[:query_string, :created_at]%>
 	<% end %>
 	<%= table_link_to "View all queries", command_queries_path(@command) %>
@@ -61,7 +61,7 @@
 		
 	<p><b>Total Queries:</b> <%= @command.queries_count_all %></p>
 	
-	<% cache(:id=>@command.id, :section=>'user_tags') do %>
+	<% cache({:id=>@command.id, :section=>'user_tags'}, :ttl=>30.minutes) do %>
 		<h2>User Tags</h2>
 		<%= tag_cloud_or_list @command.user_tags, :path=>:all_users %>
 	<% end %>

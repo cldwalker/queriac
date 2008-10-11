@@ -8,7 +8,7 @@ defaults:
   namespace: app
   sessions: false
   session_servers: false
-  fragments: false
+  fragments: true
   memory: 64
   servers: localhost:11211
   benchmarking: true
@@ -18,7 +18,7 @@ defaults:
 
 development:
   sessions: false
-  fragments: false
+  #fragments: false
   servers: localhost:11211
 
 # turn off caching

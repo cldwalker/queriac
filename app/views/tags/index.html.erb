@@ -4,7 +4,7 @@
 	<hr/>
 	<% explanation = %[A tag list is a list of items that are related by a common tag. Command tag lists are tag lists for commands.]%>
 	<h2 style="color: #427f0b">Featured Command Tag Lists <%= image_tag 'icons/information.png', :title=>explanation %></h2>
-	<% cache :section=>"featured tags" do %>
+	<% cache({:section=>"featured tags"},:ttl=>15.minutes) do %>
 	<% @featured_tag_groups.each do |tag, tagged_commands| %>
 		<h2 style="margin-bottom:0px;padding-bottom: 0px">
 			<% title = "#{tag.capitalize} (#{tagged_commands.length})" %>
