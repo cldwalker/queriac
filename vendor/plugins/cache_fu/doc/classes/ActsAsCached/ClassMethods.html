@@ -1,0 +1,763 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Module: ActsAsCached::ClassMethods</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Module</strong></td>
+          <td class="class-name-in-header">ActsAsCached::ClassMethods</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../../files/lib/acts_as_cached/cache_methods_rb.html">
+                lib/acts_as_cached/cache_methods.rb
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+
+
+   </div>
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+      <a href="#M000059">autoload_missing_constants</a>&nbsp;&nbsp;
+      <a href="#M000038">cache_config</a>&nbsp;&nbsp;
+      <a href="#M000056">cache_key</a>&nbsp;&nbsp;
+      <a href="#M000055">cache_keys</a>&nbsp;&nbsp;
+      <a href="#M000054">cache_name</a>&nbsp;&nbsp;
+      <a href="#M000052">cache_namespace</a>&nbsp;&nbsp;
+      <a href="#M000039">cache_options</a>&nbsp;&nbsp;
+      <a href="#M000057">cache_store</a>&nbsp;&nbsp;
+      <a href="#M000047">cached</a>&nbsp;&nbsp;
+      <a href="#M000048">cached?</a>&nbsp;&nbsp;
+      <a href="#M000046">caches</a>&nbsp;&nbsp;
+      <a href="#M000044">clear_cache</a>&nbsp;&nbsp;
+      <a href="#M000043">expire_cache</a>&nbsp;&nbsp;
+      <a href="#M000051">fetch_cachable_data</a>&nbsp;&nbsp;
+      <a href="#M000050">fetch_cache</a>&nbsp;&nbsp;
+      <a href="#M000040">get_cache</a>&nbsp;&nbsp;
+      <a href="#M000041">get_caches</a>&nbsp;&nbsp;
+      <a href="#M000049">is_cached?</a>&nbsp;&nbsp;
+      <a href="#M000053">max_key_length</a>&nbsp;&nbsp;
+      <a href="#M000045">reset_cache</a>&nbsp;&nbsp;
+      <a href="#M000042">set_cache</a>&nbsp;&nbsp;
+      <a href="#M000058">swallow_or_raise_cache_errors</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Public Instance methods</h3>
+
+      <div id="method-M000059" class="method-detail">
+        <a name="M000059"></a>
+
+        <div class="method-heading">
+          <a href="#M000059" class="method-signature">
+          <span class="method-name">autoload_missing_constants</span><span class="method-args">() {|| ...}</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000059-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000059-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/acts_as_cached/cache_methods.rb, line 214</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">autoload_missing_constants</span>
+      <span class="ruby-keyword kw">yield</span>
+    <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-constant">MemCache</span><span class="ruby-operator">::</span><span class="ruby-constant">MemCacheError</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">error</span>
+      <span class="ruby-identifier">lazy_load</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">hash</span>, <span class="ruby-identifier">hash_key</span><span class="ruby-operator">|</span> <span class="ruby-identifier">hash</span>[<span class="ruby-identifier">hash_key</span>] = <span class="ruby-keyword kw">true</span>; <span class="ruby-keyword kw">false</span> }
+      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">error</span>.<span class="ruby-identifier">to_s</span>[<span class="ruby-regexp re">/undefined class|referred/</span>] <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">lazy_load</span>[<span class="ruby-identifier">error</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">split</span>.<span class="ruby-identifier">last</span>.<span class="ruby-identifier">constantize</span>] <span class="ruby-keyword kw">then</span> <span class="ruby-keyword kw">retry</span>
+      <span class="ruby-keyword kw">else</span> <span class="ruby-identifier">raise</span> <span class="ruby-identifier">error</span> <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000038" class="method-detail">
+        <a name="M000038"></a>
+
+        <div class="method-heading">
+          <a href="#M000038" class="method-signature">
+          <span class="method-name">cache_config</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000038-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000038-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/acts_as_cached/cache_methods.rb, line 5</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">cache_config</span>
+      <span class="ruby-identifier">config</span> = <span class="ruby-constant">ActsAsCached</span><span class="ruby-operator">::</span><span class="ruby-constant">Config</span>.<span class="ruby-identifier">class_config</span>[<span class="ruby-identifier">cache_name</span>] <span class="ruby-operator">||=</span> {}
+      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">name</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">cache_name</span>
+        <span class="ruby-identifier">config</span>
+      <span class="ruby-keyword kw">else</span>
+        <span class="ruby-comment cmt"># sti</span>
+        <span class="ruby-constant">ActsAsCached</span><span class="ruby-operator">::</span><span class="ruby-constant">Config</span>.<span class="ruby-identifier">class_config</span>[<span class="ruby-identifier">name</span>] <span class="ruby-operator">||=</span> <span class="ruby-identifier">config</span>.<span class="ruby-identifier">dup</span>
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000056" class="method-detail">
+        <a name="M000056"></a>
+
+        <div class="method-heading">
+          <a href="#M000056" class="method-signature">
+          <span class="method-name">cache_key</span><span class="method-args">(cache_id)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000056-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000056-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/acts_as_cached/cache_methods.rb, line 183</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">cache_key</span>(<span class="ruby-identifier">cache_id</span>)
+      [<span class="ruby-identifier">cache_name</span>, <span class="ruby-identifier">cache_config</span>[<span class="ruby-identifier">:version</span>], <span class="ruby-identifier">cache_id</span>].<span class="ruby-identifier">compact</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">':'</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-value str">' '</span>, <span class="ruby-value str">'_'</span>).<span class="ruby-identifier">first</span>(<span class="ruby-identifier">max_key_length</span>)
+    <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000055" class="method-detail">
+        <a name="M000055"></a>
+
+        <div class="method-heading">
+          <a href="#M000055" class="method-signature">
+          <span class="method-name">cache_keys</span><span class="method-args">(*cache_ids)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000055-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000055-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/acts_as_cached/cache_methods.rb, line 179</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">cache_keys</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">cache_ids</span>)
+      <span class="ruby-identifier">cache_ids</span>.<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">cache_id</span><span class="ruby-operator">|</span> <span class="ruby-identifier">cache_key</span>(<span class="ruby-identifier">cache_id</span>) }
+    <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000054" class="method-detail">
+        <a name="M000054"></a>
+
+        <div class="method-heading">
+          <a href="#M000054" class="method-signature">
+          <span class="method-name">cache_name</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000054-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000054-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/acts_as_cached/cache_methods.rb, line 175</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">cache_name</span>
+      <span class="ruby-ivar">@cache_name</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:base_class</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">base_class</span>.<span class="ruby-identifier">name</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">name</span>
+    <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000052" class="method-detail">
+        <a name="M000052"></a>
+
+        <div class="method-heading">
+          <a href="#M000052" class="method-signature">
+          <span class="method-name">cache_namespace</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000052-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000052-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/acts_as_cached/cache_methods.rb, line 164</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">cache_namespace</span>
+      <span class="ruby-identifier">cache_store</span>(<span class="ruby-identifier">:namespace</span>)
+    <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000039" class="method-detail">
+        <a name="M000039"></a>
+
+        <div class="method-heading">
+          <a href="#M000039" class="method-signature">
+          <span class="method-name">cache_options</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000039-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000039-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/acts_as_cached/cache_methods.rb, line 15</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">cache_options</span>
+      <span class="ruby-identifier">cache_config</span>[<span class="ruby-identifier">:options</span>] <span class="ruby-operator">||=</span> {}
+    <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000057" class="method-detail">
+        <a name="M000057"></a>
+
+        <div class="method-heading">
+          <a href="#M000057" class="method-signature">
+          <span class="method-name">cache_store</span><span class="method-args">(method = nil, *args)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000057-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000057-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/acts_as_cached/cache_methods.rb, line 187</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">cache_store</span>(<span class="ruby-identifier">method</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+      <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">cache_config</span>[<span class="ruby-identifier">:store</span>] <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">method</span>
+
+      <span class="ruby-identifier">load_constants</span> = <span class="ruby-node">%w( get get_multi )</span>.<span class="ruby-identifier">include?</span> <span class="ruby-identifier">method</span>.<span class="ruby-identifier">to_s</span>
+
+      <span class="ruby-identifier">swallow_or_raise_cache_errors</span>(<span class="ruby-identifier">load_constants</span>) <span class="ruby-keyword kw">do</span>
+        <span class="ruby-identifier">cache_config</span>[<span class="ruby-identifier">:store</span>].<span class="ruby-identifier">send</span>(<span class="ruby-identifier">method</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000047" class="method-detail">
+        <a name="M000047"></a>
+
+        <div class="method-heading">
+          <span class="method-name">cached</span><span class="method-args">(method, options = {})</span>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Alias for <a href="ClassMethods.html#M000046">caches</a>
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000048" class="method-detail">
+        <a name="M000048"></a>
+
+        <div class="method-heading">
+          <a href="#M000048" class="method-signature">
+          <span class="method-name">cached?</span><span class="method-args">(cache_id = nil)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000048-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000048-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/acts_as_cached/cache_methods.rb, line 142</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">cached?</span>(<span class="ruby-identifier">cache_id</span> = <span class="ruby-keyword kw">nil</span>)
+      <span class="ruby-identifier">fetch_cache</span>(<span class="ruby-identifier">cache_id</span>).<span class="ruby-identifier">nil?</span> <span class="ruby-value">? </span><span class="ruby-keyword kw">false</span> <span class="ruby-operator">:</span> <span class="ruby-keyword kw">true</span>
+    <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000046" class="method-detail">
+        <a name="M000046"></a>
+
+        <div class="method-heading">
+          <a href="#M000046" class="method-signature">
+          <span class="method-name">caches</span><span class="method-args">(method, options = {})</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Encapsulates the pattern of writing custom cache methods which do nothing
+but wrap custom finders.
+</p>
+<pre>
+  =&gt; Story.caches(:find_popular)
+
+  is the same as
+
+  def self.cached_find_popular
+    get_cache(:find_popular) { find_popular }
+  end
+
+ The method also accepts both a :ttl and/or a :with key.
+ Obviously the :ttl value controls how long this method will
+ stay cached, while the :with key's value will be passed along
+ to the method.  The hash of the :with key will be stored with the key,
+ making two near-identical #caches calls with different :with values utilize
+ different caches.
+
+ =&gt; Story.caches(:find_popular, :with =&gt; :today)
+
+ is the same as
+
+  def self.cached_find_popular
+    get_cache(&quot;find_popular:today&quot;) { find_popular(:today) }
+  end
+</pre>
+<p>
+If your target method accepts multiple parameters, pass :withs an array.
+</p>
+<h1>&gt; Story.caches(:find_popular, :withs =&gt; [ :one, :two ])</h1>
+<p>
+is the same as
+</p>
+<pre>
+  def self.cached_find_popular
+    get_cache(&quot;find_popular:onetwo&quot;) { find_popular(:one, :two) }
+  end
+</pre>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000046-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000046-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/acts_as_cached/cache_methods.rb, line 130</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">caches</span>(<span class="ruby-identifier">method</span>, <span class="ruby-identifier">options</span> = {})
+      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">keys</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">:with</span>) 
+        <span class="ruby-identifier">with</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:with</span>)
+        <span class="ruby-identifier">get_cache</span>(<span class="ruby-node">&quot;#{method}:#{with}&quot;</span>, <span class="ruby-identifier">options</span>) { <span class="ruby-identifier">send</span>(<span class="ruby-identifier">method</span>, <span class="ruby-identifier">with</span>) }
+      <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">withs</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:withs</span>)
+        <span class="ruby-identifier">get_cache</span>(<span class="ruby-node">&quot;#{method}:#{withs}&quot;</span>, <span class="ruby-identifier">options</span>) { <span class="ruby-identifier">send</span>(<span class="ruby-identifier">method</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">withs</span>) }
+      <span class="ruby-keyword kw">else</span>
+        <span class="ruby-identifier">get_cache</span>(<span class="ruby-identifier">method</span>, <span class="ruby-identifier">options</span>) { <span class="ruby-identifier">send</span>(<span class="ruby-identifier">method</span>) }
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000044" class="method-detail">
+        <a name="M000044"></a>
+
+        <div class="method-heading">
+          <span class="method-name">clear_cache</span><span class="method-args">(cache_id = nil)</span>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Alias for <a href="ClassMethods.html#M000043">expire_cache</a>
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000043" class="method-detail">
+        <a name="M000043"></a>
+
+        <div class="method-heading">
+          <a href="#M000043" class="method-signature">
+          <span class="method-name">expire_cache</span><span class="method-args">(cache_id = nil)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000043-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000043-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/acts_as_cached/cache_methods.rb, line 84</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">expire_cache</span>(<span class="ruby-identifier">cache_id</span> = <span class="ruby-keyword kw">nil</span>)
+      <span class="ruby-identifier">cache_store</span>(<span class="ruby-identifier">:delete</span>, <span class="ruby-identifier">cache_key</span>(<span class="ruby-identifier">cache_id</span>)) 
+      <span class="ruby-keyword kw">true</span>
+    <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000051" class="method-detail">
+        <a name="M000051"></a>
+
+        <div class="method-heading">
+          <a href="#M000051" class="method-signature">
+          <span class="method-name">fetch_cachable_data</span><span class="method-args">(cache_id = nil)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000051-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000051-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/acts_as_cached/cache_methods.rb, line 155</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">fetch_cachable_data</span>(<span class="ruby-identifier">cache_id</span> = <span class="ruby-keyword kw">nil</span>)
+      <span class="ruby-identifier">finder</span> = <span class="ruby-identifier">cache_config</span>[<span class="ruby-identifier">:finder</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">:find</span>
+      <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">send</span>(<span class="ruby-identifier">finder</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">cache_id</span>
+
+      <span class="ruby-identifier">args</span> = [<span class="ruby-identifier">cache_id</span>]
+      <span class="ruby-identifier">args</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">cache_options</span>.<span class="ruby-identifier">dup</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">cache_options</span>.<span class="ruby-identifier">blank?</span>
+      <span class="ruby-identifier">send</span>(<span class="ruby-identifier">finder</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+    <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000050" class="method-detail">
+        <a name="M000050"></a>
+
+        <div class="method-heading">
+          <a href="#M000050" class="method-signature">
+          <span class="method-name">fetch_cache</span><span class="method-args">(cache_id)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000050-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000050-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/acts_as_cached/cache_methods.rb, line 147</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">fetch_cache</span>(<span class="ruby-identifier">cache_id</span>)
+      <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-constant">ActsAsCached</span>.<span class="ruby-identifier">config</span>[<span class="ruby-identifier">:skip_gets</span>]
+
+      <span class="ruby-identifier">autoload_missing_constants</span> <span class="ruby-keyword kw">do</span> 
+        <span class="ruby-identifier">cache_store</span>(<span class="ruby-identifier">:get</span>, <span class="ruby-identifier">cache_key</span>(<span class="ruby-identifier">cache_id</span>))
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000040" class="method-detail">
+        <a name="M000040"></a>
+
+        <div class="method-heading">
+          <a href="#M000040" class="method-signature">
+          <span class="method-name">get_cache</span><span class="method-args">(*args) {|: fetch_cachable_data(cache_id), options[:ttl])| ...}</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000040-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000040-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/acts_as_cached/cache_methods.rb, line 19</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_cache</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+      <span class="ruby-identifier">options</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">last</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">pop</span> <span class="ruby-operator">:</span> {}
+      <span class="ruby-identifier">args</span>    = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">flatten</span>
+
+      <span class="ruby-comment cmt">##</span>
+      <span class="ruby-comment cmt"># head off to get_caches if we were passed multiple cache_ids</span>
+      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span> 
+        <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">get_caches</span>(<span class="ruby-identifier">args</span>, <span class="ruby-identifier">options</span>) 
+      <span class="ruby-keyword kw">else</span>
+        <span class="ruby-identifier">cache_id</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">first</span>
+      <span class="ruby-keyword kw">end</span>
+
+      <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">item</span> = <span class="ruby-identifier">fetch_cache</span>(<span class="ruby-identifier">cache_id</span>)).<span class="ruby-identifier">nil?</span>
+        <span class="ruby-identifier">set_cache</span>(<span class="ruby-identifier">cache_id</span>, <span class="ruby-identifier">block_given?</span> <span class="ruby-value">? </span><span class="ruby-keyword kw">yield</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">fetch_cachable_data</span>(<span class="ruby-identifier">cache_id</span>), <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:ttl</span>])
+      <span class="ruby-keyword kw">else</span>
+        <span class="ruby-ivar">@@nil_sentinel</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">item</span> <span class="ruby-value">? </span><span class="ruby-keyword kw">nil</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">item</span>
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000041" class="method-detail">
+        <a name="M000041"></a>
+
+        <div class="method-heading">
+          <a href="#M000041" class="method-signature">
+          <span class="method-name">get_caches</span><span class="method-args">(*args)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+This method accepts an array of cache_ids which it will use to call
+get_multi on your cache store. Any misses will be fetched and saved to the
+cache, and a hash keyed by cache_id will ultimately be returned.
+</p>
+<p>
+If your cache store does not support get_multi an exception will be raised.
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000041-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000041-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/acts_as_cached/cache_methods.rb, line 44</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_caches</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+      <span class="ruby-identifier">raise</span> <span class="ruby-constant">NoGetMulti</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">cache_store</span>.<span class="ruby-identifier">respond_to?</span> <span class="ruby-identifier">:get_multi</span>
+
+      <span class="ruby-identifier">options</span>   = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">last</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">pop</span> <span class="ruby-operator">:</span> {}
+      <span class="ruby-identifier">cache_ids</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">:to_s</span>)
+      <span class="ruby-identifier">keys</span>      = <span class="ruby-identifier">cache_keys</span>(<span class="ruby-identifier">cache_ids</span>)
+
+      <span class="ruby-comment cmt"># Map memcache keys to object cache_ids in { memcache_key =&gt; object_id } format</span>
+      <span class="ruby-identifier">keys_map</span> = <span class="ruby-constant">Hash</span>[<span class="ruby-operator">*</span><span class="ruby-identifier">keys</span>.<span class="ruby-identifier">zip</span>(<span class="ruby-identifier">cache_ids</span>).<span class="ruby-identifier">flatten</span>]
+
+      <span class="ruby-comment cmt"># Call get_multi and figure out which keys were missed based on what was a hit</span>
+      <span class="ruby-identifier">hits</span> = <span class="ruby-identifier">cache_store</span>(<span class="ruby-identifier">:get_multi</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">keys</span>) <span class="ruby-operator">||</span> {}
+
+      <span class="ruby-comment cmt"># Misses can take the form of key =&gt; nil</span>
+      <span class="ruby-identifier">hits</span>.<span class="ruby-identifier">delete_if</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">key</span>, <span class="ruby-identifier">value</span><span class="ruby-operator">|</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">nil?</span> }
+
+      <span class="ruby-identifier">misses</span> = <span class="ruby-identifier">keys</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">hits</span>.<span class="ruby-identifier">keys</span>
+      <span class="ruby-identifier">hits</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>, <span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">hits</span>[<span class="ruby-identifier">k</span>] = <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">v</span> <span class="ruby-operator">==</span> <span class="ruby-ivar">@@nil_sentinel</span> }
+
+      <span class="ruby-comment cmt"># Return our hash if there are no misses</span>
+      <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">hits</span>.<span class="ruby-identifier">values</span>.<span class="ruby-identifier">index_by</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">:cache_id</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">misses</span>.<span class="ruby-identifier">empty?</span>
+
+      <span class="ruby-comment cmt"># Find any missed records</span>
+      <span class="ruby-identifier">needed_ids</span>     = <span class="ruby-identifier">keys_map</span>.<span class="ruby-identifier">values_at</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">misses</span>)
+      <span class="ruby-identifier">missed_records</span> = <span class="ruby-constant">Array</span>(<span class="ruby-identifier">fetch_cachable_data</span>(<span class="ruby-identifier">needed_ids</span>))
+
+      <span class="ruby-comment cmt"># Cache the missed records</span>
+      <span class="ruby-identifier">missed_records</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">missed_record</span><span class="ruby-operator">|</span> <span class="ruby-identifier">missed_record</span>.<span class="ruby-identifier">set_cache</span>(<span class="ruby-identifier">options</span>[<span class="ruby-identifier">:ttl</span>]) }
+
+      <span class="ruby-comment cmt"># Return all records as a hash indexed by object cache_id</span>
+      (<span class="ruby-identifier">hits</span>.<span class="ruby-identifier">values</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">missed_records</span>).<span class="ruby-identifier">index_by</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">:cache_id</span>)
+    <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000049" class="method-detail">
+        <a name="M000049"></a>
+
+        <div class="method-heading">
+          <span class="method-name">is_cached?</span><span class="method-args">(cache_id = nil)</span>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Alias for <a href="ClassMethods.html#M000047">cached</a>?
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000053" class="method-detail">
+        <a name="M000053"></a>
+
+        <div class="method-heading">
+          <a href="#M000053" class="method-signature">
+          <span class="method-name">max_key_length</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Memcache-client automatically prepends the namespace, plus a colon, onto
+keys, so we take that into account for the max key length. Rob Sanheim
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000053-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000053-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/acts_as_cached/cache_methods.rb, line 170</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">max_key_length</span>
+      <span class="ruby-identifier">key_size</span> = <span class="ruby-identifier">cache_config</span>[<span class="ruby-identifier">:key_size</span>] <span class="ruby-operator">||</span> <span class="ruby-value">250</span>
+      <span class="ruby-ivar">@max_key_length</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">cache_namespace</span> <span class="ruby-value">? </span>(<span class="ruby-identifier">key_size</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">cache_namespace</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">key_size</span>
+    <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000045" class="method-detail">
+        <a name="M000045"></a>
+
+        <div class="method-heading">
+          <a href="#M000045" class="method-signature">
+          <span class="method-name">reset_cache</span><span class="method-args">(cache_id = nil)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000045-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000045-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/acts_as_cached/cache_methods.rb, line 90</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">reset_cache</span>(<span class="ruby-identifier">cache_id</span> = <span class="ruby-keyword kw">nil</span>)
+      <span class="ruby-identifier">set_cache</span>(<span class="ruby-identifier">cache_id</span>, <span class="ruby-identifier">fetch_cachable_data</span>(<span class="ruby-identifier">cache_id</span>))
+    <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000042" class="method-detail">
+        <a name="M000042"></a>
+
+        <div class="method-heading">
+          <a href="#M000042" class="method-signature">
+          <span class="method-name">set_cache</span><span class="method-args">(cache_id, value, ttl = nil)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000042-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000042-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/acts_as_cached/cache_methods.rb, line 77</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">set_cache</span>(<span class="ruby-identifier">cache_id</span>, <span class="ruby-identifier">value</span>, <span class="ruby-identifier">ttl</span> = <span class="ruby-keyword kw">nil</span>)
+      <span class="ruby-identifier">returning</span>(<span class="ruby-identifier">value</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">v</span> = <span class="ruby-ivar">@@nil_sentinel</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">v</span>.<span class="ruby-identifier">nil?</span>
+        <span class="ruby-identifier">cache_store</span>(<span class="ruby-identifier">:set</span>, <span class="ruby-identifier">cache_key</span>(<span class="ruby-identifier">cache_id</span>), <span class="ruby-identifier">v</span>, <span class="ruby-identifier">ttl</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">cache_config</span>[<span class="ruby-identifier">:ttl</span>] <span class="ruby-operator">||</span> <span class="ruby-value">1500</span>)
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000058" class="method-detail">
+        <a name="M000058"></a>
+
+        <div class="method-heading">
+          <a href="#M000058" class="method-signature">
+          <span class="method-name">swallow_or_raise_cache_errors</span><span class="method-args">(load_constants = false) {|| ...}</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000058-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000058-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/acts_as_cached/cache_methods.rb, line 197</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">swallow_or_raise_cache_errors</span>(<span class="ruby-identifier">load_constants</span> = <span class="ruby-keyword kw">false</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+      <span class="ruby-identifier">load_constants</span> <span class="ruby-value">? </span><span class="ruby-identifier">autoload_missing_constants</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>) <span class="ruby-operator">:</span> <span class="ruby-keyword kw">yield</span>
+    <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">TypeError</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">error</span>
+      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">error</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">include?</span> <span class="ruby-value str">'Proc'</span> 
+        <span class="ruby-identifier">raise</span> <span class="ruby-constant">MarshalError</span>, <span class="ruby-value str">&quot;Most likely an association callback defined with a Proc is triggered, see http://ar.rubyonrails.com/classes/ActiveRecord/Associations/ClassMethods.html (Association Callbacks) for details on converting this to a method based callback&quot;</span> 
+      <span class="ruby-keyword kw">else</span>
+        <span class="ruby-identifier">raise</span> <span class="ruby-identifier">error</span>
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">error</span>
+      <span class="ruby-keyword kw">if</span> <span class="ruby-constant">ActsAsCached</span>.<span class="ruby-identifier">config</span>[<span class="ruby-identifier">:raise_errors</span>]
+        <span class="ruby-identifier">raise</span> <span class="ruby-identifier">error</span>
+      <span class="ruby-keyword kw">else</span>
+        <span class="ruby-constant">RAILS_DEFAULT_LOGGER</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;MemCache Error: #{error.message}&quot;</span> <span class="ruby-keyword kw">rescue</span> <span class="ruby-keyword kw">nil</span>
+        <span class="ruby-keyword kw">nil</span>
+      <span class="ruby-keyword kw">end</span>      
+    <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>
