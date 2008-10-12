@@ -1,15 +1,15 @@
 defaults:
-  ttl: 1800
+  ttl: 3400
   readonly: false
   urlencode: false
   c_threshold: 10000
   compression: true
   debug: false
-  namespace: app
+  namespace: queriac
   sessions: false
   session_servers: false
   fragments: true
-  memory: 64
+  memory: 128
   servers: localhost:11211
   benchmarking: true
   raise_errors: true

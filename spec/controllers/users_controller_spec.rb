@@ -52,7 +52,6 @@ describe 'users/show:' do
   def basic_expectations
     response.should be_success
     assigns[:user].should be_an_instance_of(User)
-    assigns[:tags][0].should be_an_instance_of(Tag)
     assigns[:users][0].should be_an_instance_of(User)
   end
   

@@ -11,7 +11,7 @@ class CommandsController < ApplicationController
   
   def header_search
     if logged_in? && params[:commit] == "Search Commands"
-      redirect_to search_all_commands_path :q=>params[:q]
+      redirect_to search_all_commands_path(:q=>params[:q])
     else
       redirect_to user_command_execute_path(User::PUBLIC_USER, params[:q])
     end
@@ -150,8 +150,7 @@ class CommandsController < ApplicationController
 
   #desired behavior for private queries is just a sidebar?
   def show
-    @user_commands = @command.user_commands.find(:all, :limit=>5, :order=>'queries_count DESC', :include=>:user)
-    @queries = @command.queries.public.find(:all, :order => "queries.created_at DESC", :limit=>30)
+    @user_commands, @queries =  @command.cached(:show_page)
     respond_to do |format|
       format.html
       format.xml  { render :xml => @command.to_xml }

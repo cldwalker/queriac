@@ -74,7 +74,13 @@
 		<% end %>
 		
 	<h1>Tags</h1>
-	<%= tag_cloud_or_list @tags %>
+	<% if ! current_user? %>
+		<% cache({:section=>:tags}, :ttl=>15.minutes) do %>
+			<%= tag_cloud_or_list @user.tags %>
+		<% end %>
+	<% else %>
+		<%= tag_cloud_or_list @user.tags %>
+	<% end %>
 	
 	<%= render :partial => "users/user_list"  %>
 

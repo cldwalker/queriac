@@ -7,6 +7,7 @@
 
 <%= render :partial=>'options_description_box', :locals=>{:command=>@user_command}%>
 	
+<% if @queries %>
 <% if can_view_queries? %>
 	<h2>
 		<%= "Queries (Last #{@queries.size})" %>
@@ -18,5 +19,6 @@
 	<% end %>
 <% else %>
 	<h2>Queries for this user command are private.</h2>
+<% end %>
 <% end %>
 

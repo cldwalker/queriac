@@ -4,6 +4,7 @@ class UserCommandsController < ApplicationController
   before_filter :load_valid_user_if_specified, :only=>[:index, :show, :help]
   before_filter :set_user_command, :only=>[:show, :edit, :update, :destroy, :update_url, :help]
   before_filter :set_command, :only=>[:command_user_commands]
+  before_filter :permission_required_if_private, :only=>[:show, :help]
   before_filter :permission_required, :only=>[:edit, :update, :destroy, :update_url]
   before_filter :store_location, :only=>[:index, :show, :command_user_commands]
   before_filter :allow_breadcrumbs, :only=>[:search, :index, :command_user_commands, :show, :edit, :help]
@@ -57,35 +58,11 @@ class UserCommandsController < ApplicationController
   end
   
   def show
-    if @user_command.private? && ! user_command_owner_or_admin?
-      flash[:warning] = "Sorry, the command '#{@user_command.name}' is private."
-      redirect_to user_home_path(current_user)
-      return
-    end
-    @related_user_commands = @user_command.command.user_commands.find(:all, :limit=>5, :order=>'user_commands.queries_count DESC', :include=>:user)
-    if can_view_queries?
-      @queries =  @user_command.queries.find(:all, :limit=>30, :order=>'queries.created_at DESC', :include=>:user_command)
-    else
-      @queries = []
-    end
-
-    respond_to do |format|
-      format.html
-      #format.xml  { render :xml => @command.to_xml }
-    end
+    @related_user_commands, @queries = user_command_owner? ? @user_command.show_page(can_view_queries?) : 
+      @user_command.cached(:show_page, :with=>can_view_queries?, :ttl=>15.minutes)
   end
   
   def help
-    if @user_command.private? && ! user_command_owner_or_admin?
-      flash[:warning] = "Sorry, the command '#{@user_command.name}' is private."
-      redirect_to user_home_path(current_user)
-      return
-    end
-    if can_view_queries?
-      @queries =  @user_command.queries.find(:all, :limit=>30, :order=>'queries.created_at DESC', :include=>:user_command)
-    else
-      @queries = []
-    end
   end
   
   def new  
@@ -361,6 +338,15 @@ class UserCommandsController < ApplicationController
       @user_command = current_user.user_commands.find_by_keyword(params[:id])
     end
     return false if user_command_is_nil?(params[:id])
+    true
+  end
+  
+  def permission_required_if_private
+    if @user_command.private? && ! user_command_owner_or_admin?
+      flash[:warning] = "Sorry, the command '#{@user_command.name}' is private."
+      redirect_to logged_in? ? user_home_path(current_user) : home_path
+      return false
+    end
     true
   end
   

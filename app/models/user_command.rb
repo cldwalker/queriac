@@ -5,6 +5,7 @@ class UserCommand < ActiveRecord::Base
   has_many :queries, :dependent => :destroy
   
   acts_as_taggable
+  acts_as_cached
   validates_presence_of :user_id, :keyword, :name, :url
   validates_each :url_options do |record, attr, value|
     record.validate_url_options if record.has_options?
@@ -163,13 +164,25 @@ class UserCommand < ActiveRecord::Base
     self.command.user == possible_owner
   end
   
-  def decrement_command_counts
-    self.command.decrement_user_command_counts(self.queries_count)
+  def update_query_counts
+    self.update_attribute(:queries_count, self.queries_count + 1)
     true
   end
   
-  def update_query_counts
-    self.update_attribute(:queries_count, self.queries_count + 1)
+  def show_page(can_view_queries)
+    related_user_commands = self.command.user_commands.find(:all, :limit=>5, :order=>'user_commands.queries_count DESC', :include=>:user)
+    if can_view_queries
+      queries =  self.queries.find(:all, :limit=>30, :order=>'queries.created_at DESC', :include=>:user_command)
+    else
+      queries = []
+    end
+    [related_user_commands, queries]
+  end
+  
+  #Callback methods
+  def decrement_command_counts
+    self.command.decrement_user_command_counts(self.queries_count)
+    true
   end
   
   #won't be necessary if we just delete the command

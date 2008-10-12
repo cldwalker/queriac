@@ -30,6 +30,7 @@ class User < ActiveRecord::Base
   has_many :tags, :through => :user_commands
   
   belongs_to :default_command, :class_name => "UserCommand", :foreign_key => :default_command_id
+  acts_as_cached
   
   PUBLIC_USER = 'public' #can query all public commands + gets deleted user commands
   VIEWABLE_SQL = %[users.activation_code IS NULL]
@@ -53,6 +54,8 @@ class User < ActiveRecord::Base
   validates_format_of       :email,  :with => /^([^@\s]+)@(?:[-a-z0-9]+\.)+[a-z]{2,}$/i
   before_save :encrypt_password
   before_create :make_activation_code
+  after_create :expire_class_caches
+  after_destroy :move_commands_to_public_user, :expire_class_caches
   
   def validate
     if self.login && USER_STOPWORDS.include?(self.login.downcase)
@@ -61,11 +64,11 @@ class User < ActiveRecord::Base
   end
   
   #takes ownership of deleted commands
-  def self.public_user; find_by_login(PUBLIC_USER); end
+  def self.public_user; get_cache(:public_user) { find_by_login(PUBLIC_USER); } end
   
   def self.find_top_users(options={})
     #includes user_commands count
-    users = User.find(:all, {:conditions=>VIEWABLE_SQL, :joins => "INNER JOIN user_commands ON user_commands.user_id = users.id", 
+    users = find(:all, {:conditions=>VIEWABLE_SQL, :joins => "INNER JOIN user_commands ON user_commands.user_id = users.id", 
       :select => "users.*, count(users.id) as user_commands_count",:group => "user_commands.user_id HAVING user_commands_count >= 15",
       :order=>'login'}.merge(options))
     set_queries_count_for_users(users)
@@ -238,25 +241,41 @@ class User < ActiveRecord::Base
       }
       ]
     end
-    # before filter 
-    def encrypt_password
-      return if password.blank?
-      self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--") if new_record?
-      self.crypted_password = encrypt(password)
-    end
     
     def password_required?
       crypted_password.blank? || !password.blank?
     end
+    
+    # Callback methods
+    def encrypt_password
+      return if password.blank?
+      self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--") if new_record?
+      self.crypted_password = encrypt(password)
+      true
+    end
 
     def make_activation_code
       self.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
+      true
     end 
     
-    def after_destroy
+    def move_commands_to_public_user
       if self.commands.size > 0 && (public_user = self.class.public_user)
         self.commands.each {|e| e.update_attribute :user_id, public_user.id}
       end
       true
+    end
+    
+    def expire_class_caches
+      self.class.expire_cache :find_top_users
+      true
+    end
+    
+    #publicity should be public or any
+    def user_commands_by_type(publicity)
+      quicksearches = self.user_commands.send(publicity).quicksearches.used.find(:all, {:order => "queries_count DESC", :include => [:user], :limit => 15})
+      shortcuts = self.user_commands.send(publicity).shortcuts.used.find(:all, {:order => "queries_count DESC", :include => [:user,], :limit => 15})
+      bookmarklets = self.user_commands.send(publicity).bookmarklets.used.find(:all, {:order => "queries_count DESC", :include => [:user], :limit => 15})
+      return [quicksearches, shortcuts, bookmarklets]
     end
 end

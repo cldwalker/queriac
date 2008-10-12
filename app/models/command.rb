@@ -1,5 +1,4 @@
 class Command < ActiveRecord::Base
-  acts_as_cached
   include CommandHelper
   belongs_to :user
   has_many :queries, :through=>:user_commands
@@ -7,6 +6,7 @@ class Command < ActiveRecord::Base
   has_many :users, :through=>:user_commands, :conditions=>User::VIEWABLE_SQL
   has_many :user_tags, :through=>:user_commands, :source=>:tags
   
+  acts_as_cached
   acts_as_taggable
   named_scope :public, :conditions => {:public => true}
   named_scope :any
@@ -19,6 +19,7 @@ class Command < ActiveRecord::Base
   named_scope :shortcuts, :conditions => ["commands.kind ='shortcut' AND commands.bookmarklet=0"]
   named_scope :quicksearches, :conditions => ["commands.kind ='parametric' AND commands.bookmarklet=0"]
   
+  after_update :expire_cache
   before_update :update_revised_at, :destroy_public_user_command_if_privatized
   validates_presence_of :name, :url
   validates_uniqueness_of :name
@@ -28,6 +29,8 @@ class Command < ActiveRecord::Base
   serialize :url_options, Array
   
   TYPES = [:bookmarklets, :shortcuts, :options, :quicksearches]
+  
+  def to_param; self.keyword || self.id; end
   
   # Validation / Initialization
   #------------------------------------------------------------------------------------------------------------------
@@ -59,6 +62,24 @@ class Command < ActiveRecord::Base
     end
   end
   
+  def before_validation_on_create
+    self.keyword.downcase! if self.keyword
+    self.url.sub!('%s', DEFAULT_PARAM )
+  end
+  
+  def after_validation
+    self.kind = (self.url.include?(DEFAULT_PARAM) || self.url =~ OPTION_PARAM_REGEX) ? "parametric" : "shortcut"
+    self.bookmarklet = url_is_bookmarklet?(self.url)
+  end
+  
+  #Callback methods
+  #------------------------------------------------------------------------------------------------------------------
+  
+  def expire_cache
+    self.expire_cached(:show_page)
+    true
+  end
+  
   def destroy_public_user_command_if_privatized
     if self.changed.include?('public') && self.public == false
       (user_command = self.user_commands.detect {|e| e.user.login == User::PUBLIC_USER}) && user_command.destroy
@@ -71,6 +92,14 @@ class Command < ActiveRecord::Base
     true
   end
   
+  # Booleans
+  #------------------------------------------------------------------------------------------------------------------
+  def parametric?; self.kind == "parametric"; end
+  def private?; !public?; end
+  
+  # Miscellany
+  #------------------------------------------------------------------------------------------------------------------
+  
   #to be called from vicarious updates ie @user_command.update_all_attributes
   def update_attributes_safely(*args)
     self.update_attributes(*args)
@@ -80,32 +109,6 @@ class Command < ActiveRecord::Base
       self.save if self.valid?
     end
   end
-  
-  def before_validation_on_create
-    self.keyword.downcase! if self.keyword
-    self.url.sub!('%s', DEFAULT_PARAM )
-  end
-  
-  def after_validation
-    self.kind = (self.url.include?(DEFAULT_PARAM) || self.url =~ OPTION_PARAM_REGEX) ? "parametric" : "shortcut"
-    self.bookmarklet = url_is_bookmarklet?(self.url)
-  end
-  
-  def to_param; self.keyword || self.id; end
-  # def url=(url)
-  #   super(url.blank? || url.downcase.starts_with?('http') || url.downcase.starts_with?('file') || url.downcase.starts_with?('javascript') ? url : "http://#{url}")
-  # end
-
-  # Booleans
-  #------------------------------------------------------------------------------------------------------------------
-  def parametric?; self.kind == "parametric"; end
-  def private?; !public?; end
-  
-  # Miscellany
-  #------------------------------------------------------------------------------------------------------------------
-  # def save_query(query_string)
-  #   self.queries.create(:query_string => query_string)
-  # end
   
   def created_by?(possible_owner)
     self.user == possible_owner
@@ -242,6 +245,12 @@ class Command < ActiveRecord::Base
     result = prefix_string + js_result.gsub(/\+\s*$/,'').gsub(/\s*"$/,'"')
     result += ";window.location=new_location"
     result
+  end
+  
+  def show_page
+    user_commands = self.user_commands.find(:all, :limit=>5, :order=>'queries_count DESC', :include=>:user)
+    queries = self.queries.public.find(:all, :order => "queries.created_at DESC", :limit=>30)
+    [user_commands, queries]
   end
   
 end

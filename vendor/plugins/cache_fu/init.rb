@@ -29,6 +29,6 @@ end
 ActsAsCached.config = YAML.load(ERB.new(IO.read(config_file)).result)
 
 begin
-  require 'extensions' 
+  require 'cache_fu_extensions' 
 rescue LoadError
 end

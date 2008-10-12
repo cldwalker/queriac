@@ -26,15 +26,12 @@ class UsersController < ApplicationController
     publicity = (current_user? || admin?) ? "any" : "public"
     
     if @user.queries.count > 100
-      @quicksearches = @user.user_commands.send(publicity).quicksearches.used.find(:all, {:order => "queries_count DESC", :include => [:user], :limit => 15})
-      @shortcuts = @user.user_commands.send(publicity).shortcuts.used.find(:all, {:order => "queries_count DESC", :include => [:user,], :limit => 15})
-      @bookmarklets = @user.user_commands.send(publicity).bookmarklets.used.find(:all, {:order => "queries_count DESC", :include => [:user], :limit => 15})
+      @quicksearches, @shortcuts, @bookmarklets = @user.cached(:user_commands_by_type, :with=>publicity, :ttl=>15.minutes)
     else
       @user_commands = @user.user_commands.send(publicity).paginate(:page => params[:page], :order => "queries_count DESC", :include => [:user, :command])
     end
     
-    @tags = @user.tags
-    @users = User.find_top_users
+    @users = User.cached(:find_top_users)
     @commands_to_update = @user.user_commands.out_of_date if current_user?
   end
   
