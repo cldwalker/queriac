@@ -6,4 +6,5 @@ Queriac is a free online tool that allows you to manage your quicksearches, shor
 To start using Queriac head over to http://queri.ac and create an account. It's free and easy.
 
 Here's a screenshot of a command list..
+
 ![Command List Screenshot](http://zeke.sikelianos.com/projects/queriac/images/commands.png)
